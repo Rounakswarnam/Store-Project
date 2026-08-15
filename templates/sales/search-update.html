@@ -1,0 +1,3602 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='sweetalert2.min.css') }}">
+    <script src="{{ url_for('static', filename='sweetalert2.min.js') }}"></script>
+
+    <title>Srarch & Update - Sales</title>
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            scrollbar-width: none;
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            background-color: #081b29;
+        }
+
+        .swal2-validation-message {
+            background: #102a30 !important;
+            color: #ffffff !important;
+            border: 1px solid #444;
+            padding: 0.5em 1em;
+            border-radius: 4px;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .wrapper {
+            width: 500px;
+            position: absolute;
+            left: 50%;
+            top: 65px;
+            transform: translateX(-50%);
+            padding-bottom: 32px;
+        }
+
+        .wrapper h1 {
+            color: #fffff0;
+            opacity: 0.9;
+            text-align: center;
+        }
+
+        .wrapper .finder {
+            width: 100%;
+            display: grid;
+            grid-template-rows: 32px 32px 32px 32px 32px;
+            grid-row-gap: 8px;
+            margin-top: 24px;
+        }
+
+        #customerName,
+        #address {
+            height: 100%;
+            width: 100%;
+            background-color: #113956;
+            border: none;
+            outline: none;
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-bottom: 8px;
+            padding-top: 9px;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #fffff0;
+            font-weight: bold;
+            border: 2px solid transparent;
+            transition: 0.3s;
+
+            &:focus {
+                border: 2px solid yellowgreen;
+                transition: 0.3s;
+            }
+        }
+
+        input::placeholder {
+            color: #fffff0;
+            opacity: 0.7;
+        }
+
+        #suggestionsAddress {
+            min-width: 100%;
+            max-height: 200px;
+            background-color: #113956;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            list-style: none;
+            z-index: 999;
+            position: absolute;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            margin-top: 4px;
+            border-radius: 6px;
+            border: 2px solid yellowgreen;
+        }
+
+        #suggestionsAddress li {
+            background-color: transparent;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 8px;
+            padding-right: 8px;
+            color: #fffff0;
+            font-weight: bold;
+            font-size: 14px;
+            opacity: 0.7;
+            border-radius: 6px;
+            transition: 0.3s;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #081b29;
+                opacity: 1;
+                transition: 0.3s;
+            }
+        }
+
+        #suggestionsAddress li.hover {
+            background-color: #081b29;
+            opacity: 1;
+            transition: 0.3s;
+        }
+
+        .wrapper .finder .club:nth-of-type(3) {
+            display: grid;
+            grid-template-columns: 1fr 347px;
+            grid-column-gap: 8px;
+        }
+
+        .wrapper .finder .club:nth-of-type(3) span {
+            font-size: 16px;
+            color: #fffff0;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            opacity: 0.7;
+            padding-left: 8px;
+        }
+
+        #phoneInput {
+            display: grid;
+            grid-template-columns: 32px 32px 32px 32px 32px 32px 32px 32px 32px 32px;
+            grid-column-gap: 3px;
+        }
+
+        #phoneInput input {
+            height: 100%;
+            width: 100%;
+            background-color: #113956;
+            border: none;
+            outline: none;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 16px;
+            color: #fffff0;
+            font-weight: bold;
+            border: 2px solid transparent;
+            transition: 0.3s;
+
+            &:focus {
+                border: 2px solid yellowgreen;
+                transition: 0.3s;
+            }
+        }
+
+        .wrapper .finder .club:nth-of-type(4) {
+            display: grid;
+            grid-template-columns: 1fr 100px 1fr;
+            grid-column-gap: 8px;
+        }
+
+        .select-container {
+            position: relative;
+            width: 100%;
+        }
+
+        select {
+            width: 100%;
+            height: 32px;
+            padding-left: 8px;
+            background-color: #113956;
+            color: #fffff0;
+            border-radius: 6px;
+            appearance: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+            border: none;
+            color-scheme: dark;
+            border: 2px solid transparent;
+            transition: 0.3s;
+
+            &:focus {
+                border: 2px solid yellowgreen;
+                transition: 0.3s;
+            }
+        }
+
+        .select-container::after {
+            content: "▼";
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            color: #fffff0;
+            pointer-events: none;
+        }
+
+        .wrapper .finder .club:nth-of-type(4) .credit {
+            background-color: #113956;
+            padding: 6px;
+            border-radius: 6px;
+            display: grid;
+            grid-template-columns: 20px 1fr;
+            grid-column-gap: 4px;
+
+            &.filter {
+                background-color: yellowgreen;
+            }
+        }
+
+        .wrapper .finder .club:nth-of-type(4) .credit #credit {
+            accent-color: #091b29;
+            cursor: pointer;
+        }
+
+        .wrapper .finder .club:nth-of-type(4) .credit span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fffff0;
+            font-size: 16px;
+            font-weight: bolder;
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        .wrapper .finder .club:nth-of-type(4) .credit.filter span {
+            color: #081b29;
+            opacity: 1;
+        }
+
+        .threshold {
+            position: fixed;
+            z-index: 9;
+            background-color: rgb(0, 0, 0, 0.5);
+            height: 100vh;
+            width: 100vw;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: 0.3s;
+
+            &.active {
+                opacity: 1;
+                pointer-events: auto;
+                transition: 0.3s;
+            }
+        }
+
+        .threshold>.thresWrapper {
+            width: 350px;
+            display: grid;
+            grid-template-rows: 38px 38px 38px 38px;
+            grid-row-gap: 8px;
+        }
+
+        .threshold>.thresWrapper .thres {
+            &:nth-of-type(4) {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-column-gap: 8px;
+            }
+
+            &:nth-of-type(1)>input,
+            &:nth-of-type(2)>input,
+            &:nth-of-type(3)>input {
+                height: 100%;
+                width: 100%;
+                background-color: #113956;
+                border: none;
+                outline: none;
+                border-radius: 6px;
+                padding-left: 8px;
+                padding-right: 8px;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 18px;
+                border: 2px solid transparent;
+                transition: 0.3s;
+
+                &:focus {
+                    border: 2px solid yellowgreen;
+                    transition: 0.3s;
+                }
+            }
+
+            &:nth-of-type(4)>button {
+                border-radius: 6px;
+                font-size: 18px;
+                font-weight: bold;
+                color: #fffff0;
+                outline: none;
+                border: none;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:nth-of-type(1) {
+                    background-color: transparent;
+                    border: 2px solid orangered;
+
+                    &:hover {
+                        background-color: orangered;
+                        color: #081b29;
+                        transition: 0.3s;
+                    }
+
+                    &:focus {
+                        background-color: orangered;
+                        color: #081b29;
+                        transition: 0.3s;
+                    }
+                }
+
+                &:nth-of-type(2) {
+                    background-color: #113956;
+
+                    &:hover {
+                        background-color: yellowgreen;
+                        color: #081b29;
+                        transition: 0.3s;
+                    }
+
+                    &:focus {
+                        background-color: yellowgreen;
+                        color: #081b29;
+                        transition: 0.3s;
+                    }
+                }
+            }
+        }
+
+        .wrapper .finder .club:nth-of-type(5) {
+            display: grid;
+            grid-template-columns: 300px 32px 1fr;
+            grid-column-gap: 8px;
+        }
+
+        .wrapper .finder .club:nth-of-type(5) button {
+            background-color: transparent;
+            outline: none;
+            border: 2px dashed greenyellow;
+            border-radius: 6px;
+            color: #fffff0;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+
+            &:focus {
+                background-color: greenyellow;
+                color: #081b29;
+                transition: 0.3s;
+            }
+
+            &:hover {
+                background-color: greenyellow;
+                color: #081b29;
+                transition: 0.3s;
+            }
+        }
+
+        .callender {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .callender>div {
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            position: absolute;
+            width: 300px;
+        }
+
+        .callender>div.active {
+            opacity: 1;
+            pointer-events: auto;
+            transition: 0.3s;
+        }
+
+        .callender>div:nth-of-type(2) {
+            width: 300px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-column-gap: 8px;
+        }
+
+        .date {
+            height: 32px;
+            width: 300px;
+            background-color: #113956;
+            border: none;
+            outline: none;
+            padding-left: 8px;
+            padding-right: 8px;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #fffff0;
+            font-weight: bold;
+            color-scheme: dark;
+            cursor: pointer;
+
+            &::-webkit-calendar-picker-indicator {
+                font-size: 20px;
+                cursor: pointer;
+            }
+        }
+
+        .callender>div:nth-of-type(2) .date {
+            width: 146px;
+            height: 32px;
+        }
+
+        .wrapper .results {
+            margin-top: 16px;
+        }
+
+        .wrapper .finder .club:nth-of-type(5) .limit {
+            width: 100%;
+            height: 100%;
+            background-color: #113956;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fffff0;
+            transition: 0.3s;
+
+            &:hover {
+                color: #081b29;
+                background-color: greenyellow;
+                transition: 0.3s;
+            }
+
+            &>span {
+                cursor: pointer;
+                height: 100%;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 6px;
+            }
+
+            &>.result-limiter {
+                background-color: #113956;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 42px;
+                width: 500px;
+                position: absolute;
+                left: 0;
+                transform: translateY(42px);
+                z-index: 9;
+                padding: 0 8px;
+                opacity: 0;
+                pointer-events: none;
+                transition: 0.3s;
+
+                &.active {
+                    opacity: 1;
+                    pointer-events: auto;
+                    transition: 0.3s;
+                }
+
+                &>input[type="range"] {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    display: block;
+                    background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af, #515bd4);
+                    width: 100%;
+                    height: 10px;
+                    border-radius: 5px;
+                    outline: none;
+
+                    &::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        background-color: #081b29;
+                        width: 25px;
+                        height: 25px;
+                        border-radius: 50%;
+                        border: 2px solid greenyellow;
+                        cursor: pointer;
+                        transition: .3s ease-in-out;
+                    }
+
+                    &::-webkit-slider-thumb:active {
+                        transform: scale(1.2);
+                    }
+                }
+            }
+        }
+
+        .wrapper .results .tittle {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fffff0;
+            opacity: 0.7;
+            text-align: center;
+            position: relative;
+
+            &::before {
+                content: "";
+                position: absolute;
+                height: 2px;
+                width: 40%;
+                background-color: #fffff0;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                border-radius: 50%;
+                opacity: 0.7;
+            }
+
+            &::after {
+                content: "";
+                position: absolute;
+                height: 2px;
+                width: 40%;
+                background-color: #fffff0;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                border-radius: 50%;
+                opacity: 0.7;
+            }
+        }
+
+        .wrapper .results #loadMore {
+            margin-top: 16px;
+            height: 32px;
+            width: 200px;
+            background-color: transparent;
+            outline: none;
+            border: none;
+            border: 2px dashed greenyellow;
+            border-radius: 6px;
+            color: #fffff0;
+            font-size: 18px;
+            font-weight: bold;
+            position: relative;
+            opacity: 1;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: 0.3s;
+
+            &:hover {
+                background-color: greenyellow;
+                color: #081b29;
+                transition: 0.3s;
+            }
+        }
+
+        .wrapper .results #loadMore.disappeared {
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        #findings {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #findings .item {
+            border-radius: 8px;
+            padding: 8px;
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 40px;
+            grid-column-gap: 8px;
+            background-color: transparent;
+            border: 3px solid #113956;
+
+            &:nth-of-type(1) {
+                margin-top: 16px;
+            }
+        }
+
+        #findings .item.cred {
+            background-color: #113956;
+            border: none;
+        }
+
+        #findings .item .details {
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        #findings .item .details .date {
+            background-color: yellowgreen;
+            width: 100px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #081b29;
+            border-radius: 4px;
+            position: absolute;
+            right: 8px;
+            pointer-events: none;
+        }
+
+        #findings .item .details .name {
+            font-size: 18px;
+            color: #fffff0;
+            font-weight: bolder;
+            pointer-events: none;
+        }
+
+        #findings .item .details .address {
+            color: #fffff0;
+            opacity: 0.8;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 5px;
+            pointer-events: none;
+        }
+
+        #findings .item .details .number {
+            color: #fffff0;
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        #findings .item .details .bill {
+            font-size: 14px;
+            color: #fffff0;
+            font-weight: bold;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        #findings .item .ctaTrigger {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+        }
+
+        #findings .item .ctaTrigger button {
+            border: none;
+            outline: none;
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+
+            &:hover {
+                background-color: #113956;
+                transition: 0.3s;
+            }
+
+            &>img {
+                height: 32px;
+                width: 32px;
+                pointer-events: none;
+            }
+        }
+
+        #findings .item.cred .ctaTrigger button {
+            border: none;
+            outline: none;
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+
+            &:hover {
+                background-color: #081b29;
+                transition: 0.3s;
+            }
+
+            &>img {
+                height: 32px;
+                width: 32px;
+                pointer-events: none;
+            }
+        }
+
+        #findings .border {
+            width: 90%;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(to right, #833ab4, #fd1d1d, orange, #fd1d1d, #833ab4);
+            margin: 0 auto;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+
+        .optionsPopup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: rgb(0, 0, 0, 0.5);
+            height: 100vh;
+            width: 100vw;
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s ease-in-out;
+            z-index: -9;
+        }
+
+        .optionsPopup.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 9;
+            transition: 0.3s ease-in-out;
+        }
+
+        .optionsPopup>.optionsWrapper {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow: scroll;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo {
+            display: grid;
+            grid-template-rows: 280px 1fr;
+            grid-row-gap: 8px;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.editables {
+            background-color: #113956;
+            padding: 9px 8px 8px 8px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.editables>div {
+            height: 32px;
+            width: 384px;
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-column-gap: 8px;
+
+            &::before {
+                content: "";
+                position: absolute;
+                width: 80%;
+                height: 4px;
+                background-color: #fffff0;
+                border-radius: 2px;
+                opacity: 0.7;
+                pointer-events: none;
+                left: 50%;
+                transform: translate(-50%, -48px);
+            }
+        }
+
+        #popDate {
+            background-color: #081b29;
+            border-radius: 6px;
+            padding: 2px 8px;
+            color: #fffff0;
+            font-size: 16px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        #popID {
+            background-color: #081b29;
+            border-radius: 6px;
+            padding: 2px 8px;
+            color: #fffff0;
+            font-size: 16px;
+            font-weight: bold;
+            pointer-events: none;
+            position: absolute;
+            left: 8px;
+            top: 34px;
+            height: 23px;
+        }
+
+        #popTotal {
+            background-color: #081b29;
+            border-radius: 6px;
+            padding: 2px 8px;
+            color: #fffff0;
+            font-size: 16px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        #popName,
+        #popAddress,
+        #popNumber {
+            height: 32px;
+            width: 100%;
+            background-color: #081b29;
+            border: none;
+            outline: none;
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-bottom: 8px;
+            padding-top: 9px;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #fffff0;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        #popName {
+            margin-top: 16px;
+        }
+
+        #popPaid,
+        #popCredit,
+        #auth {
+            height: 32px;
+            width: 100%;
+            background-color: #081b29;
+            border: none;
+            outline: none;
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-bottom: 8px;
+            padding-top: 9px;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #fffff0;
+            font-weight: bold;
+            position: relative;
+        }
+
+        #addressSuggestions {
+            min-width: calc(100% - 16px);
+            max-height: 135px;
+            background-color: #081b29;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            list-style: none;
+            z-index: 999;
+            position: absolute;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            margin-top: 2px;
+            border-radius: 6px;
+        }
+
+        #addressSuggestions li {
+            background-color: transparent;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 8px;
+            padding-right: 8px;
+            color: #fffff0;
+            font-weight: bold;
+            font-size: 14px;
+            opacity: 0.7;
+            border-radius: 6px;
+            transition: 0.3s;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #113956;
+                opacity: 1;
+                transition: 0.3s;
+            }
+        }
+
+        #addressSuggestions li.hover {
+            background-color: #113956;
+            opacity: 1;
+            transition: 0.3s;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.cta {
+            background-color: #113956;
+            border-radius: 12px;
+            padding: 8px;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.cta>.auth {
+            display: grid;
+            grid-template-rows: 32px 1fr;
+            padding-bottom: 8px;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.cta>.auth>.authContainer {
+            display: grid;
+            grid-template-columns: 1fr 32px;
+            grid-template-rows: 32px;
+            grid-column-gap: 4px;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.cta>.auth>.authContainer>#authIcons {
+            background-color: #081b29;
+            height: 100%;
+            width: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.cta>.auth>.authContainer>#authIcons>img:nth-of-type(1) {
+            position: absolute;
+            font-size: 20px;
+            height: 22px;
+            width: 22px;
+            pointer-events: none;
+            opacity: 1;
+            transition: 0.3s;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.cta>.auth>.authContainer>#authIcons.active>img:nth-of-type(1) {
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.cta>.auth>.authContainer>#authIcons>img:nth-of-type(2) {
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            pointer-events: none;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.cta>.auth>.authContainer>#authIcons.active>img:nth-of-type(2) {
+            opacity: 1;
+            transition: 0.3s;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.cta>.auth>.authInvalid {
+            font-size: 14px;
+            color: red;
+            font-weight: bold;
+            display: none;
+            margin-left: 8px;
+        }
+
+        .optionsPopup>.optionsWrapper>.popInfo>.cta>.auth>.authInvalid.active {
+            display: block;
+        }
+
+        .ctabox {
+            position: relative;
+            height: 32px;
+            width: 100%;
+        }
+
+        .ctabox .fta {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 32px;
+            grid-column-gap: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .ctabox .cta1 {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 32px;
+            grid-column-gap: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .ctabox .cta2 {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 32px;
+            grid-column-gap: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .optionsPopup.active>.optionsWrapper>.popInfo>.cta>.ctabox>.fta.active,
+        .optionsPopup.active>.optionsWrapper>.popInfo>.cta>.ctabox>.cta1.active,
+        .optionsPopup.active>.optionsWrapper>.popInfo>.cta>.ctabox>.cta2.active {
+            opacity: 1;
+            pointer-events: auto;
+            transition: 0.3s;
+        }
+
+        .ctabox .fta button,
+        .ctabox .cta1 button,
+        .ctabox .cta2 button {
+            background: #081b29;
+            outline: none;
+            border: none;
+            border-radius: 6px;
+            color: #fffff0;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+
+            &:hover {
+                background-color: yellowgreen;
+                color: #081b29;
+                transition: 0.3s;
+            }
+        }
+
+        .ctabox>.fta>.popDelete:hover,
+        #popDelete:hover {
+            background-color: orangered;
+        }
+
+        .optionsPopup>.optionsWrapper>#popDtls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .optionsPopup>.optionsWrapper>#popDtls>.popItem {
+            background-color: #113956;
+            padding: 8px;
+            border-radius: 12px;
+            color: #fffff0;
+            font-weight: bold;
+        }
+
+        .optionsPopup>.optionsWrapper>#popDtls>.popItem>.popVarietyName {
+            background-color: #081b29;
+            display: inline;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .optionsPopup>.optionsWrapper>#popDtls>.popItem>.popArticleName {
+            margin-top: 4px;
+        }
+
+        .optionsPopup>.optionsWrapper>#popDtls>.popItem>.popItemInfo,
+        .optionsPopup>.optionsWrapper>#popDtls>.popItem>.popPrep {
+            font-size: 14px;
+        }
+
+        .optionsPopup>.optionsWrapper>#popDtls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .optionsPopup>.optionsWrapper>#popDtls>.popItemDarab {
+            background-color: transparent;
+            border: 3px solid #113956;
+            padding: 8px;
+            border-radius: 12px;
+            color: #fffff0;
+            font-weight: bold;
+        }
+
+        .optionsPopup>.optionsWrapper>#popDtls>.popItemDarab>.popVarietyName {
+            background-color: #113956;
+            display: inline;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .optionsPopup>.optionsWrapper>#popDtls>.popItemDarab>.popArticleName {
+            margin-top: 4px;
+        }
+
+        .optionsPopup>.optionsWrapper>#popDtls>.popItemDarab>.popItemInfo,
+        .optionsPopup>.optionsWrapper>#popDtls>.popItemDarab>.popPrep {
+            font-size: 14px;
+        }
+
+        .optionsPopup>.optionsWrapper>.bhao {
+            background-color: #113956;
+            width: 100%;
+            border-radius: 12px;
+            padding: 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-column-gap: 8px;
+            height: 44px;
+
+            &>div {
+                height: 28px;
+                width: 100%;
+                background-color: #081b29;
+                border-radius: 8px;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: left;
+                padding-left: 8px;
+                padding-right: 8px;
+                position: relative;
+
+                &:nth-of-type(1)::after {
+                    content: "18C Gold Bhao";
+                }
+
+                &:nth-of-type(2)::after {
+                    content: "22C Gold Bhao";
+                }
+
+                &::after {
+                    position: absolute;
+                    background-color: yellowgreen;
+                    height: 20px;
+                    width: 120px;
+                    display: flex;
+                    align-items: center;
+                    text-align: center;
+                    justify-content: center;
+                    padding-left: 6px;
+                    padding-right: 6px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    color: #081b29;
+                    font-weight: bold;
+                    pointer-events: none;
+                    opacity: 0;
+                    transition: 0.3s;
+                    left: 50%;
+                    top: 0;
+                    transform: translate(-50%, calc(-100% + 10px));
+                }
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    height: 15px;
+                    width: 15px;
+                    left: 50%;
+                    top: 0;
+                    transform: translate(-50%, 0) rotate(45deg);
+                    background-color: yellowgreen;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: 0.3s;
+                }
+
+                &:hover::after {
+                    opacity: 1;
+                    transform: translate(-50%, -100%);
+                    transition: 0.3s;
+                }
+
+                &:hover::before {
+                    opacity: 1;
+                    transform: translate(-50%, -10px) rotate(45deg);
+                    transition: 0.3s;
+                }
+            }
+        }
+
+        .optionsPopup>.optionsWrapper>.logs {
+            background-color: #113956;
+            width: 100%;
+            border-radius: 12px;
+            padding: 8px;
+            pointer-events: none;
+
+            &>.logHeader {
+                margin-bottom: 16px;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-column-gap: 8px;
+
+                &>span {
+                    background-color: transparent;
+                    color: #fffff0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bolder;
+                    height: 32px;
+                    position: relative;
+                    background-color: transparent;
+
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        height: 4px;
+                        width: 90%;
+                        left: 50%;
+                        bottom: 0;
+                        transform: translate(-50%, 0);
+                        background-color: #081b29;
+                        border-radius: 2px;
+                    }
+
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        height: 18px;
+                        width: 18px;
+                        background-color: #081b29;
+                        left: 50%;
+                        bottom: 0;
+                        transform: translate(-50%, 11px);
+                        clip-path: polygon(100% 30%, 0 30%, 50% 100%);
+                    }
+                }
+            }
+
+            &>#logs {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+
+                &>.log {
+                    width: 100%;
+                    background-color: #081b29;
+                    border-radius: 6px;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    padding-bottom: 3px;
+                    padding-top: 4px;
+                    color: #fffff0;
+                    font-weight: bolder;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr 1fr;
+                    grid-column-gap: 8px;
+                    position: relative;
+                    margin-top: 4px;
+
+                    &:nth-of-type(1) {
+                        margin-top: 0;
+                    }
+
+                    &>span {
+                        position: relative;
+                    }
+
+                    &>span:nth-of-type(2),
+                    &>span:nth-of-type(3) {
+                        padding-left: 8px;
+
+                        &::before {
+                            content: "";
+                            width: 4px;
+                            height: 100%;
+                            border-radius: 2px;
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            transform: translate(-6px, 0);
+                            background-color: #fffff0;
+                            opacity: 0.6;
+                            pointer-events: none;
+                        }
+                    }
+                }
+            }
+        }
+
+        .optionsPopup>#print {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: linear-gradient(to right, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            height: 38px;
+            width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 8px;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        .skull {
+            width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .skeleton-card {
+            width: 500px;
+            height: 90px;
+            background: #113956;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skeleton {
+            background: linear-gradient(to right, #833ab4, red, #fd1d1d, orange, #fd1d1d, #833ab4);
+            background-size: 400% 100%;
+            animation: shimmer 1.5s infinite alternate;
+            border-radius: 6px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 0% 0;
+            }
+
+            100% {
+                background-position: 100% 0;
+            }
+        }
+
+        .skeleton-date {
+            width: 100px;
+            height: 18px;
+            border-radius: 4px;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+
+        .skeleton-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+        }
+
+        .skeleton-content {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        #notif {
+            z-index: 99;
+            width: 300px;
+            position: fixed;
+            bottom: 8px;
+            right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #notif>.toast {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            display: grid;
+            grid-template-rows: 32px 1fr;
+            grid-row-gap: 3px;
+            position: relative;
+            backdrop-filter: blur(6px);
+            animation: show_toast 0.3s ease forwards;
+
+            &::before {
+                content: "";
+                position: absolute;
+                width: calc(100% - 16px);
+                height: 4px;
+                background-color: #081b29;
+                left: 8px;
+                bottom: 6px;
+                border-radius: 2px;
+                box-shadow: 0 0 5px #081b29;
+                animation: timeOut 6s linear 1 forwards;
+                transform-origin: right;
+            }
+        }
+
+        #notif>.toast.success {
+            background: linear-gradient(to right, rgba(76, 175, 80, 0.4), rgba(56, 142, 60, 0.4), rgba(27, 94, 32, 0.4));
+        }
+
+        #notif>.toast.error {
+            background: linear-gradient(to right, rgba(244, 67, 54, 0.4), rgba(211, 47, 47, 0.4), rgba(136, 14, 79, 0.4));
+        }
+
+        #notif>.toast.info {
+            background: linear-gradient(to right, rgba(33, 150, 243, 0.4), rgba(30, 136, 229, 0.4), rgba(21, 101, 192, 0.4));
+        }
+
+        @keyframes timeOut {
+            to {
+                width: 0%;
+            }
+        }
+
+        @keyframes show_toast {
+            0% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        #notif>.toast>.header {
+            display: grid;
+            grid-template-columns: 1fr 32px;
+            grid-column-gap: 6px;
+            position: relative;
+        }
+
+        #notif>.toast>.header>.tittle {
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            font-weight: bold;
+            position: relative;
+            text-shadow: 0 0 4px #081b29, 0 0 8px #081b29, 0 0 16px #081b29;
+            color: #fffff0;
+        }
+
+        #notif>.toast>.header>.cta {
+            background-color: transparent;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #081b29;
+                transition: 0.3s;
+            }
+
+            &>img {
+                pointer-events: none;
+                height: 30px;
+                width: 30px;
+                transform: rotate(45deg);
+            }
+        }
+
+        #notif>.toast>.message {
+            padding-bottom: 6px;
+            white-space: pre-wrap;
+            color: #fffff0;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 0 0 4px #081b29, 0 0 8px #081b29;
+        }
+
+        #navtrigger {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            height: 50px;
+            width: 50px;
+            border-radius: 12px;
+            background-color: #113956;
+            box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+            cursor: pointer;
+            transition: 0.3s;
+
+            &::before {
+                content: "";
+                position: absolute;
+                width: 30px;
+                height: 4px;
+                background-color: #fffff0;
+                border-radius: 2px;
+                top: 50%;
+                left: 50%;
+                transform: translateX(-50%) translateY(calc(-50% - 6px)) rotate(0);
+                transition: 0.3s;
+            }
+
+            &::after {
+                content: "";
+                position: absolute;
+                width: 30px;
+                height: 4px;
+                background-color: #fffff0;
+                border-radius: 2px;
+                top: 50%;
+                left: 50%;
+                transform: translateX(-50%) translateY(calc(-50% + 6px)) rotate(0);
+                transition: 0.3s;
+            }
+
+            &:hover {
+                background-color: #081b29;
+                transition: 0.3s;
+            }
+        }
+
+        #navtrigger.active {
+            &::before {
+                transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+                transition: 0.3s;
+            }
+
+            &::after {
+                transform: translateX(-50%) translateY(-50%) rotate(45deg);
+                transition: 0.3s;
+            }
+        }
+
+        #nav {
+            width: 300px;
+            top: 65px;
+            left: 8px;
+            position: absolute;
+            border-radius: 12px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-left: 8px;
+            padding-right: 8px;
+            background-color: #113956;
+            pointer-events: none;
+            opacity: 0;
+            filter: blur(16px);
+            transform: translateX(calc(-100% - 15px));
+            transition: 0.3s;
+            box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+        }
+
+        #nav.active {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0);
+            pointer-events: auto;
+            transition: 0.3s;
+        }
+
+        #nav>.mainUL>.mainLI {
+            color: #fffff0;
+            font-size: 18px;
+            font-weight: bold;
+            position: relative;
+            margin-top: 4px;
+
+            &:nth-of-type(1) {
+                margin-top: 0;
+            }
+        }
+
+        #nav>.mainUL>.mainLI:nth-of-type(1) img,
+        #nav>.mainUL>.mainLI:nth-of-type(2) img {
+            height: 25px;
+            width: 25px;
+            transform: translateY(3px);
+            right: 8px;
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        #nav>.mainUL>.mainLI:nth-of-type(1) .text,
+        #nav>.mainUL>.mainLI:nth-of-type(2) .text {
+            margin-left: 8px;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        #nav>.mainUL>.mainLI:nth-of-type(3),
+        #nav>.mainUL>.mainLI:nth-of-type(4) {
+            padding-top: 4px;
+            padding-bottom: 4px;
+            padding-left: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+
+            &:hover {
+                background-color: #081b29;
+                transition: 0.3s;
+            }
+        }
+
+        #nav>.mainUL>.mainLI>.subUL {
+            position: relative;
+
+            &::before {
+                content: "";
+                position: absolute;
+                height: 80%;
+                width: 4px;
+                top: 50%;
+                transform: translateY(-50%);
+                left: 13px;
+                background-color: #fffff0;
+                border-radius: 2px;
+                opacity: 0.6;
+            }
+        }
+
+        #nav>.mainUL>.mainLI>.subUL>.subLI {
+            margin-left: 22px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            padding-left: 8px;
+            border-radius: 8px;
+            transition: 0.3s;
+            cursor: pointer;
+            margin-top: 4px;
+
+            &:hover {
+                background-color: #081b29;
+                transition: 0.3s;
+            }
+        }
+
+        .currentPage {
+            background-color: #081b29;
+        }
+
+        #autoScroll {
+            position: fixed;
+            bottom: 8px;
+            right: 8px;
+            height: 50px;
+            width: 50px;
+            border-radius: 12px;
+            background-color: #113956;
+            box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+
+            &>img {
+                height: 36px;
+                width: 36px;
+                pointer-events: none;
+            }
+
+            &:hover {
+                background-color: #081b29;
+                transition: 0.3s;
+            }
+        }
+
+        #pageReload {
+            position: absolute;
+            top: 8px;
+            left: 66px;
+            height: 50px;
+            width: 50px;
+            border-radius: 12px;
+            background-color: #113956;
+            box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+
+            &>img {
+                height: 36px;
+                width: 36px;
+                pointer-events: none;
+            }
+
+            &:hover {
+                background-color: #081b29;
+                transition: 0.3s;
+            }
+        }
+
+        #rowid {
+            display: grid;
+            grid-template-columns: 138px 38px;
+            grid-column-gap: 6px;
+            height: 50px;
+            width: 194px;
+            position: absolute;
+            top: 8px;
+            left: 124px;
+            background-color: #113956;
+            border-radius: 12px;
+            box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+            padding: 6px;
+
+            &>input {
+                background-color: #081b29;
+                outline: none;
+                border: none;
+                border-radius: 8px;
+                padding: 8px;
+                font-size: 18px;
+                font-weight: bold;
+                color: #fffff0;
+                height: 38px;
+                width: 100%;
+                border: 2px solid transparent;
+                transition: 0.3s;
+
+                &:focus {
+                    border: 2px solid yellowgreen;
+                    transition: 0.3s;
+                }
+            }
+
+            &>div {
+                height: 100%;
+                width: 100%;
+                background-color: #081b29;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+
+                &>img {
+                    pointer-events: none;
+                    width: 26px;
+                    height: 26px;
+                }
+            }
+        }
+
+        .rowIdThreshold {
+            position: fixed;
+            z-index: 9;
+            background-color: rgb(0, 0, 0, 0.5);
+            height: 100vh;
+            width: 100vw;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: 0.3s;
+
+            &.active {
+                opacity: 1;
+                pointer-events: auto;
+                transition: 0.3s;
+            }
+        }
+
+        .rowIdThreshold>.thresWrapper {
+            width: 350px;
+            display: grid;
+            grid-template-rows: 38px 38px 38px;
+            grid-row-gap: 8px;
+        }
+
+        .rowIdThreshold>.thresWrapper .thres {
+            &:nth-of-type(3) {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-column-gap: 8px;
+            }
+
+            &:nth-of-type(1)>input,
+            &:nth-of-type(2)>input {
+                height: 100%;
+                width: 100%;
+                background-color: #113956;
+                border: none;
+                outline: none;
+                border-radius: 6px;
+                padding-left: 8px;
+                padding-right: 8px;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 18px;
+                border: 2px solid transparent;
+                transition: 0.3s;
+
+                &:focus {
+                    border: 2px solid yellowgreen;
+                    transition: 0.3s;
+                }
+            }
+
+            &:nth-of-type(3)>button {
+                border-radius: 6px;
+                font-size: 18px;
+                font-weight: bold;
+                color: #fffff0;
+                outline: none;
+                border: none;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:nth-of-type(1) {
+                    background-color: transparent;
+                    border: 2px solid orangered;
+
+                    &:hover {
+                        background-color: orangered;
+                        color: #081b29;
+                        transition: 0.3s;
+                    }
+
+                    &:focus {
+                        background-color: orangered;
+                        color: #081b29;
+                        transition: 0.3s;
+                    }
+                }
+
+                &:nth-of-type(2) {
+                    background-color: #113956;
+
+                    &:hover {
+                        background-color: yellowgreen;
+                        color: #081b29;
+                        transition: 0.3s;
+                    }
+
+                    &:focus {
+                        background-color: yellowgreen;
+                        color: #081b29;
+                        transition: 0.3s;
+                    }
+                }
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <h1>Search & Update - Sales</h1>
+        <div class="finder">
+            <div class="club">
+                <input type="text" id="customerName" name="customerName" placeholder="Customer's Name"
+                    autocomplete="off" />
+            </div>
+            <div class="club">
+                <input type="text" id="address" name="address" placeholder="Address" autocomplete="off" />
+                <ul id="suggestionsAddress" style="display: none;" tabindex="-1" data-input-id="address"
+                    autocomplete="off">
+                    {% for item in address_suggestions %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="club">
+                <span>Mobile Number</span>
+                <div class="phone-input" id="phoneInput">
+                    <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                </div>
+            </div>
+            <div class="club">
+                <div class="select-container">
+                    <select id="dateFilter">
+                        <option>Specific Date</option>
+                        <option>Date Range</option>
+                        <option>Date After</option>
+                        <option>Date Before</option>
+                    </select>
+                </div>
+                <div class="credit">
+                    <input type="checkbox" id="credit" tabindex="-1" />
+                    <span class="text">Credit ?</span>
+                </div>
+                <div class="select-container">
+                    <select id="filterStyle">
+                        <option>Oldest First</option>
+                        <option>Newest First</option>
+                    </select>
+                </div>
+            </div>
+            <div class="club">
+                <div class="callender">
+                    <div class="specific">
+                        <input type="date" id="specificDate" class="date" autocomplete="off" tabindex="-1" />
+                    </div>
+                    <div class="range">
+                        <input type="date" id="rangeLower" class="date" autocomplete="off" tabindex="-1" />
+                        <input type="date" id="rangeUpper" class="date" autocomplete="off" tabindex="-1" />
+                    </div>
+                    <div class="after">
+                        <input type="date" id="dateAfter" class="date" autocomplete="off" tabindex="-1" />
+                    </div>
+                    <div class="before">
+                        <input type="date" id="dateBefore" class="date" autocomplete="off" tabindex="-1" />
+                    </div>
+                </div>
+                <div class="limit">
+                    <span id="rangeValue">50</span>
+                    <div class="result-limiter">
+                        <Input id="numberOfResults" type="range" value="50" step="1" min="1" max="50"
+                            onChange="rangeSlide(this.value)" onmousemove="rangeSlide(this.value)" />
+                    </div>
+                </div>
+                <button id="find">Search</button>
+            </div>
+        </div>
+        <div class="results">
+            <div class="tittle">Findings</div>
+            <div id="findings"></div>
+            <center>
+                <button id="loadMore" tabindex="-1">Load More</button>
+            </center>
+        </div>
+    </div>
+
+    <div class="threshold">
+        <div class="thresWrapper">
+            <div class="thres">
+                <input type="number" id="exactCreditAmountThreshold" placeholder='"X" amount of Credit'
+                    autocomplete="off" disabled>
+            </div>
+            <div class="thres">
+                <input type="number" id="lowerCreditAmountThreshold" placeholder='Credit above "X" amount'
+                    autocomplete="off" disabled>
+            </div>
+            <div class="thres">
+                <input type="number" id="upperCreditAmountThreshold" placeholder='Credit below "X" amount'
+                    autocomplete="off" disabled>
+            </div>
+            <div class="thres">
+                <button class="thresClose" tabindex="-1">Remove Filters</button>
+                <button class="thresApply">Apply FIlters</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="rowIdThreshold">
+        <div class="thresWrapper">
+            <div class="thres">
+                <input type="number" id="lowerRowIdThreshold" placeholder='Results after "X" Bill ID' autocomplete="off"
+                    disabled>
+            </div>
+            <div class="thres">
+                <input type="number" id="upperRowIdThreshold" placeholder='Results before "X" Bill ID'
+                    autocomplete="off" disabled>
+            </div>
+            <div class="thres">
+                <button class="rowThresClose" tabindex="-1">Remove Filters</button>
+                <button class="rowThresApply">Apply FIlters</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="optionsPopup">
+        <div id="print">Print Bill</div>
+        <div class="optionsWrapper">
+            <div class="popInfo">
+                <div class="editables">
+                    <span id="popDate"></span><br>
+                    <span id="popID"></span><br>
+                    <input type="text" id="popName" placeholder="Customer's Name" autocomplete="off" tabindex="-1" />
+                    <input type="text" id="popAddress" placeholder="Customer's Address" autocomplete="off"
+                        tabindex="-1" />
+                    <ul id="addressSuggestions" style="display: none;" tabindex="-1" data-input-id="popAddress"
+                        autocomplete="off">
+                        {% for item in address_suggestions %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                    <input type="text" id="popNumber" placeholder="Customer's Number" autocomplete="off"
+                        tabindex="-1" />
+                    <br><br><br>
+                    <span id="popTotal"></span>
+                    <div>
+                        <input type="number" id="popPaid" placeholder="Paid Amount" autocomplete="off" tabindex="-1" />
+                        <input type="number" id="popCredit" placeholder="Credit Amount" autocomplete="off"
+                            tabindex="-1" />
+                    </div>
+                </div>
+                <div class="cta">
+                    <div class="auth" style="display: none;">
+                        <div class="authContainer">
+                            <input type="password" id="auth" placeholder="Admin Password" autocomplete="off" />
+                            <span id="authIcons">
+                                <img src="{{ url_for('static', filename='icon/eye.svg') }}">
+                                <img src="{{ url_for('static', filename='icon/eye-close.svg') }}">
+                            </span>
+                        </div>
+                        <div class="authInvalid">Empty / Incorrect Password</div>
+                    </div>
+                    <div class="ctabox">
+                        <div class="fta active">
+                            <button tabindex="-1" class="popClose">Close</button>
+                            <button tabindex="-1" class="popDelete">Delete</button>
+                            <button tabindex="-1" class="popEdit">Update</button>
+                        </div>
+                        <div class="cta1">
+                            <button tabindex="-1" class="popClose1">Cancle</button>
+                            <button tabindex="-1" id="popDelete">Delete Record</button>
+                        </div>
+                        <div class="cta2">
+                            <button tabindex="-1" class="popClose2">Cancle</button>
+                            <button tabindex="-1" id="popEdit">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="logs">
+                <div class="logHeader">
+                    <span>Date</span>
+                    <span>Paid Credit</span>
+                    <span>Remaining</span>
+                </div>
+                <div id="logs"></div>
+            </div>
+            <div class="bhao">
+                <div id="bhao18C"></div>
+                <div id="bhao22C"></div>
+            </div>
+            <div id="popDtls"></div>
+        </div>
+    </div>
+
+    <div id="autoScroll" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+        <img src="{{ url_for('static', filename='icon/arrow-up.svg') }}">
+    </div>
+    <div id="navtrigger"></div>
+    <div id="pageReload"><img src="{{ url_for('static', filename='icon/reload.svg') }}"></div>
+    <div id="rowid">
+        <input type="search" id="rowidInput" autocomplete="off" tabindex="-1" placeholder="Bill Number ??" oninput="this.value = this.value.replace(/\D/g, '');" />
+        <div class="thresmod">
+            <img src="{{ url_for('static', filename='icon/options.svg') }}">
+        </div>
+    </div>
+    <div id="nav">
+        <div class="mainUL">
+            <div class="mainLI">
+                <span class="text">Sales</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                <div class="subUL">
+                    <div class="subLI" onclick="window.location.href='/sales/index.html'">New Sales</div>
+                    <div class="subLI currentPage">Search and Update</div>
+                </div>
+            </div>
+            <div class="mainLI">
+                <span class="text">Loans</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                <div class="subUL">
+                    <div class="subLI">New Loan</div>
+                    <div class="subLI">Search and Update</div>
+                </div>
+            </div>
+            <div class="mainLI" id="inventory">Inventory</div>
+            <div class="mainLI" id="admin">Admin Panel</div>
+        </div>
+    </div>
+
+    <div id="notif"></div>
+
+    <script>
+        // Admin password 
+        const ADMIN_PASS = "{{ admin_pass }}";
+
+        // Bill ID Focus on load 
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("rowidInput").focus();
+        });
+
+        // Number of results to be returned event handellers
+        function rangeSlide(value) {
+            document.getElementById('rangeValue').innerHTML = value;
+        }
+
+        const rangeValue = document.getElementById("rangeValue");
+        const resultLimiter = document.querySelector(".result-limiter");
+
+        rangeValue.addEventListener("click", function (event) {
+            resultLimiter.classList.add("active");
+            event.stopPropagation(); // prevent click from bubbling to window
+        });
+
+        window.addEventListener("click", function (event) {
+            if (!rangeValue.contains(event.target) && !resultLimiter.contains(event.target)) {
+                resultLimiter.classList.remove("active");
+            }
+        });
+
+        // Admin Page Visit
+        document.getElementById("admin").addEventListener("click", async () => {
+            const { value: pw, isConfirmed } = await Swal.fire({
+                title: 'Want to open Admin Page ??',
+                text: 'Enter admin password to visit admin page !!',
+                input: 'password',
+                icon: 'question',
+                inputPlaceholder: 'Enter admin password',
+                background: '#081b20',
+                color: '#ffffff',
+                showCancelButton: true,
+                confirmButtonText: 'Visit Admin Page',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#7f8c8d',
+                reverseButtons: true,
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                inputValidator: (value) => {
+                    if (!value) return 'Password is required!';
+                }
+            });
+
+            if (!isConfirmed) return;
+
+            if (pw !== ADMIN_PASS) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Wrong Password',
+                    text: 'You are not authorized to be the Admin !!',
+                    background: '#081b20',
+                    color: '#ffffff'
+                });
+                return;
+            }
+
+            window.location.href = '/admin/sales-analytics.html'
+        });
+
+        document.getElementById("inventory").addEventListener("click", async () => {
+            const { value: pw, isConfirmed } = await Swal.fire({
+                title: 'Want to check Inventory ??',
+                text: 'Enter admin password to visit inventory page !!',
+                input: 'password',
+                icon: 'question',
+                inputPlaceholder: 'Enter admin password',
+                background: '#081b20',
+                color: '#ffffff',
+                showCancelButton: true,
+                confirmButtonText: 'Visit Inventory Page',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#7f8c8d',
+                reverseButtons: true,
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                inputValidator: (value) => {
+                    if (!value) return 'Password is required!';
+                }
+            });
+
+            if (!isConfirmed) return;
+
+            if (pw !== ADMIN_PASS) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Wrong Password',
+                    text: 'You are not authorized to be the Admin !!',
+                    background: '#081b20',
+                    color: '#ffffff'
+                });
+                return;
+            }
+
+            window.location.href = '/inventory/inventory.html'
+        });
+
+        // Row Id Special Filter Mods 
+        document.querySelector(".thresmod").addEventListener("click", function () {
+            document.querySelector(".rowIdThreshold").classList.add("active");
+            document.getElementById("lowerRowIdThreshold").disabled = false;
+            document.getElementById("upperRowIdThreshold").disabled = false;
+            document.getElementById("lowerRowIdThreshold").focus();
+        });
+        // Credit Additional Popup 
+        document.querySelector(".credit .text").addEventListener("click", function () {
+            let credit = document.getElementById("credit").checked;
+            if (credit) {
+                document.querySelector(".threshold").classList.add("active");
+                document.getElementById("exactCreditAmountThreshold").disabled = false;
+                document.getElementById("lowerCreditAmountThreshold").disabled = false;
+                document.getElementById("upperCreditAmountThreshold").disabled = false;
+                document.getElementById("exactCreditAmountThreshold").focus();
+            }
+        });
+
+        document.getElementById("credit").addEventListener("click", function () {
+            let credit = document.getElementById("credit").checked;
+            if (!credit) {
+                document.querySelector(".threshold").classList.remove("active");
+                document.getElementById("exactCreditAmountThreshold").disabled = true;
+                document.getElementById("lowerCreditAmountThreshold").disabled = true;
+                document.getElementById("upperCreditAmountThreshold").disabled = true;
+                document.getElementById("exactCreditAmountThreshold").value = "";
+                document.getElementById("lowerCreditAmountThreshold").value = "";
+                document.getElementById("upperCreditAmountThreshold").value = "";
+                document.querySelector(".credit").classList.remove("filter");
+            }
+        });
+
+        document.querySelector(".thresClose").addEventListener("click", function () {
+            document.querySelector(".threshold").classList.remove("active");
+            document.getElementById("lowerCreditAmountThreshold").disabled = true;
+            document.getElementById("upperCreditAmountThreshold").disabled = true;
+            document.getElementById("exactCreditAmountThreshold").disabled = true;
+            document.getElementById("lowerCreditAmountThreshold").value = "";
+            document.getElementById("upperCreditAmountThreshold").value = "";
+            document.getElementById("exactCreditAmountThreshold").value = "";
+            document.querySelector(".credit").classList.remove("filter");
+        });
+
+        document.querySelector(".thresApply").addEventListener("click", function () {
+            document.querySelector(".threshold").classList.remove("active");
+            document.getElementById("lowerCreditAmountThreshold").disabled = true;
+            document.getElementById("upperCreditAmountThreshold").disabled = true;
+            document.getElementById("exactCreditAmountThreshold").disabled = true;
+
+            let lowerCredit = document.getElementById("lowerCreditAmountThreshold").value.trim();
+            let upperCredit = document.getElementById("upperCreditAmountThreshold").value.trim();
+            let exactCredit = document.getElementById("exactCreditAmountThreshold").value.trim();
+
+            if (exactCredit !== "" || lowerCredit !== "" || upperCredit !== "") {
+                document.querySelector(".credit").classList.add("filter");
+            } else {
+                document.getElementById("lowerCreditAmountThreshold").value = "";
+                document.getElementById("upperCreditAmountThreshold").value = "";
+                document.getElementById("exactCreditAmountThreshold").value = "";
+                document.querySelector(".credit").classList.remove("filter");
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let lowerCreditInput = document.getElementById("lowerCreditAmountThreshold");
+            let upperCreditInput = document.getElementById("upperCreditAmountThreshold");
+            let exactCreditInput = document.getElementById("exactCreditAmountThreshold");
+
+            function validateInput(event) {
+                let inputField = event.target;
+                let cleanedValue = inputField.value.replace(/[^0-9.]/g, "");
+                if (cleanedValue.split(".").length > 2) {
+                    cleanedValue = cleanedValue.replace(/\.+$/, "");
+                }
+                inputField.value = cleanedValue;
+
+                if (inputField === exactCreditInput && cleanedValue) {
+                    lowerCreditInput.value = "";
+                    upperCreditInput.value = "";
+                } else if ((inputField === lowerCreditInput || inputField === upperCreditInput) && cleanedValue) {
+                    exactCreditInput.value = "";
+                }
+            }
+
+            lowerCreditInput.addEventListener("input", validateInput);
+            upperCreditInput.addEventListener("input", validateInput);
+            exactCreditInput.addEventListener("input", validateInput);
+        });
+
+        // phone number auto navigations 
+        const phoneInputs = document.querySelectorAll('.phone-input input');
+        phoneInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.match(/[0-9]/)) {
+                    if (index < phoneInputs.length - 1) phoneInputs[index + 1].focus();
+                } else {
+                    e.target.value = '';
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    phoneInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // The suggestion chain !!
+        function filterSuggestions(input, listId) {
+            const suggestions = document.getElementById(listId);
+            const items = Array.from(suggestions.children);
+            const query = input.value.toLowerCase().trim();
+
+            const matchingItems = items.filter(item =>
+                item.textContent.toLowerCase().includes(query)
+            );
+
+            if (matchingItems.length > 0) {
+                suggestions.style.display = "block";
+                items.forEach(item => {
+                    item.style.display = matchingItems.includes(item) ? "block" : "none";
+                });
+            } else {
+                suggestions.style.display = "none";
+            }
+        }
+
+        document.getElementById("address").addEventListener("input", function () {
+            filterSuggestions(this, "suggestionsAddress");
+        });
+
+        document.getElementById("popAddress").addEventListener("input", function () {
+            filterSuggestions(this, "addressSuggestions");
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest("ul") && !e.target.closest("input")) {
+                document.querySelectorAll("ul").forEach(ul => ul.style.display = "none");
+            }
+        });
+
+        let isClickingSuggestion = false;
+
+        document.querySelectorAll("ul").forEach(ul => {
+            ul.addEventListener("mousedown", () => isClickingSuggestion = true);
+            ul.addEventListener("touchstart", () => isClickingSuggestion = true);
+
+            ul.addEventListener("click", (e) => {
+                if (e.target.tagName === "LI") {
+                    const inputId = ul.getAttribute("data-input-id");
+                    const input = document.getElementById(inputId);
+                    if (input) {
+                        input.value = e.target.textContent;
+                        ul.style.display = "none";
+                    }
+                }
+                isClickingSuggestion = false;
+            });
+        });
+
+        ["popAddress", "address"].forEach(inputId => {
+            const input = document.getElementById(inputId);
+            input.addEventListener("blur", function () {
+                setTimeout(() => {
+                    if (!isClickingSuggestion) {
+                        document.querySelectorAll("ul").forEach(ul => ul.style.display = "none");
+                    }
+                }, 100);
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            function enableKeyboardNavigation(inputId, listId) {
+                const input = document.getElementById(inputId);
+                const suggestions = document.getElementById(listId);
+                let activeIndex = -1;
+
+                input.addEventListener("input", function () {
+                    activeIndex = -1;
+                    suggestions.scrollTop = 0;
+                });
+
+                input.addEventListener("keydown", function (e) {
+                    const visibleItems = Array.from(suggestions.children).filter(
+                        item => item.style.display !== "none"
+                    );
+
+                    if (visibleItems.length === 0) return;
+
+                    if (e.key === "ArrowDown") {
+                        e.preventDefault();
+                        activeIndex = (activeIndex + 1) % visibleItems.length;
+                        updateHighlight(visibleItems);
+                    } else if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        activeIndex = (activeIndex - 1 + visibleItems.length) % visibleItems.length;
+                        updateHighlight(visibleItems);
+                    } else if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (activeIndex >= 0) {
+                            selectItem(visibleItems[activeIndex]);
+                        }
+                    }
+                });
+
+                function updateHighlight(items) {
+                    items.forEach(item => item.classList.remove("hover"));
+                    if (activeIndex >= 0) {
+                        items[activeIndex].classList.add("hover");
+                        items[activeIndex].scrollIntoView({
+                            block: "center",
+                            behavior: "smooth"
+                        });
+                    }
+                }
+
+                function selectItem(item) {
+                    input.value = item.textContent;
+                    suggestions.style.display = "none";
+                }
+
+                suggestions.addEventListener("click", (e) => {
+                    if (e.target.tagName === "LI") {
+                        selectItem(e.target);
+                    }
+                });
+            }
+
+            enableKeyboardNavigation("address", "suggestionsAddress");
+            enableKeyboardNavigation("popAddress", "addressSuggestions");
+        });
+
+        // Select box date toggle ...
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const dateFilter = document.getElementById("dateFilter");
+            const dateContainers = {
+                "Specific Date": document.querySelector(".specific"),
+                "Date Range": document.querySelector(".range"),
+                "Date After": document.querySelector(".after"),
+                "Date Before": document.querySelector(".before"),
+            };
+
+            function updateActiveClass() {
+                Object.values(dateContainers).forEach(div => div.classList.remove("active"));
+
+                document.getElementById("specificDate").value = ""
+                document.getElementById("rangeUpper").value = "";
+                document.getElementById("rangeLower").value = "";
+                document.getElementById("dateAfter").value = "";
+                document.getElementById("dateBefore").value = "";
+
+                const selectedValue = dateFilter.value;
+                if (dateContainers[selectedValue]) {
+                    dateContainers[selectedValue].classList.add("active");
+                }
+            }
+
+            dateFilter.addEventListener("change", updateActiveClass);
+
+            updateActiveClass();
+        });
+
+        // Toast notifications 
+
+        let notifications = document.getElementById("notif");
+
+        function createToast(type, title, text) {
+            let existingToasts = notifications.getElementsByClassName("toast");
+
+            while (existingToasts.length >= 3) {
+                existingToasts[0].remove();
+            }
+
+            let newToast = document.createElement('div');
+            newToast.classList.add("toast");
+            newToast.classList.add(type);
+            newToast.innerHTML = `
+                    <div class="header">
+                        <span class="tittle">${title}</span>
+                        <span class="cta" onclick="this.closest('.toast').remove()">
+                            <img src="{{ url_for('static', filename='icon/plus.svg') }}">
+                        </span>
+                    </div>
+                    <div class="message">${text}</div>
+                `;
+
+            notifications.appendChild(newToast);
+            newToast.timeOut = setTimeout(() => newToast.remove(), 6000);
+        }
+
+
+        // Appending Filtered Data to Frontend Dynamically
+        function appendRecordsToTable(records) {
+            const findingsContainer = document.getElementById("findings");
+
+            removeLoader();
+
+            records.forEach(record => {
+                const itemDiv = document.createElement("div");
+                itemDiv.classList.add("item");
+                itemDiv.setAttribute("rowid", record.id);
+
+                if (record.remaining_credit > 0) {
+                    itemDiv.classList.add("cred");
+                }
+
+                const detailsDiv = document.createElement("div");
+                detailsDiv.classList.add("details");
+
+                const formattedDate = record.date.split("-").reverse().join("-");
+
+                detailsDiv.innerHTML = `
+                        <div class="date">${formattedDate}</div>
+                        <div class="name">${record.customer_name}</div>
+                        <div class="address">${record.address}</div>
+                        <div class="number">${record.phone_number}</div>
+                        <div class="bill">
+                            <span class="total">Total - ₹ ${record.total_amount}</span>  ||  
+                            <span class="paid">Paid - ₹ ${record.paid_amount}</span>  ||  
+                            ${record.remaining_credit > 0 ? `<span class="creditAmount">Credit - ₹ ${record.remaining_credit}</span>` : `<span class="creditAmount">No Credit</span>`}
+                        </div>
+                    `;
+
+                const ctaTriggerDiv = document.createElement("div");
+                ctaTriggerDiv.classList.add("ctaTrigger");
+                const ctaTButton = document.createElement("button");
+                ctaTButton.classList.add("ctaT");
+                ctaTButton.classList.add("edit");
+                ctaTButton.innerHTML = `<img src="{{ url_for('static', filename='icon/grid.svg') }}">`;
+                ctaTriggerDiv.appendChild(ctaTButton);
+
+                itemDiv.appendChild(detailsDiv);
+                itemDiv.appendChild(ctaTriggerDiv);
+
+                findingsContainer.appendChild(itemDiv);
+            });
+            
+            scroll();
+            
+            const border = document.createElement("div");
+            border.classList.add("border");
+            findingsContainer.appendChild(border);
+        }
+
+        // Add and remove loaders 
+
+        function addLoader() {
+            const loaderHTML = `
+                    <div class="skull" id="loadingSkeleton">
+                        <div class="skeleton-card">
+                            <div class="skeleton-content">
+                                <div class="skeleton skeleton-text" style="width: 200px; height: 20px;"></div>
+                                <div class="skeleton skeleton-text" style="width: 110%; height: 14px; margin-top: 4px;"></div>
+                                <div class="skeleton skeleton-text" style="width: 70%; height: 14px;"></div>
+                                <div class="skeleton skeleton-text" style="width: 150%; height: 14px;"></div>
+                            </div>
+                            <div class="skeleton skeleton-date"></div>
+                            <div class="skeleton skeleton-icon"></div>
+                        </div>
+                    
+                        <div class="skeleton-card">
+                            <div class="skeleton-content">
+                                <div class="skeleton skeleton-text" style="width: 200px; height: 18px;"></div>
+                                <div class="skeleton skeleton-text" style="width: 110%; height: 13px; margin-top: 6px;"></div>
+                                <div class="skeleton skeleton-text" style="width: 70%; height: 13px;"></div>
+                                <div class="skeleton skeleton-text" style="width: 150%; height: 13px;"></div>
+                            </div>
+                            <div class="skeleton skeleton-date"></div>
+                            <div class="skeleton skeleton-icon"></div>
+                        </div>
+                    </div>
+                `;
+
+            document.getElementById("findings").insertAdjacentHTML("beforeend", loaderHTML);
+            window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
+        }
+
+        function removeLoader() {
+            const loader = document.getElementById("loadingSkeleton");
+            if (loader) {
+                loader.remove();
+            }
+        }
+
+        function scroll() {
+            let elements = document.querySelectorAll("#findings .border")
+            if (elements.length > 0) {
+                let lastElement = elements[elements.length - 1];
+                lastElement.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+        }
+
+        // Filtering data using backend 
+
+        // Getting filters
+        let lastUsedFilters = null;
+        let lastUsedOrder = null;
+
+        function getFilters() {
+            let filters = {};
+
+            let customerName = document.getElementById("customerName").value.trim();
+            let address = document.getElementById("address").value.trim();
+            let dateType = document.getElementById("dateFilter").value;
+            let order = document.getElementById("filterStyle").value === "Oldest First" ? "ASC" : "DESC";
+            let credit = document.getElementById("credit").checked;
+
+            let phoneInputs = document.querySelectorAll("#phoneInput input");
+            let phoneNumber = Array.from(phoneInputs).map(input => input.value.trim()).join("");
+
+            if (customerName) filters.customer_name = customerName;
+            if (address) filters.address = address;
+            if (phoneNumber.length > 0) filters.phone_number = phoneNumber;
+            if (credit) filters.credit = 1;
+
+            if (credit) {
+                let lowerCredit = document.getElementById("lowerCreditAmountThreshold").value.trim();
+                let upperCredit = document.getElementById("upperCreditAmountThreshold").value.trim();
+                let exactCredit = document.getElementById("exactCreditAmountThreshold").value.trim();
+
+                if (lowerCredit && !isNaN(lowerCredit)) filters.lower_credit = parseFloat(lowerCredit);
+                if (upperCredit && !isNaN(upperCredit)) filters.upper_credit = parseFloat(upperCredit);
+                if (exactCredit && !isNaN(exactCredit)) filters.exact_credit = parseFloat(exactCredit);
+            }
+
+            if (dateType === "Specific Date") {
+                let specificDate = document.getElementById("specificDate").value;
+                if (specificDate) filters.date = specificDate;
+            } else if (dateType === "Date After") {
+                let dateAfter = document.getElementById("dateAfter").value;
+                if (dateAfter) filters.date_after = dateAfter;
+            } else if (dateType === "Date Before") {
+                let dateBefore = document.getElementById("dateBefore").value;
+                if (dateBefore) filters.date_before = dateBefore;
+            } else if (dateType === "Date Range") {
+                let rangeLower = document.getElementById("rangeLower").value;
+                let rangeUpper = document.getElementById("rangeUpper").value;
+                if (rangeLower && rangeUpper) {
+                    if (new Date(rangeLower) > new Date(rangeUpper)) {
+                        let type = 'info';
+                        let title = 'Alert !!';
+                        let text = 'Invalid date range, lower limit should be before the upper limit !!';
+                        createToast(type, title, text);
+                        return null;
+                    }
+                    filters.date_range = [rangeLower, rangeUpper];
+                }
+            }
+
+            return { filters, order };
+        }
+
+        // Comparing filters
+        function areFiltersEqual(filters1, filters2) {
+            return JSON.stringify(filters1) === JSON.stringify(filters2);
+        }
+
+        let isSearchActive = false;
+
+        // Search by ROWID
+        document.getElementById('rowidInput').addEventListener('keydown', async function (e) {
+            if (e.key === 'Enter') {
+                const rowid = this.value.trim();
+
+                if (!rowid) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Can't perform search, the bill id is empty !!";
+                    createToast(type, title, text);
+                    return;
+                }
+
+                document.getElementById("loadMore").classList.add("disappeared");
+                document.getElementById("findings").innerHTML = "";
+                addLoader();
+
+                if (isSearchActive) {
+                    createToast('info', 'Alert !!', 'Cancelled Prvious Search !!');
+                    createToast('info', `${rowid}`, 'Searching For this bill id !!');
+                } else {
+                    createToast('info', `${rowid}`, 'Searching for this bill id !!');
+                }
+
+                isSearchActive = false;
+                lastUsedFilters = null;
+
+                try {
+                    const response = await fetch('/sales_search_by_rowid', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ rowid: rowid })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.status === 404) {
+                        let type = 'info';
+                        let title = 'Alert !!';
+                        let text = `No records was found with given Bill Number "${rowid}"`;
+                        createToast(type, title, text);
+                        removeLoader();
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        let type = 'error';
+                        let title = 'Server Error !!';
+                        let text = 'Some Error Occured';
+                        createToast(type, title, text);
+                        removeLoader();
+                        return;
+                    }
+
+                    appendRecordsToTable([result]);
+                    createToast('success', 'Success !!', 'Record Found !!');
+                } catch (error) {
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                    console.error("Error : ", error);
+                    removeLoader();
+                }
+            }
+        });
+
+        // Search based on filters
+        document.getElementById("find").addEventListener("click", function () {
+            document.getElementById('rowidInput').value = "";
+
+            const data = getFilters();
+            if (!data) return;
+
+            if (areFiltersEqual(data.filters, lastUsedFilters) && data.order === lastUsedOrder) {
+                createToast('info', 'Check Again !!', 'You are using same filters to search as last time !!');
+                if (isSearchActive) {
+                    createToast('info', 'Please Wait !!', 'Last Search is still processing');
+                } else {
+                    createToast('info', 'Have a Look !!', 'Search with these filters is already completed');
+                }
+                return;
+            }
+
+            lastUsedFilters = JSON.parse(JSON.stringify(data.filters));
+            lastUsedOrder = data.order;
+            lastRecordId = null;
+            isSearchActive = true;
+            const numberOfResults = document.getElementById("numberOfResults").value;
+            document.getElementById("findings").innerHTML = "";
+            addLoader();
+            document.getElementById("loadMore").classList.add("disappeared");
+
+            fetch("/search_sales", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ filters: data.filters, last_record_id: lastRecordId, order: data.order, max_results: Number(numberOfResults) })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // console.log("Received Data:", data);
+
+                    if (data.records.length > 0) {
+                        let type = 'success';
+                        let title = 'Success !!';
+                        let text = 'Records found sucessfully !!';
+                        createToast(type, title, text);
+
+                        lastRecordId = data.records[data.records.length - 1]?.id || null;
+                        appendRecordsToTable(data.records);
+                    } else {
+                        let type = 'info';
+                        let title = 'Alert !!';
+                        let text = 'No records were found with the given filters.';
+                        createToast(type, title, text);
+                        removeLoader();
+                    }
+
+                    if (data.has_more) {
+                        document.getElementById("loadMore").classList.remove("disappeared");
+                    } else {
+                        document.getElementById("loadMore").classList.add("disappeared");
+                    }
+
+                    isSearchActive = false;
+                })
+                .catch(error => {
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                    console.error("Error : ", error);
+                    removeLoader();
+                    isSearchActive = false;
+                });
+        });
+
+        // Load more based on filter
+        function loadMoreRecords() {
+            if (!lastRecordId) return;
+            document.getElementById('rowidInput').value = "";
+
+            const data = getFilters();
+            if (!data) return;
+
+            if (!areFiltersEqual(data.filters, lastUsedFilters)) {
+                let type = 'info';
+                let title = 'Alert !!';
+                let text = 'Filters have changed. Redirecting to fresh search.';
+                createToast(type, title, text);
+
+                document.getElementById("find").click();
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+                return;
+            }
+
+            const numberOfResults = document.getElementById("numberOfResults").value;
+
+            addLoader();
+            isSearchActive = true;
+
+            fetch("/load_more_sales", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ filters: data.filters, last_record_id: lastRecordId, order: data.order, max_results: Number(numberOfResults) })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // console.log("Received Data in Load More:", data);
+
+                    if (data.records.length > 0) {
+                        let type = 'success';
+                        let title = 'Success !!';
+                        let text = 'More records found sucessfully !!';
+                        createToast(type, title, text);
+
+                        appendRecordsToTable(data.records);
+                        lastRecordId = data.records[data.records.length - 1]?.id || null;
+                    } else {
+                        let type = 'info';
+                        let title = 'Alert !!';
+                        let text = 'No more records were found';
+                        createToast(type, title, text);
+                        removeLoader();
+                    }
+
+                    if (data.has_more) {
+                        document.getElementById("loadMore").classList.remove("disappeared");
+                    } else {
+                        document.getElementById("loadMore").classList.add("disappeared");
+                    }
+
+                    isSearchActive = false;
+                })
+                .catch(error => {
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                    console.error("Error : ", error);
+                    removeLoader();
+                    isSearchActive = false;
+                });
+        }
+
+        document.getElementById("loadMore").classList.add("disappeared");
+        document.getElementById("loadMore").addEventListener("click", loadMoreRecords);
+
+        // Popup event Handelers ...
+
+        function setFieldsEnabled() {
+            document.getElementById("popName").style.pointerEvents = "auto";
+            document.getElementById("popAddress").style.pointerEvents = "auto";
+            document.getElementById("popNumber").style.pointerEvents = "auto";
+            document.getElementById("popPaid").style.pointerEvents = "auto";
+            document.getElementById("popCredit").style.pointerEvents = "auto";
+            document.getElementById("auth").style.pointerEvents = "auto";
+
+            document.getElementById("popName").disabled = false;
+            document.getElementById("popAddress").disabled = false;
+            document.getElementById("popNumber").disabled = false;
+            document.getElementById("popPaid").disabled = false;
+            document.getElementById("popCredit").disabled = false;
+            document.getElementById("auth").disabled = false;
+        }
+
+        function setFieldsDisabled() {
+            document.getElementById("popName").style.pointerEvents = "none";
+            document.getElementById("popAddress").style.pointerEvents = "none";
+            document.getElementById("popNumber").style.pointerEvents = "none";
+            document.getElementById("popPaid").style.pointerEvents = "none";
+            document.getElementById("popCredit").style.pointerEvents = "none";
+            document.getElementById("auth").style.pointerEvents = "none";
+
+            document.getElementById("popName").disabled = true;
+            document.getElementById("popAddress").disabled = true;
+            document.getElementById("popNumber").disabled = true;
+            document.getElementById("popPaid").disabled = true;
+            document.getElementById("popCredit").disabled = true;
+            document.getElementById("auth").disabled = true;
+        }
+        setFieldsDisabled(true);
+
+        document.getElementById("authIcons").addEventListener("click", function () {
+            this.classList.toggle("active");
+            let passwordField = document.getElementById("auth");
+            passwordField.type = passwordField.type === "password" ? "text" : "password";
+        });
+
+        document.querySelector(".popDelete").addEventListener("click", function () {
+            document.querySelector(".fta").classList.remove("active");
+            document.querySelector(".cta1").classList.add("active");
+            setFieldsDisabled();
+            document.getElementById("auth").style.pointerEvents = "auto";
+            document.getElementById("auth").disabled = false;
+            document.querySelector(".auth").style.display = "block";
+        });
+
+        document.querySelector(".popEdit").addEventListener("click", function () {
+            document.querySelector(".fta").classList.remove("active");
+            document.querySelector(".cta2").classList.add("active");
+            setFieldsEnabled();
+            document.querySelector(".auth").style.display = "block";
+        });
+
+        document.querySelector(".popClose1").addEventListener("click", function () {
+            document.querySelector(".fta").classList.add("active");
+            document.querySelector(".cta1").classList.remove("active");
+            setFieldsDisabled();
+            document.getElementById("auth").value = "";
+            document.getElementById("auth").type = "password";
+            document.getElementById("authIcons").classList.remove("active");
+            document.querySelector(".authInvalid").classList.remove("active");
+            document.querySelector(".auth").style.display = "none";
+        });
+
+        document.querySelector(".popClose2").addEventListener("click", function () {
+            document.querySelector(".fta").classList.add("active");
+            document.querySelector(".cta2").classList.remove("active");
+            setFieldsDisabled();
+            document.getElementById("auth").value = "";
+            document.getElementById("auth").type = "password";
+            document.getElementById("authIcons").classList.remove("active");
+            document.querySelector(".authInvalid").classList.remove("active");
+            document.querySelector(".auth").style.display = "none";
+        });
+
+        document.querySelector(".popClose").addEventListener("click", function () {
+            document.querySelector(".optionsPopup").classList.remove("active");
+            setFieldsDisabled();
+        })
+
+        document.getElementById("popPaid").addEventListener("click", () => {
+            const { credit, remaining } = window.saleOriginals;
+            if (credit === 0 && remaining === 0) {
+                document.getElementById("popPaid").style.pointerEvents = "none";
+                document.getElementById("popPaid").disabled = true;
+                document.getElementById("popPaid").style.opacity = "0.6";
+
+                document.getElementById("popCredit").style.pointerEvents = "none";
+                document.getElementById("popCredit").disabled = true;
+                document.getElementById("popCredit").style.opacity = "0.6";
+
+                let type = 'info';
+                let title = 'Alert !!';
+                let text = "NO CREDIT ... you cant change these fields anymore !!";
+                createToast(type, title, text);
+                console.log("toast");
+            } else {
+                document.getElementById("popPaid").style.pointerEvents = "auto";
+                document.getElementById("popPaid").disabled = false;
+                document.getElementById("popPaid").style.opacity = "1";
+
+                document.getElementById("popCredit").style.pointerEvents = "auto";
+                document.getElementById("popCredit").disabled = false;
+                document.getElementById("popCredit").style.opacity = "1";
+            }
+        });
+
+        document.getElementById("popCredit").addEventListener("click", () => {
+            const { credit, remaining } = window.saleOriginals;
+            if (credit === 0 && remaining === 0) {
+                document.getElementById("popCredit").style.pointerEvents = "none";
+                document.getElementById("popCredit").disabled = true;
+                document.getElementById("popCredit").style.opacity = "0.6";
+
+                document.getElementById("popPaid").style.pointerEvents = "none";
+                document.getElementById("popPaid").disabled = true;
+                document.getElementById("popPaid").style.opacity = "0.6";
+
+                let type = 'info';
+                let title = 'Alert !!';
+                let text = "NO CREDIT ... you cant change these fields anymore !!";
+                createToast(type, title, text);
+            } else {
+                document.getElementById("popCredit").style.pointerEvents = "auto";
+                document.getElementById("popCredit").disabled = false;
+                document.getElementById("popCredit").style.opacity = "1";
+
+                document.getElementById("popPaid").style.pointerEvents = "auto";
+                document.getElementById("popPaid").disabled = false;
+                document.getElementById("popPaid").style.opacity = "1";
+            }
+        });
+
+        // Popup Open and Populate
+
+        let activeRowId = null;
+
+        document.getElementById("findings").addEventListener("click", function (event) {
+            if (event.target.closest(".edit")) {
+                const itemDiv = event.target.closest(".item");
+                if (!itemDiv) return;
+
+                const rowid = itemDiv.getAttribute("rowid");
+                fetchAndPopulateRecord(rowid);
+            }
+        });
+
+        function fetchAndPopulateRecord(rowid) {
+            activeRowId = rowid;
+
+            fetch(`/get-record_sales/${rowid}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data || Number(data.rowid) !== Number(rowid)) {
+                        let type = 'error';
+                        let title = 'Server Error'
+                        let text = 'Mismatched records recieved, check console for more details.';
+                        createToast(type, title, text);
+                        console.log("Received:", data.rowid, "Expected:", rowid);
+                        return;
+                    }
+
+                    const dateParts = data.date.split("-");
+                    const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+
+                    document.getElementById("popDate").textContent = formattedDate;
+                    document.getElementById("popID").textContent = `Bill Num :- ${data.rowid}`;
+                    document.getElementById("popName").value = data.customer_name;
+                    document.getElementById("popAddress").value = data.address;
+                    document.getElementById("popNumber").value = data.phone_number;
+                    document.getElementById("popTotal").textContent = `Total :- ₹ ${data.total_amount}`;
+                    document.getElementById("popPaid").value = data.paid_amount;
+                    document.getElementById("popCredit").value = data.remaining_credit;
+                    document.getElementById("bhao18C").textContent = `₹ ${data.bhao["Gold 18C"]}/g`;
+                    document.getElementById("bhao22C").textContent = `₹ ${data.bhao["Gold 22C"]}/g`;
+
+                    const originalTotal = data.total_amount;
+                    const originalPaid = data.paid_amount;
+                    const originalRemaining = data.remaining_credit;
+                    const originalCredit = data.credit;
+                    window.saleOriginals = {
+                        total: originalTotal,
+                        paid: originalPaid,
+                        remaining: originalRemaining,
+                        credit: originalCredit
+                    };
+
+                    const popDtlsContainer = document.getElementById("popDtls");
+                    popDtlsContainer.innerHTML = "";
+
+                    data.shopping_details.forEach(item => {
+                        const popItem = document.createElement("div");
+                        popItem.classList.add("popItem");
+
+                        popItem.innerHTML = `
+                                <div class="popVarietyName">${item.type}</div>
+                                <div class="popArticleName">${item.article}</div>
+                                <div class="popPrep">
+                                    <span class="popItemBhao">Bhao - ${item.rate} per gram</span> ||
+                                    <span class="popItemMake">${item.type === "Silver" ? `Making - ₹ ${item.makeing} /g` : `Making - ${item.makeing} %`}</span>
+                                </div>
+                                <div class="popItemInfo">
+                                    <span class="popItemWeight">Weight - ${item.weight} grams</span>  ||  
+                                    <span class="popItemPrice">Price - ₹ ${item.price}</span>
+                                </div>
+                            `;
+
+                        popDtlsContainer.appendChild(popItem);
+                    });
+
+                    data.darab.forEach(item => {
+                        const popItem = document.createElement("div");
+                        popItem.classList.add("popItemDarab");
+
+                        popItem.innerHTML = `
+                                <div class="popVarietyName">${item.type}</div>
+                                <div class="popArticleName">${item.article}</div>
+                                <div class="popPrep">
+                                    <span class="popItemBhao">Bhao - ${item.rate} per gram</span>
+                                </div>
+                                <div class="popItemInfo">
+                                    <span class="popItemWeight">Weight - ${item.weight} grams</span>  ||  
+                                    <span class="popItemPrice">Price - ₹ ${item.price}</span>
+                                </div>
+                            `;
+
+                        popDtlsContainer.appendChild(popItem);
+                    });
+
+                    const logsContainer = document.getElementById("logs");
+                    logsContainer.innerHTML = "";
+
+                    if (Array.isArray(data.credit_payment_history) && data.credit_payment_history.length > 0) {
+                        data.credit_payment_history.forEach(entry => {
+                            const logDiv = document.createElement("div");
+                            logDiv.classList.add("log");
+
+                            const dateSpan = document.createElement("span");
+                            const paidSpan = document.createElement("span");
+                            const remainingSpan = document.createElement("span");
+
+                            const dateParts = entry.date.split("-");
+                            const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+
+                            dateSpan.textContent = formattedDate;
+                            paidSpan.textContent = `₹ ${entry.paid}`;
+                            remainingSpan.textContent = `₹ ${entry.remaining_credit}`;
+
+                            logDiv.appendChild(dateSpan);
+                            logDiv.appendChild(paidSpan);
+                            logDiv.appendChild(remainingSpan);
+
+                            logsContainer.appendChild(logDiv);
+                        });
+
+                        logsContainer.style.display = "block";
+                        document.querySelector(".logs").style.display = "block";
+                    } else {
+                        logsContainer.style.display = "none";
+                        document.querySelector(".logs").style.display = "none";
+                    }
+
+                    document.getElementById("auth").value = "";
+                    document.getElementById("auth").type = "password";
+                    document.getElementById("authIcons").classList.remove("active");
+                    document.querySelector(".authInvalid").classList.remove("active");
+                    document.querySelector(".fta").classList.add("active");
+                    document.querySelector(".cta1").classList.remove("active");
+                    document.querySelector(".cta2").classList.remove("active");
+                    document.querySelector(".auth").style.display = "none";
+
+                    document.getElementById("popCredit").style.pointerEvents = "auto";
+                    document.getElementById("popCredit").disabled = false;
+                    document.getElementById("popCredit").style.opacity = "1";
+
+                    document.getElementById("popPaid").style.pointerEvents = "auto";
+                    document.getElementById("popPaid").disabled = false;
+                    document.getElementById("popPaid").style.opacity = "1";
+
+                    document.querySelector(".optionsPopup").classList.add("active");
+                    setFieldsDisabled();
+                })
+                .catch(error => {
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                    console.error("Error : ", error);
+                    removeLoader();
+                });
+        }
+
+        // Some Dynamic Functionality 
+
+        const paidInput = document.getElementById("popPaid");
+        const creditInput = document.getElementById("popCredit");
+        const totalDisplay = document.getElementById("popTotal");
+
+        function syncAmounts(changedField) {
+            const totalAmount = parseFloat(totalDisplay.textContent.replace("Total :- ₹ ", "").trim());
+            let paidAmount = parseFloat(paidInput.value) || 0;
+            let creditAmount = parseFloat(creditInput.value) || 0;
+
+            if (changedField === "paid") {
+                creditAmount = totalAmount - paidAmount;
+                if (creditAmount < 0) {
+                    creditAmount = 0;
+                    paidAmount = totalAmount;
+                }
+                creditInput.value = creditAmount;
+            } else if (changedField === "credit") {
+                paidAmount = totalAmount - creditAmount;
+                if (paidAmount < 0) {
+                    paidAmount = 0;
+                    creditAmount = totalAmount;
+                }
+                paidInput.value = paidAmount;
+            }
+        }
+
+        paidInput.addEventListener("input", function () {
+            syncAmounts("paid");
+        });
+
+        creditInput.addEventListener("input", function () {
+            syncAmounts("credit");
+        });
+
+        document.getElementById("auth").addEventListener("input", function () {
+            document.querySelector(".authInvalid").classList.remove("active");
+        });
+
+        // Delete record 
+
+        document.getElementById("popDelete").addEventListener("click", async function () {
+            const password = document.getElementById("auth").value;
+            if (password !== ADMIN_PASS) {
+                document.querySelector(".authInvalid").classList.add("active");
+                return;
+            }
+
+            const { value: pw, isConfirmed } = await Swal.fire({
+                title: 'Delete Record?',
+                text: 'This action will not be undone !!.',
+                input: 'password',
+                icon: 'warning',
+                inputPlaceholder: 'Enter admin password',
+                background: '#081b20',
+                color: '#ffffff',
+                showCancelButton: true,
+                confirmButtonText: 'Delete Record',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#7f8c8d',
+                reverseButtons: true,
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                inputValidator: (value) => {
+                    if (!value) return 'Password is required!';
+                }
+            });
+
+            if (!isConfirmed) return;
+
+            if (pw !== ADMIN_PASS) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Wrong Password',
+                    text: 'You are not authorized to make changes to database.',
+                    background: '#081b20',
+                    color: '#ffffff'
+                });
+                return;
+            }
+
+            fetch(`/delete-sales-record/${activeRowId}`, { method: "DELETE" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const itemToDelete = document.querySelector(`.item[rowid="${activeRowId}"]`);
+                        if (itemToDelete) {
+                            itemToDelete.remove();
+                        }
+                        document.querySelector(".optionsPopup").classList.remove("active");
+                        let type = 'success';
+                        let title = 'Success !!';
+                        let text = 'Record deleted sucessfully !!';
+                        createToast(type, title, text);
+                    } else {
+                        let type = 'error';
+                        let title = 'Error !!';
+                        let text = 'Failed to delete record !!';
+                        createToast(type, title, text);
+                    }
+                })
+                .catch(error => {
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                    console.error("Error : ", error);
+                    removeLoader();
+                });
+        });
+
+        // Update Record
+
+        document.getElementById("popEdit").addEventListener("click", async function () {
+            const password = document.getElementById("auth").value;
+            if (password !== ADMIN_PASS) {
+                document.querySelector(".authInvalid").classList.add("active");
+                return;
+            }
+
+            const { paid: originalPaid, remaining: originalRemaining, credit } = window.saleOriginals;
+
+            const date = new Date().toISOString().split("T")[0];
+            const customerName = document.getElementById("popName").value.trim();
+            const address = document.getElementById("popAddress").value.trim();
+            const phoneNumber = document.getElementById("popNumber").value.trim();
+            const paidAmount = parseFloat(document.getElementById("popPaid").value.trim()) || 0;
+            const creditAmount = parseFloat(document.getElementById("popCredit").value.trim()) || 0;
+            const totalAmount = parseFloat(document.getElementById("popTotal").textContent.replace("Total :- ₹ ", "").trim());
+
+            if (!customerName) {
+                let type = 'info';
+                let title = 'Alert !!';
+                let text = "Customer's Name can't be empty !!";
+                createToast(type, title, text);
+                return;
+            }
+
+            if (!address) {
+                let type = 'info';
+                let title = 'Alert !!';
+                let text = "Customer's Address can't be empty !!";
+                createToast(type, title, text);
+                return;
+            }
+
+            if (phoneNumber.length !== 10 || isNaN(phoneNumber)) {
+                let type = 'info';
+                let title = 'Alert !!';
+                let text = 'Phone number much contain 10 digits !!';
+                createToast(type, title, text);
+                return;
+            }
+
+            if (isNaN(paidAmount)) {
+                let type = 'info';
+                let title = 'Alert !!';
+                let text = "Paid amount must be greater then or equal to zero !!";
+                createToast(type, title, text);
+                return;
+            }
+
+            if (isNaN(creditAmount)) {
+                let type = 'info';
+                let title = 'Alert !!';
+                let text = "Credit amount must be greater than or equal to zero";
+                createToast(type, title, text);
+                return;
+            }
+
+            if (paidAmount + creditAmount !== totalAmount) {
+                let type = 'info';
+                let title = 'Alert !!';
+                let text = 'Total Amount is not equal to Paid Amount + Credit Amount !!';
+                createToast(type, title, text);
+                return;
+            }
+
+            if (credit === 1 && originalRemaining > 0) {
+                if (paidAmount >= originalPaid && creditAmount <= originalRemaining) {
+                    console.log("Update in process waiting for confermation");
+                } else {
+                    if (creditAmount > originalRemaining) {
+                        let type = 'info';
+                        let title = 'Alert !!';
+                        let text = "Current Credit can't be more than previous credit ";
+                        createToast(type, title, text);
+                        return;
+                    } else if (paidAmount < originalPaid) {
+                        let type = 'info';
+                        let title = 'Alert !!';
+                        let text = "Current Paid amount can't be less than previous Paid Amount";
+                        createToast(type, title, text);
+                        return;
+                    } else {
+                        let type = 'info';
+                        let title = 'Alert !!';
+                        let text = "Invalid amount fields ...";
+                        createToast(type, title, text);
+                        return;
+                    }
+                    return;
+                }
+            }
+
+            const { value: pw, isConfirmed } = await Swal.fire({
+                title: 'Update Record?',
+                text: 'Enter password to update this record in database.',
+                input: 'password',
+                icon: 'question',
+                inputPlaceholder: 'Enter admin password',
+                background: '#081b20',
+                color: '#ffffff',
+                showCancelButton: true,
+                confirmButtonText: 'Update Record',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#7f8c8d',
+                reverseButtons: true,
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                inputValidator: (value) => {
+                    if (!value) return 'Password is required!';
+                }
+            });
+
+            if (!isConfirmed) return;
+
+            if (pw !== ADMIN_PASS) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Wrong Password',
+                    text: 'You are not authorized to make changes to database.',
+                    background: '#081b20',
+                    color: '#ffffff'
+                });
+                return;
+            }
+
+            let creditStatus = creditAmount > 0 ? 1 : 0;
+
+            const updatedData = {
+                rowid: activeRowId,
+                customer_name: customerName,
+                address: address,
+                phone_number: phoneNumber,
+                paid_amount: paidAmount,
+                remaining_credit: creditAmount,
+                credit: creditStatus,
+                date
+            };
+
+            fetch(`/update-sales-record`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const itemToUpdate = document.querySelector(`.item[rowid="${activeRowId}"]`);
+                        if (itemToUpdate) {
+                            itemToUpdate.querySelector(".name").textContent = customerName;
+                            itemToUpdate.querySelector(".address").textContent = address;
+                            itemToUpdate.querySelector(".number").textContent = phoneNumber;
+                            itemToUpdate.querySelector(".total").textContent = `Total: ₹ ${totalAmount}`;
+                            itemToUpdate.querySelector(".paid").textContent = `Paid: ₹ ${paidAmount}`;
+                            itemToUpdate.querySelector(".creditAmount").textContent = creditAmount > 0 ? `Credit: ₹ ${creditAmount}` : "No Credit";
+
+                            let type = 'success';
+                            let title = 'Success !!';
+                            let text = 'Record updated sucessfully !!';
+                            createToast(type, title, text);
+
+                            if (creditAmount === 0 && paidAmount === totalAmount) {
+                                itemToUpdate.classList.remove("cred");
+                            } else {
+                                itemToUpdate.classList.add("cred");
+                            }
+                        }
+
+                        document.querySelector(".optionsPopup").classList.remove("active");
+                    } else {
+                        let type = 'error';
+                        let title = 'Error !!';
+                        let text = 'Failed to update record !!';
+                        createToast(type, title, text);
+                    }
+                })
+                .catch(error => {
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                    console.error("Error : ", error);
+                    removeLoader();
+                });
+        });
+
+        // Print 
+        document.getElementById("print").addEventListener("click", function () {
+            if (typeof activeRowId !== "undefined" && activeRowId !== null) {
+                window.location.href = `/sales/invoice.html?rowid=${activeRowId}`;
+            } else {
+                console.error("activeRowId is not set!");
+            }
+        });
+
+        //  Nav Trigger and Page Reload ...
+
+        document.getElementById("navtrigger").addEventListener("click", async function () {
+            if (isSearchActive) {
+                const { isConfirmed, isDismissed } = await Swal.fire({
+                    title: 'Search in Progress !!',
+                    text: 'A search is currently running. What would you like to do?',
+                    icon: 'warning',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Cancel Search & Proceed',
+                    cancelButtonText: 'Keep Search Running',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true
+                });
+
+                if (isDismissed) {
+                    return;
+                }
+
+                if (isConfirmed) {
+                    try {
+                        await fetch('/cancel_search', { method: 'POST' });
+                        createToast('info', 'Cancelled !!', 'Search Cancelled Successfully !!')
+                    } catch (err) {
+                        console.error("Failed to cancel search on server:", err);
+                        createToast('error', 'Server Error !!', 'Failed to cancle search , check console for more info !!')
+                    }
+
+                    isSearchActive = false;
+                    document.getElementById("nav").classList.toggle("active");
+                    document.getElementById("navtrigger").classList.toggle("active");
+                    return;
+                }
+            } else {
+                document.getElementById("navtrigger").classList.toggle("active");
+                document.getElementById("nav").classList.toggle("active");
+            }
+        });
+
+        document.getElementById("pageReload").addEventListener("click", async function () {
+            if (isSearchActive) {
+                const { isConfirmed, isDismissed } = await Swal.fire({
+                    title: 'Search in Progress !!',
+                    text: 'A search is currently running. What would you like to do?',
+                    icon: 'warning',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Cancel Search & Reload Page',
+                    cancelButtonText: 'Keep Search Running',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true
+                });
+
+                if (isDismissed) {
+                    return;
+                }
+
+                if (isConfirmed) {
+                    try {
+                        await fetch('/cancel_search', { method: 'POST' });
+                        createToast('info', 'Cancelled !!', 'Search Cancelled Successfully !!')
+                    } catch (err) {
+                        console.error("Failed to cancel search on server:", err);
+                        createToast('error', 'Server Error !!', 'Failed to cancle search , check console for more info !!')
+                    }
+
+                    isSearchActive = false;
+                    setTimeout(() => {
+                        window.location.href = '/sales/search-update.html'
+                    }, 2000);
+                    return;
+                }
+            } else {
+                window.location.href = '/sales/search-update.html'
+            }
+        });
+    </script>
+</body>
+</html>

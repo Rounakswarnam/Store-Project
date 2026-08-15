@@ -1,0 +1,1 @@
+current_sale_search_active_id = None

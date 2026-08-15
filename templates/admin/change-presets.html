@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='sweetalert2.min.css') }}">
+        <script src="{{ url_for('static', filename='sweetalert2.min.js') }}"></script>
+
+        <title>Change Presets - Admin</title>
+
+        <style>
+
+            *,
+            *::before,
+            *::after {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+                scrollbar-width: none;
+            }
+
+            *::-webkit-scrollbar {
+                display: none;
+            }
+
+            body {
+                background-color: #081b29;
+            }
+
+            .swal2-validation-message {
+                background: #102a30 !important;
+                color: #ffffff !important;
+                border: 1px solid #444;
+                padding: 0.5em 1em;
+                border-radius: 4px;
+                font-size: 0.9em;
+                transition: all 0.2s ease;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            }
+
+            .wrapper {
+                width: 500px;
+                position: absolute;
+                left: 50%;
+                top: 65px;
+                transform: translateX(-50%);
+                padding-bottom: 8px;
+                display: grid;
+                grid-template-rows: 42px 1fr;
+            }
+
+            .wrapper > .container {
+                width: 100%;
+                margin-top: 8px;
+                position: relative;
+            }
+
+            .wrapper > .container > .cont {
+                height: calc(100vh - 80px);
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                display: grid;
+                grid-template-rows: 1fr 36px;
+                grid-row-gap: 8px;
+                background-color: #081b29;
+            }
+
+            .wrapper > .container > .cont > .append {
+                overflow-x: scroll;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .wrapper > .container > .cont > .append > .item {
+                width: 100%;
+                height: 40px;
+                display: grid;
+                grid-template-columns: 1fr 32px;
+                grid-template-rows: 32px;
+                grid-column-gap: 6px;
+                background-color: #113656;
+                padding: 4px;
+                border-radius: 8px;
+            }
+
+            .wrapper > .container > .cont > .append > .item > input {
+                background-color: #081b29;
+                outline: none;
+                border: none;
+                border-radius: 8px;
+                color: #fffff0;
+                font-size: 16px;
+                font-weight: bold;
+                padding-left: 8px;
+                padding-right: 8px;
+                pointer-events: none;
+
+                &::placeholder {
+                    color: #fffff0;
+                    opacity: 0.7;
+                }
+            }
+
+            .wrapper > .container > .cont > .append > .item > button {
+                background-color: #081b29;
+                outline: none;
+                border: none;
+                font-size: 18px;
+                color: #fffff0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                cursor: pointer;
+
+                & > img {
+                    height: 20px;
+                    width: 20px;
+                    pointer-events: none;
+                }
+            }
+
+            .wrapper > .container > .cont > .cta {
+                display: grid;
+                grid-template-columns: 1fr 36px;
+                grid-column-gap: 6px;
+            }
+
+            .wrapper > .container > .cont > .cta > input {
+                background-color: #113656;
+                outline: none;
+                border: none;
+                border-radius: 8px;
+                color: #fffff0;
+                font-size: 18px;
+                font-weight: bold;
+                padding-left: 8px;
+                padding-right: 8px;
+                
+                &::placeholder {
+                    color: #fffff0;
+                    opacity: 0.7;
+                }
+            }
+
+            .wrapper > .container > .cont > .cta > button {
+                border: none;
+                outline: none;
+                background-color: #113656;
+                border-radius: 8px;
+                color: #fffff0;
+                font-size: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                cursor: pointer;
+
+                & > img {
+                    height: 34px;
+                    width: 34px;
+                    pointer-events: none;
+                }
+            }
+
+            #navtrigger {
+                position: absolute;
+                top: 8px;
+                left: 8px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    width: 30px;
+                    height: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(calc(-50% - 6px)) rotate(0);
+                    transition: 0.3s;
+                }
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    width: 30px;
+                    height: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(calc(-50% + 6px)) rotate(0);
+                    transition: 0.3s;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #navtrigger.active {
+                &::before {
+                    transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+                    transition: 0.3s;
+                }
+
+                &::after {
+                    transform: translateX(-50%) translateY(-50%) rotate(45deg);
+                    transition: 0.3s;
+                }
+            }
+
+            #nav {
+                width: 300px;
+                top: 65px;
+                left: 8px;
+                position: absolute;
+                border-radius: 12px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                padding-left: 8px;
+                padding-right: 8px;
+                background-color: #113956;
+                pointer-events: none;
+                opacity: 0;
+                transform: translateX(calc(-100% - 15px));
+                transition: 0.3s;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+            }
+
+            #nav.active {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+                transition: 0.3s;
+            }
+
+            #nav > .mainUL > .mainLI {
+                color: #fffff0;
+                font-size: 18px;
+                font-weight: bold;
+                margin-top: 0;
+                position: relative;
+                margin-top: 4px;
+
+                &:nth-of-type(1) {
+                    margin-top: 0;
+                }
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(1) img,
+            #nav > .mainUL > .mainLI:nth-of-type(2) img,
+            #nav > .mainUL > .mainLI:nth-of-type(4) img {
+                height: 25px;
+                width: 25px;
+                transform: translateY(3px);
+                right: 8px;
+                position: absolute;
+                pointer-events: none;
+                opacity: 0.8;
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(1) .text,
+            #nav > .mainUL > .mainLI:nth-of-type(2) .text,
+            #nav > .mainUL > .mainLI:nth-of-type(4) .text {
+                margin-left: 8px;
+                pointer-events: none;
+                opacity: 0.8;
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(3) {
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #nav > .mainUL > .mainLI > .subUL {
+                position: relative;
+            
+                &::before {
+                    content: "";
+                    position: absolute;
+                    height: 90%;
+                    width: 4px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 13px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    opacity: 0.6;
+                }
+            }
+
+            #nav > .mainUL > .mainLI > .subUL > .subLI {
+                margin-left: 22px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                border-radius: 8px;
+                transition: 0.3s;
+                cursor: pointer;
+                margin-top: 4px;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .currentPage {
+                background-color: #081b29;
+            }
+
+            #pageReload {
+                position: absolute;
+                top: 8px;
+                left: 66px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: 0.3s;
+
+                & > img {
+                    height: 36px;
+                    width: 36px;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #notif {
+                z-index: 99;
+                width: 300px;
+                position: fixed;
+                bottom: 8px;
+                right: 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            #notif > .toast {
+                width: 100%;
+                padding: 8px;
+                border-radius: 8px;
+                display: grid;
+                grid-template-rows: 32px 1fr;
+                grid-row-gap: 3px;
+                position: relative;
+                backdrop-filter: blur(6px);
+                animation: show_toast 0.3s ease forwards;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    width: calc(100% - 16px);
+                    height: 4px;
+                    background-color: #081b29;
+                    left: 8px;
+                    bottom: 6px;
+                    border-radius: 2px;
+                    box-shadow: 0 0 5px #081b29;
+                    animation: timeOut 6s linear 1 forwards;
+                    transform-origin: right;
+                }
+            }
+
+            #notif > .toast.success { 
+                background: linear-gradient(to right, rgba(76, 175, 80, 0.4), rgba(56, 142, 60, 0.4), rgba(27, 94, 32, 0.4)); 
+            }
+
+            #notif > .toast.error { 
+                background: linear-gradient(to right, rgba(244, 67, 54, 0.4), rgba(211, 47, 47, 0.4), rgba(136, 14, 79, 0.4)); 
+            }
+
+            #notif > .toast.info { 
+                background: linear-gradient(to right, rgba(33, 150, 243, 0.4), rgba(30, 136, 229, 0.4), rgba(21, 101, 192, 0.4)); 
+            }
+
+            @keyframes timeOut{
+                to{
+                    width: 0%;  
+                }
+            }
+
+            @keyframes show_toast {
+            	0% {
+            		transform: translateX(100%);
+            	}
+            	100% {
+            		transform: translateX(0);
+            	}
+            }
+
+            #notif > .toast > .header {
+                display: grid;
+                grid-template-columns: 1fr 32px;
+                grid-column-gap: 6px;
+                position: relative;
+            }
+
+            #notif > .toast > .header > .tittle {
+                font-size: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: start;
+                font-weight: bold;
+                position: relative;
+                text-shadow: 0 0 4px #081b29, 0 0 8px #081b29, 0 0 16px #081b29;
+                color: #fffff0;
+            }
+
+            #notif > .toast > .header > .cta {
+                background-color: transparent;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+
+                & > img {
+                    pointer-events: none;
+                    height: 30px;
+                    width: 30px;
+                    transform: rotate(45deg);
+                }
+            }
+
+            #notif > .toast > .message {
+                padding-bottom: 6px;
+                white-space: pre-wrap;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 16px;
+                text-shadow: 0 0 4px #081b29, 0 0 8px #081b29;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="container">
+                <div class="addressCont cont">
+                    <div id="addressCont" class="append">
+                        {% for row in address_suggestions %}
+                            <div class="item" rowid="{{ row['id'] }}">
+                                <input type="text" class="text" value="{{ row['name'] }}" disabled readonly tabindex="-1">
+                                <button class="delete"><img src="{{ url_for('static', filename='icon/trash.svg') }}"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="cta">
+                        <input type="text" id="addressInput" placeholder="Add new address suggestion !!" autocomplete="off">
+                        <button id="addressButton" tabindex="1"><img src="{{ url_for('static', filename='icon/plus.svg') }}"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="navtrigger"></div>
+        <div id="pageReload" onclick="window.location.href='/admin/change-presets.html'"><img src="{{ url_for('static', filename='icon/reload.svg') }}"></div>
+        <div id="nav">
+            <div class="mainUL">
+                <div class="mainLI">
+                    <span class="text">Sales</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI" onclick="window.location.href='/sales/index.html'">New Sales</div>
+                        <div class="subLI" onclick="window.location.href='/sales/search-update.html'">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI">
+                    <span class="text">Loans</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI">New Loan</div>
+                        <div class="subLI">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI" id="inventory">Inventory</div>
+                <div class="mainLI">
+                    <span class="text">Admin Panel</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI" onclick="window.location.href='/admin/sales-analytics.html'">Sales Analytics</div>
+                        <div class="subLI currentPage">Address Presets</div>
+                        <div class="subLI">Admin Controls</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="validation-data" data-list='{{ lowercase|tojson }}' hidden></div>
+        <div id="notif"></div>
+
+        <script>
+        // Admin password 
+            const ADMIN_PASS = "{{ admin_pass }}";
+
+        // Name Validation 
+            const validationRaw = document.getElementById("validation-data").dataset.list;
+            window.validationList = JSON.parse(validationRaw);
+
+        // Admin Page Visit
+            document.getElementById("inventory").addEventListener("click", async () => {
+                const { value: pw, isConfirmed } = await Swal.fire({
+                    title: 'Want to check Inventory ??',
+                    text: 'Enter admin password to visit inventory page !!',
+                    input: 'password',
+                    icon: 'question',
+                    inputPlaceholder: 'Enter admin password',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Visit Inventory Page',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true,
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    inputValidator: (value) => {
+                        if (!value) return 'Password is required!';
+                    }
+                });
+            
+                if (!isConfirmed) return;
+
+                if (pw !== ADMIN_PASS) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wrong Password',
+                        text: 'You are not authorized to be the Admin !!',
+                        background: '#081b20',
+                        color: '#ffffff'
+                    });
+                    return;
+                }
+            
+                window.location.href='/inventory/inventory.html'
+            });
+        // Toast notifications 
+
+            let notifications = document.getElementById("notif");
+
+            function createToast(type, title, text) {
+                let existingToasts = notifications.getElementsByClassName("toast");
+            
+                while (existingToasts.length >= 3) {
+                    existingToasts[0].remove(); 
+                }
+            
+                let newToast = document.createElement('div');
+                newToast.classList.add("toast");
+                newToast.classList.add(type);
+                newToast.innerHTML = `
+                    <div class="header">
+                        <span class="tittle">${title}</span>
+                        <span class="cta" onclick="this.closest('.toast').remove()">
+                            <img src="{{ url_for('static', filename='icon/plus.svg') }}">
+                        </span>
+                    </div>
+                    <div class="message">${text}</div>
+                `;
+                
+                notifications.appendChild(newToast);
+                newToast.timeOut = setTimeout(() => newToast.remove(), 6000);
+            }
+        
+        // Event Handelers
+            // Nav Trigger
+            document.getElementById("navtrigger").addEventListener("click", function() {
+               document.getElementById("navtrigger").classList.toggle("active");
+               document.getElementById("nav").classList.toggle("active");
+            });
+
+        // Delete a suggestion ...
+            document.addEventListener("click", async function (event) {
+                if (event.target.closest(".delete")) {
+                    let item = event.target.closest(".item"); 
+                    let rowid = item.getAttribute("rowid");   
+                    let name = item.querySelector(".text").value; 
+                    const nameLower = name.toLowerCase();
+
+                    const isConfirmed = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: `Do you really want to delete "${name}" from Address Suggestion?`,
+                        icon: 'warning',
+                        background: '#081b20',
+                        color: '#ffffff',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel',
+                        showCancelButton: true,
+                        reverseButtons: true,
+                        confirmButtonColor: '#e74c3c',
+                        cancelButtonColor: '#7f8c8d',
+                    }).then(result => result.isConfirmed);
+
+                    if (!isConfirmed) return;
+
+                    fetch("/delete-suggestion", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ rowid })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            item.remove();
+                            window.validationList = window.validationList.filter(item => item !== nameLower);
+                            let type = 'success';
+                            let title = 'Success !!';
+                            let text = 'Suggestion removed sucessfully !!';
+                            createToast(type, title, text);
+                        } else {
+                            alert("Error deleting record: " + data.message);
+                            let type = 'error';
+                            let title = 'Server Error !!';
+                            let text = 'Some error occured on the server side, Check console for more details !!';
+                            createToast(type, title, text);
+                        }
+                    })
+                    .catch(error => {
+                        let type = 'error';
+                        let title = 'Server Error !!';
+                        let text = 'Some error occured on the server side, Check console for more details !!';
+                        createToast(type, title, text);
+                        console.error("Error : ", error);
+                    });
+                }
+            });
+
+        // Add a new suggestion
+            async function handleAddButtonClick(event) {
+                let value = document.getElementById("addressInput").value.trim();
+                let container = document.getElementById("addressCont");
+
+                if (!value) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = 'Suggestion field is empty !!';
+                    createToast(type, title, text);
+                    return;
+                }
+
+                nameLower = value.toLowerCase();
+                if (window.validationList.includes(nameLower)) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "This address already exists";
+                    createToast(type, title, text);
+                    return
+                }
+
+                const isConfirmed = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: `Do you want to add "${value}" to Address Suggestions?`,
+                    icon: 'info',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    confirmButtonText: 'Yes, Add it!',
+                    cancelButtonText: 'Cancel',
+                    showCancelButton: true,
+                    reverseButtons: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                }).then(result => result.isConfirmed);
+
+                if (!isConfirmed) return;
+
+                fetch("/add-suggestion", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: value })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.validationList.push(nameLower);
+
+                        let newItem = document.createElement("div");
+                        newItem.classList.add("item");
+                        newItem.setAttribute("rowid", data.rowid);
+                        newItem.innerHTML = `
+                            <input type="text" class="text" value="${value}">
+                            <button class="delete"><img src="{{ url_for('static', filename='icon/trash.svg') }}"></button>
+                        `;
+                        container.appendChild(newItem);
+                        container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+                        document.getElementById("addressInput").value = ""; 
+
+                        let type = 'success';
+                        let title = 'Success !!';
+                        let text = 'Suggestion added sucessfully !!';
+                        createToast(type, title, text);
+                    } else {
+                        alert("Error adding record: " + data.message);
+                        let type = 'error';
+                        let title = 'Server Error !!';
+                        let text = 'Some error occured on the server side, Check console for more details !!';
+                        createToast(type, title, text);
+                    }
+                })
+                .catch(error => {
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                    console.error("Error : ", error);
+                });
+            }
+            
+            document.getElementById("addressButton").addEventListener("click", handleAddButtonClick);
+        </script>
+    </body>
+</html>

@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='sweetalert2.min.css') }}">
+        <script src="{{ url_for('static', filename='sweetalert2.min.js') }}"></script>
+
+        <title>New Sale - Sales</title>
+
+        <style>
+
+            *,
+            *::before,
+            *::after {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+                scrollbar-width: none;
+            }
+
+            *::-webkit-scrollbar {
+                display: none;
+            }
+
+            body {
+                background-color: #081b29;
+            }
+
+            .swal2-validation-message {
+                background: #102a30 !important;
+                color: #ffffff !important;
+                border: 1px solid #444;
+                padding: 0.5em 1em;
+                border-radius: 4px;
+                font-size: 0.9em;
+                transition: all 0.2s ease;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            }
+
+        /* Toast and Nav */
+
+            #notif {
+                z-index: 99;
+                width: 300px;
+                position: fixed;
+                bottom: 8px;
+                right: 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            #notif > .toast {
+                width: 100%;
+                padding: 8px;
+                border-radius: 8px;
+                display: grid;
+                grid-template-rows: 32px 1fr;
+                grid-row-gap: 3px;
+                position: relative;
+                backdrop-filter: blur(6px);
+                animation: show_toast 0.3s ease forwards;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    width: calc(100% - 16px);
+                    height: 4px;
+                    background-color: #081b29;
+                    left: 8px;
+                    bottom: 6px;
+                    border-radius: 2px;
+                    box-shadow: 0 0 5px #081b29;
+                    animation: timeOut 6s linear 1 forwards;
+                    transform-origin: right;
+                }
+            }
+
+            #notif > .toast.success { 
+                background: linear-gradient(to right, rgba(76, 175, 80, 0.4), rgba(56, 142, 60, 0.4), rgba(27, 94, 32, 0.4)); 
+            }
+
+            #notif > .toast.error { 
+                background: linear-gradient(to right, rgba(244, 67, 54, 0.4), rgba(211, 47, 47, 0.4), rgba(136, 14, 79, 0.4)); 
+            }
+
+            #notif > .toast.info { 
+                background: linear-gradient(to right, rgba(33, 150, 243, 0.4), rgba(30, 136, 229, 0.4), rgba(21, 101, 192, 0.4)); 
+            }
+
+            @keyframes timeOut{
+                to{
+                    width: 0%;  
+                }
+            }
+
+            @keyframes show_toast {
+            	0% {
+            		transform: translateX(100%);
+            	}
+            	100% {
+            		transform: translateX(0);
+            	}
+            }
+
+            #notif > .toast > .header {
+                display: grid;
+                grid-template-columns: 1fr 32px;
+                grid-column-gap: 6px;
+                position: relative;
+            }
+
+            #notif > .toast > .header > .tittle {
+                font-size: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: start;
+                font-weight: bold;
+                position: relative;
+                text-shadow: 0 0 4px #081b29, 0 0 8px #081b29, 0 0 16px #081b29;
+                color: #fffff0;
+            }
+
+            #notif > .toast > .header > .cta {
+                background-color: transparent;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fffff0;
+                font-size: 28px;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+
+                & > img {
+                    pointer-events: none;
+                    height: 30px;
+                    width: 30px;
+                    transform: rotate(45deg);
+                }
+            }
+
+            #notif > .toast > .message {
+                padding-bottom: 6px;
+                white-space: pre-wrap;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 16px;
+                text-shadow: 0 0 4px #081b29, 0 0 8px #081b29;
+            }
+
+            #navtrigger {
+                position: absolute;
+                top: 8px;
+                left: 8px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    width: 30px;
+                    height: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(calc(-50% - 6px)) rotate(0);
+                    transition: 0.3s;
+                }
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    width: 30px;
+                    height: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(calc(-50% + 6px)) rotate(0);
+                    transition: 0.3s;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #navtrigger.active {
+                &::before {
+                    transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+                    transition: 0.3s;
+                }
+
+                &::after {
+                    transform: translateX(-50%) translateY(-50%) rotate(45deg);
+                    transition: 0.3s;
+                }
+            }
+
+            #nav {
+                width: 300px;
+                top: 65px;
+                left: 8px;
+                position: absolute;
+                border-radius: 12px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                padding-left: 8px;
+                padding-right: 8px;
+                background-color: #113956;
+                pointer-events: none;
+                opacity: 0;
+                transform: translateX(calc(-100% - 15px));
+                transition: 0.3s;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+            }
+
+            #nav.active {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+                transition: 0.3s;
+            }
+
+            #nav > .mainUL > .mainLI {
+                color: #fffff0;
+                font-size: 18px;
+                font-weight: bold;
+                margin-top: 0;
+                position: relative;
+                margin-top: 4px;
+
+                &:nth-of-type(1) {
+                    margin-top: 0;
+                }
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(1) img,
+            #nav > .mainUL > .mainLI:nth-of-type(2) img {
+                height: 25px;
+                width: 25px;
+                transform: translateY(3px);
+                right: 8px;
+                position: absolute;
+                pointer-events: none;
+                opacity: 0.8;
+
+                > img {
+                    height: 100%;
+                    width: 100%;
+                }
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(1) .text,
+            #nav > .mainUL > .mainLI:nth-of-type(2) .text {
+                margin-left: 8px;
+                pointer-events: none;
+                opacity: 0.8;
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(3),
+            #nav > .mainUL > .mainLI:nth-of-type(4) {
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #nav > .mainUL > .mainLI > .subUL {
+                position: relative;
+            
+                &::before {
+                    content: "";
+                    position: absolute;
+                    height: 80%;
+                    width: 4px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 13px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    opacity: 0.6;
+                }
+            }
+
+            #nav > .mainUL > .mainLI > .subUL > .subLI {
+                margin-left: 22px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                border-radius: 8px;
+                transition: 0.3s;
+                cursor: pointer;
+                margin-top: 4px;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .currentPage {
+                background-color: #081b29;
+            }
+
+            #pageReload {
+                position: absolute;
+                top: 8px;
+                left: 66px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: 0.3s;
+
+                & > img {
+                    height: 36px;
+                    width: 36px;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #addItem {
+                position: absolute;
+                top: 8px;
+                left: 124px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: 0.3s;
+
+                & > img {
+                    height: 36px;
+                    width: 36px;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .wrapper {
+                width: 500px;
+                position: absolute;
+                left: 50%;
+                top: 65px;
+                transform: translateX(-50%);
+                padding-bottom: 32px;
+                background-color: transparent;
+            }
+
+            .wrapper h1 {
+                color: #fffff0;
+                opacity: 0.9;
+                text-align: center;
+            }
+
+            .wrapperNAV {
+                background-color: #113956;
+                height: 46px;
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-column-gap: 12px;
+                margin-top: 16px;
+                padding: 4px;
+                border-radius: 10px;
+
+                & > button {
+                    background-color: transparent;
+                    outline: none;
+                    border: none;
+                    color: #fffff0;
+                    font-weight: bolder;
+                    font-size: 20px;
+                    border-radius: 8px;
+                    transition: 0.3s;
+                    cursor: pointer;
+                    position: relative;
+
+                    &.active {
+                        background-color: #081b29;
+                        transition: 0.3s;
+                    }
+
+                    &:hover {
+                        background-color: #081b29;
+                        transition: 0.3s;
+                    }
+
+                    &:nth-of-type(2)::before,
+                    &:nth-of-type(3)::before {
+                        content: "";
+                        position: absolute;
+                        height: 80%;
+                        width: 4px;
+                        background-color: #fffff0;
+                        border-radius: 2px;
+                        top: 50%;
+                        left: 0;
+                        transform: translate(-8px,-50%);
+                        opacity: 0.7;
+                    }
+                }
+            }
+
+            .container {
+                width: 100%;
+                margin-top: 16px;
+                position: relative;
+
+                & > .cont {
+                    width: 100%;
+                    height: calc(100vh - 190px);
+                    position: absolute;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: 0.3s;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+
+                    &.active {
+                        opacity: 1;
+                        pointer-events: auto;
+                        transition: 0.3s;
+                    }
+
+                    & > .item {
+                        background-color: #113956;
+                        padding-left: 8px;
+                        padding-right: 8px;
+                        padding-bottom: 8px;
+                        padding-top: 10px;
+                        border-radius: 8px;
+                        position: relative;
+                        filter: blur(0);
+                        scale: 1;
+                        box-shadow: 0 0 5px transparent;
+                        transition: 0.3s;
+
+                        &.blurred {
+                            filter: blur(6px);
+                            scale: 0.95;
+                            box-shadow: 0 0 5px transparent;
+                            transition: 0.3s;
+                        }
+
+                        &.highlight {
+                            filter: blur(0);
+                            scale: 1.05;
+                            box-shadow: 0 0 5px #fffff0;
+                            transition: 0.3s;
+                        }
+
+                        & > .type {
+                            background-color: yellowgreen;
+                            border-radius: 8px;
+                            color: #081b29;
+                            font-size: 14px;
+                            font-weight: bold;
+                            padding: 4px 8px;
+                            display: inline;
+                        }
+
+                        & > .name {
+                            color: #fffff0;
+                            font-size: 18px;
+                            font-weight: bold;
+                            margin-top: 8px;
+                        }
+
+                        & > .info {
+                            color: #fffff0;
+                            font-weight: bold;
+                            font-size: 16px;
+                        }
+
+                        & > .cta {
+                            position: absolute;
+                            right: 8px;
+                            bottom: 8px;
+                            height: 42px;
+                            width: 42px;
+                            background-color: transparent;
+                            border-radius: 8px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border: 3px solid #081b29;
+                            transition: 0.3s;
+                            cursor: pointer;
+
+                            &:hover {
+                                background-color: #081b29;
+                                transition: 0.3s;
+                            }
+
+                            & > img {
+                                height: 32px;
+                                width: 32px;
+                                pointer-events: none;
+                            }
+                        }
+
+                        &.unavailable {
+                            background: linear-gradient(135deg, #8B0000, #FF6347, #8B0000);
+
+                            & > .type {
+                                background-color: #081b29;
+                                color: #fffff0;
+                            }
+
+                            & > .name,
+                            & > .info {
+                                color: #fffff0;
+                                text-shadow: 0 0 5px #081b29;
+                            }
+
+                            & > .cta {
+                                background-color: #081b29;
+                            }
+                        }
+
+                        &.vulnerable {
+                            background: linear-gradient(135deg, #FFA500, #FF7F50, #FF4500);
+
+                            & > .type {
+                                background-color: #081b29;
+                                color: #fffff0;
+                            }
+
+                            & > .name,
+                            & > .info {
+                                color: #081b29;
+                            }
+
+                            & > .cta {
+                                background-color: #081b29;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .update {
+                position: fixed;
+                height: 100vh;
+                width: 100vw;
+                top: 0;
+                left: 0;
+                background-color: rgb(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                pointer-events: none;
+                backdrop-filter: blur(5px);
+                z-index: -2;
+                transition: 0.5s;
+
+                &.active {
+                    pointer-events: auto;
+                    opacity: 1;
+                    z-index: 9;
+                    transition: 0.5s;
+                }
+
+                & > .updateCont {
+                    width: 500px;
+                    display: grid;
+                    grid-template-rows: 36px 36px 36px 36px 36px;
+                    grid-row-gap: 8px;
+
+                    & > .updateInfo {
+                        display: grid;
+                        grid-template-columns: 100px 1fr;
+                        grid-column-gap: 8px;
+                        cursor: not-allowed;
+
+                        & > div {
+                            background-color: #113956;
+                            border-radius: 8px;
+                            color: #fffff0;
+                            font-weight: bold;
+                            font-size: 18px;
+                            position: relative;
+                        
+                            &:nth-of-type(1) {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            }
+
+                            &:nth-of-type(2) {
+                                display: flex;
+                                align-items: center;
+                                padding-left: 8px;
+                            }
+
+                            &::after {
+                                content: var(--text);
+                                position: absolute;
+                                background-color: yellowgreen;
+                                display: flex;
+                                align-items: center;
+                                text-align: center;
+                                justify-content: center;
+                                padding-left: 6px;
+                                padding-right: 6px;
+                                padding-top: 4px;
+                                padding-bottom: 4px;
+                                border-radius: 6px;
+                                font-size: 14px;
+                                color: #081b29;
+                                font-weight: bold;
+                                pointer-events: none;
+                                opacity: 0;
+                                transition: 0.3s;
+                                left: 50%;
+                                top: 0;
+                                transform: translate(-50%,calc(-100% + 10px));
+                            }
+                        
+                            &::before {
+                                content: "";
+                                position: absolute;
+                                height: 15px;
+                                width: 15px;
+                                left: 50%;
+                                top: 0;
+                                transform: translate(-50%,0) rotate(45deg);
+                                background-color: yellowgreen;
+                                opacity: 0;
+                                pointer-events: none;
+                                transition: 0.3s;
+                            }
+                        
+                            &:hover::after {
+                                opacity: 1;
+                                transform: translate(-50%,-100%);
+                                transition: 0.3s;
+                            }
+                        
+                            &:hover::before {
+                                opacity: 1;
+                                transform: translate(-50%,-10px) rotate(45deg);
+                                transition: 0.3s;
+                            }
+                        }
+                    }
+
+                    & > .quantityInfo {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        grid-column-gap: 8px;
+                        cursor: not-allowed;
+                        
+                        & > div {
+                            background-color: #113956;
+                            border-radius: 8px;
+                            color: #fffff0;
+                            font-weight: bold;
+                            font-size: 18px;
+                            display: flex;
+                            align-items: center;
+                            padding-left: 8px;
+                            position: relative;
+
+                            &::after {
+                                content: var(--text);
+                                position: absolute;
+                                background-color: yellowgreen;
+                                display: flex;
+                                align-items: center;
+                                text-align: center;
+                                justify-content: center;
+                                padding-left: 6px;
+                                padding-right: 6px;
+                                padding-top: 4px;
+                                padding-bottom: 4px;
+                                border-radius: 6px;
+                                font-size: 14px;
+                                color: #081b29;
+                                font-weight: bold;
+                                pointer-events: none;
+                                opacity: 0;
+                                transition: 0.3s;
+                                left: 50%;
+                                top: 0;
+                                transform: translate(-50%,calc(-100% + 10px));
+                            }
+                        
+                            &::before {
+                                content: "";
+                                position: absolute;
+                                height: 15px;
+                                width: 15px;
+                                left: 50%;
+                                top: 0;
+                                transform: translate(-50%,0) rotate(45deg);
+                                background-color: yellowgreen;
+                                opacity: 0;
+                                pointer-events: none;
+                                transition: 0.3s;
+                            }
+                        
+                            &:hover::after {
+                                opacity: 1;
+                                transform: translate(-50%,-100%);
+                                transition: 0.3s;
+                            }
+                        
+                            &:hover::before {
+                                opacity: 1;
+                                transform: translate(-50%,-10px) rotate(45deg);
+                                transition: 0.3s;
+                            }
+                        }
+                    }
+
+                    & > .quantityInfo_edit {
+                        background-color: transparent;
+                        display: grid;
+                        grid-template-columns: 1fr 36px;
+                        grid-column-gap: 8px;
+
+                        & > div {
+                            position: relative;
+                            height: 100%;
+                            width: 100%;
+
+                            & > div {
+                                display: grid;
+                                grid-template-columns: 1fr 1fr;
+                                grid-column-gap: 8px;
+                                height: 100%;
+                                width: 100%;
+                                position: absolute;
+                                opacity: 0;
+                                pointer-events: none;
+                                transition: 0.3s;
+
+                                &.active {
+                                    opacity: 1;
+                                    pointer-events: auto;
+                                    transition: 0.3s;
+                                }
+
+                                &.no_edit {
+                                    cursor: not-allowed;
+                                }
+
+                                & > input {
+                                    height: 100%;
+                                    width: 100%;
+                                    background-color: #113956;
+                                    border: none;
+                                    outline: none;
+                                    padding-left: 8px;
+                                    padding-right: 8px;
+                                    padding-bottom: 6px;
+                                    padding-top: 7px;
+                                    border-radius: 8px;
+                                    font-size: 16px;
+                                    color: #fffff0;
+                                    font-weight: bold;
+                                    border: 2px solid transparent;
+                                    transition: 0.3s;
+
+                                    &:focus {
+                                        border: 2px solid yellowgreen;
+                                        transition: 0.3s;
+                                    }
+                                }
+
+                                & > div {
+                                    background-color: #113956;
+                                    border-radius: 8px;
+                                    color: #fffff0;
+                                    font-weight: bold;
+                                    font-size: 18px;
+                                    display: flex;
+                                    align-items: center;
+                                    padding-left: 8px;
+                                    position: relative;
+
+                                    &::after {
+                                        content: var(--text);
+                                        position: absolute;
+                                        background-color: yellowgreen;
+                                        display: flex;
+                                        align-items: center;
+                                        text-align: center;
+                                        justify-content: center;
+                                        padding-left: 6px;
+                                        padding-right: 6px;
+                                        padding-top: 4px;
+                                        padding-bottom: 4px;
+                                        border-radius: 6px;
+                                        font-size: 14px;
+                                        color: #081b29;
+                                        font-weight: bold;
+                                        pointer-events: none;
+                                        opacity: 0;
+                                        transition: 0.3s;
+                                        left: 50%;
+                                        top: 0;
+                                        transform: translate(-50%,calc(-100% + 10px));
+                                    }
+                                
+                                    &::before {
+                                        content: "";
+                                        position: absolute;
+                                        height: 15px;
+                                        width: 15px;
+                                        left: 50%;
+                                        top: 0;
+                                        transform: translate(-50%,0) rotate(45deg);
+                                        background-color: yellowgreen;
+                                        opacity: 0;
+                                        pointer-events: none;
+                                        transition: 0.3s;
+                                    }
+                                
+                                    &:hover::after {
+                                        opacity: 1;
+                                        transform: translate(-50%,-100%);
+                                        transition: 0.3s;
+                                    }
+                                
+                                    &:hover::before {
+                                        opacity: 1;
+                                        transform: translate(-50%,-10px) rotate(45deg);
+                                        transition: 0.3s;
+                                    }
+                                }
+                            }
+                        }
+
+                        & > button {
+                            background-color: #113956;
+                            border-radius: 8px;
+                            border: none;
+                            outline: none;
+                            cursor: pointer;
+                            position: relative;
+
+                            &::before {
+                                content: "";
+                                position: absolute;
+                                height: 4px;
+                                width: 22px;
+                                background-color: #fffff0;
+                                border-radius: 2px;
+                                left: 50%;
+                                top: 50%;
+                                transform: translate(-50%,calc(-50% - 5px)) rotate(0);
+                                transition: 0.3s;
+                            }
+
+                            &::after {
+                                content: "";
+                                position: absolute;
+                                height: 4px;
+                                width: 22px;
+                                background-color: #fffff0;
+                                border-radius: 2px;
+                                left: 50%;
+                                top: 50%;
+                                transform: translate(-50%,calc(-50% + 5px)) rotate(0);
+                                transition: 0.3s;
+                            }
+
+                            &.active::before {
+                                transform: translate(-50%,-50%) rotate(45deg);
+                                transition: 0.3s;
+                            }
+
+                            &.active::after {
+                                transform: translate(-50%,-50%) rotate(-45deg);
+                                transition: 0.3s;
+                            }
+                        }
+                    }
+
+                    & > .addInfo {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        grid-column-gap: 8px;
+
+                        & > input {
+                            height: 100%;
+                            width: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            padding-left: 8px;
+                            padding-right: 8px;
+                            padding-bottom: 6px;
+                            padding-top: 7px;
+                            border-radius: 8px;
+                            font-size: 16px;
+                            color: #fffff0;
+                            font-weight: bold;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+                        
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+                    }
+
+                    & > .updateCta {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr 1fr;
+                        grid-column-gap: 8px;
+
+                        & > button {
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 8px;
+                            font-size: 18px;
+                            color: #fffff0;
+                            font-weight: bold;
+                            cursor: pointer;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+                        
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+
+                            &:hover {
+                                background-color: yellowgreen;
+                                color: #081b29;
+                                transition: 0.3s;
+                            }
+
+                            &:nth-of-type(2):hover {
+                                background-color: orangered;
+                                color: #081b29;
+                                transition: 0.3s;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .popup {
+                z-index: -2;
+                background: rgb(0, 0, 0, 0.6);
+                backdrop-filter: blur(5px);
+                height: 100vh;
+                width: 100vw;
+                position: fixed;
+                opacity: 0;
+                pointer-events: none;
+                transition: 0.3s;
+
+                &.active {
+                    opacity: 1;
+                    pointer-events: auto;
+                    z-index: 9;
+                    transition: 0.3s;
+                }
+            
+                & > .wrapper {
+                    width: 450px;
+                    height: 160px;
+                    display: grid;
+                    grid-template-rows: 32px 120px;
+                    grid-row-gap: 8px;
+                    position: absolute;
+                    top: 32px;
+
+                    & > .club1 {
+                        display: grid;
+                        grid-template-columns: 100px 1fr;
+                        grid-column-gap: 8px;
+                    
+                        & > select {
+                            border: none;
+                            outline: none;
+                            appearance: none;
+                            background-color: #113956;
+                            color: #fffff0;
+                            font-size: 16px;
+                            font-weight: bold;
+                            border-radius: 6px;
+                            display: inline;
+                            width: 100%;
+                            height: 100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            cursor: pointer;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+                        
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+                    
+                        & > input {
+                            width: 100%;
+                            height: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #fffff0;
+                            padding: 0 8px;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+                        
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+                    }
+                
+                    & > .club2 {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        grid-template-rows: 1fr 1fr 1fr;
+                        grid-gap: 8px;
+                    
+                        & > input {
+                            width: 100%;
+                            height: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #fffff0;
+                            padding: 0 8px;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+                        
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+                    
+                        & > button {
+                            width: 100%;
+                            height: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #fffff0;
+                            padding: 0 8px;
+                            cursor: pointer;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+                        
+                            &:hover {
+                                background-color: yellowgreen;
+                                color: #081b29;
+                                transition: 0.3s;
+                            }
+                        
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+                    }
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <h1>Inventory</h1>
+            <div class="wrapperNAV">
+                <button id="wrapperNavBtn1" tabindex="-1" class="active">22C Gold</button>
+                <button id="wrapperNavBtn2" tabindex="-1" class="">18C Gold</button>
+                <button id="wrapperNavBtn3" tabindex="-1" class="">Silver</button>
+            </div>
+            <div class="container">
+                <div class="cont active" id="goldCont_22C">
+                    {% for item in inventory_22c %}
+                        <div class="item {{ item.status }}">
+                            <div class="type">{{ item.type }}</div>
+                            <div class="name">{{ item.name }}</div>
+                            <div class="info">
+                                <span>Weight - {{ item.weight }} grams</span>  ||  <span>Quantity - {{ item.quantity }} piece</span>
+                            </div>
+                            <div class="cta" rowid="{{ item.id }}" thresWeight="{{ item.thresWeight }}" thresQuantity="{{ item.thresQuantity }}"><img src="{{ url_for('static', filename='icon/plus.svg') }}"></div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="cont" id="goldCont_18C">
+                    {% for item in inventory_18c %}
+                        <div class="item {{ item.status }}">
+                            <div class="type">{{ item.type }}</div>
+                            <div class="name">{{ item.name }}</div>
+                            <div class="info">
+                                <span>Weight - {{ item.weight }} grams</span>  ||  <span>Quantity - {{ item.quantity }} piece</span>
+                            </div>
+                            <div class="cta" rowid="{{ item.id }}" thresWeight="{{ item.thresWeight }}" thresQuantity="{{ item.thresQuantity }}"><img src="{{ url_for('static', filename='icon/plus.svg') }}"></div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="cont" id="silverCont">
+                    {% for item in inventory_silver %}
+                        <div class="item {{ item.status }}">
+                            <div class="type">{{ item.type }}</div>
+                            <div class="name">{{ item.name }}</div>
+                            <div class="info">
+                                <span>Weight - {{ item.weight }} grams</span>  ||  <span>Quantity - {{ item.quantity }} piece</span>
+                            </div>
+                            <div class="cta" rowid="{{ item.id }}" thresWeight="{{ item.thresWeight }}" thresQuantity="{{ item.thresQuantity }}"><img src="{{ url_for('static', filename='icon/plus.svg') }}"></div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="popup" id="popup">
+            <div class="wrapper">
+                <div class="club1">
+                    <select id="type" onchange="document.getElementById('newArticle').value = ''">
+                        <option value="Gold 18C">Gold 18C</option>
+                        <option value="Gold 22C">Gold 22C</option>
+                        <option value="Silver">Silver</option>
+                    </select>
+                    <input type="text" id="newArticle" placeholder="Article Name ??" autocomplete="off" />
+                </div>
+                <div class="club2">
+                    <input type="number" id="weight" name="weight" step="0.01" placeholder="Weight ?? (g)" autocomplete="off" />
+                    <input type="number" id="quantity" name="quantity" placeholder="Quantity ?? (pcs)" autocomplete="off" />
+                    <input id="weightThreshold" type="number" step="0.01" placeholder="Threshold Weight (g)" autocomplete="off" />
+                    <input id="quantityThreshold" type="number" placeholder="Threshold Quantity (pcs)" autocomplete="off" />
+                    <button id="closePopup" tabindex="-1">Cancle & Reset</button>
+                    <button id="addItemToList">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="update">
+            <div class="updateCont">
+                <div class="updateInfo">
+                    <div id="updateType" style="--text: 'Type';"></div>
+                    <div id="updateName" style="--text: 'Item Name';"></div>
+                </div>
+                <div class="quantityInfo_edit">
+                    <div class="club">
+                        <div class="no_edit active">
+                            <div id="thresWeight" style="--text: 'Threshold Weight';"></div>
+                            <div id="thresQuantity" style="--text: 'Threshold Quantity';"></div>
+                        </div>
+                        <div class="edit">
+                            <input type="number" id="updateThresWeight" step="0.001" placeholder="Threshold Weight ??" autocomplete="off" />
+                            <input type="number" id="updateThresQuantity" placeholder="Threshold Quantity ??" autocomplete="off" />
+                        </div>
+                    </div>
+                    <button id="updateThres" onclick="updateTH()" tabindex="-1"></button>
+                </div>
+                <div class="quantityInfo">
+                    <div id="updateWeight" style="--text: 'Current Weight';"></div>
+                    <div id="updateQuantity" style="--text: 'Current Quantity'"></div>
+                </div>
+                <div class="addInfo">
+                    <input type="number" id="addWeight" name="addWeight" step="0.001" placeholder="Add Weight ??" autocomplete="off" />
+                    <input type="number" id="addQuantity" name="addQuantity" placeholder="Add Quantity ??" autocomplete="off" />
+                </div>
+                <div class="updateCta">
+                    <button id="updateClose" tabindex="-1">Cancle</button>
+                    <button id="updateDelete" tabindex="-1">Delete Item</button>
+                    <button id="updateUpdate">Update</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="navtrigger"></div>
+        <div id="pageReload" onclick="window.location.href='/inventory/inventory.html'"><img src="{{ url_for('static', filename='icon/reload.svg') }}"></div>
+        <div id="addItem"><img src="{{ url_for('static', filename='icon/plus.svg') }}"></div>
+        <div id="nav">
+            <div class="mainUL">
+                <div class="mainLI">
+                    <span class="text">Sales</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI" onclick="window.location.href='/sales/index.html'">New Sales</div>
+                        <div class="subLI" onclick="window.location.href='/sales/search-update.html'">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI">
+                    <span class="text">Loans</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI">New Loan</div>
+                        <div class="subLI">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI currentPage">Inventory</div>
+                <div class="mainLI" id="admin">Admin Panel</div>
+            </div>
+        </div>
+
+        <div id="validation-data" data-list='{{ validation|tojson }}' hidden></div>
+        <div id="notif"></div>
+        
+        <script>
+        // Admin Pass
+            const ADMIN_PASS = "{{ admin_pass }}";
+
+        // Admin Page Visit
+            document.getElementById("admin").addEventListener("click", async () => {
+                const { value: pw, isConfirmed } = await Swal.fire({
+                    title: 'Want to open Admin Page ??',
+                    text: 'Enter admin password to visit admin page !!',
+                    input: 'password',
+                    icon: 'question',
+                    inputPlaceholder: 'Enter admin password',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Visit Admin Page',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true,
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    inputValidator: (value) => {
+                        if (!value) return 'Password is required!';
+                    }
+                });
+          
+                if (!isConfirmed) return;
+                
+                if (pw !== ADMIN_PASS) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wrong Password',
+                        text: 'You are not authorized to be the Admin !!',
+                        background: '#081b20',
+                        color: '#ffffff'
+                    });
+                    return;
+                }
+              
+                window.location.href='/admin/sales-analytics.html'
+            });
+
+        // Name Validation 
+            const validationRaw = document.getElementById("validation-data").dataset.list;
+            window.validationList = JSON.parse(validationRaw);
+
+        // Nav Trigger
+            document.getElementById("navtrigger").addEventListener("click", function() {
+               document.getElementById("navtrigger").classList.toggle("active");
+               document.getElementById("nav").classList.toggle("active");
+            });
+
+        // Wrapper Nav
+            const btn1 = document.getElementById("wrapperNavBtn1");
+            const btn2 = document.getElementById("wrapperNavBtn2");
+            const btn3 = document.getElementById("wrapperNavBtn3");
+
+            const cont1 = document.getElementById("goldCont_22C");
+            const cont2 = document.getElementById("goldCont_18C");
+            const cont3 = document.getElementById("silverCont");
+
+            btn1.addEventListener("click", function() {
+                btn1.classList.add("active");
+                cont1.classList.add("active");
+            
+                btn2.classList.remove("active");
+                cont2.classList.remove("active");
+                btn3.classList.remove("active");
+                cont3.classList.remove("active");
+            });
+
+            btn2.addEventListener("click", function() {
+                btn2.classList.add("active");
+                cont2.classList.add("active");
+            
+                btn1.classList.remove("active");
+                cont1.classList.remove("active");
+                btn3.classList.remove("active");
+                cont3.classList.remove("active");
+            });
+
+            btn3.addEventListener("click", function() {
+                btn3.classList.add("active");
+                cont3.classList.add("active");
+            
+                btn2.classList.remove("active");
+                cont2.classList.remove("active");
+                btn1.classList.remove("active");
+                cont1.classList.remove("active");
+            });
+
+        // Toast notifications 
+            let notifications = document.getElementById("notif");
+            function createToast(type, title, text) {
+                let existingToasts = notifications.getElementsByClassName("toast");
+            
+                while (existingToasts.length >= 3) {
+                    existingToasts[0].remove(); 
+                }
+            
+                let newToast = document.createElement('div');
+                newToast.classList.add("toast");
+                newToast.classList.add(type);
+                newToast.innerHTML = `
+                    <div class="header">
+                        <span class="tittle">${title}</span>
+                        <span class="cta" onclick="this.closest('.toast').remove()">
+                            <img src="{{ url_for('static', filename='icon/plus.svg') }}">
+                        </span>
+                    </div>
+                    <div class="message">${text}</div>
+                `;
+                
+                notifications.appendChild(newToast);
+                newToast.timeOut = setTimeout(() => newToast.remove(), 6000);
+            }
+
+        // Add item popup handeler
+            document.getElementById("addItem").addEventListener("click", function() {
+                document.getElementById("popup").classList.add("active");
+            });
+
+            document.getElementById("closePopup").addEventListener("click", function() {
+                document.getElementById("newArticle").value = "";
+                document.getElementById("weight").value = "";
+                document.getElementById("quantity").value = "";
+                document.getElementById("weightThreshold").value = "";
+                document.getElementById("quantityThreshold").value = "";
+                document.getElementById("popup").classList.remove("active");
+            });
+
+        // Adding to inventory !!
+            document.getElementById("addItemToList").addEventListener("click", async () => {
+                const type = document.getElementById("type").value.trim();
+                const dummy = document.getElementById("newArticle").value.trim();
+                
+                if (!type) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Article's Caret type can't be empty";
+                    createToast(type, title, text);
+                    return
+                }
+                
+                if (!dummy) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Article's Name can't be empty";
+                    createToast(type, title, text);
+                    return
+                }
+
+                let name = `${dummy}_${type}`;
+                let nameLower = name.toLowerCase();
+                
+                if (window.validationList.includes(nameLower)) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "This item already exists into this category";
+                    createToast(type, title, text);
+                    return
+                }
+
+                const weight = document.getElementById("weight").value.trim();
+                const quantity = document.getElementById("quantity").value.trim();
+                const weightThreshold = document.getElementById("weightThreshold").value.trim();
+                const quantityThreshold = document.getElementById("quantityThreshold").value.trim();
+            
+                if (!weight || isNaN(weight) || Number(weight) <= 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Weight is invalid or 0 !!";
+                    createToast(type, title, text);
+                    return
+                }
+
+                if (!quantity || isNaN(quantity) || Number(quantity) <= 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Quantity is invalid or 0 !!";
+                    createToast(type, title, text);
+                    return
+                }
+
+                if (!weightThreshold || isNaN(weightThreshold) || Number(weightThreshold) <= 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Weight Threshold is invalid or 0 !!";
+                    createToast(type, title, text);
+                    return
+                }
+
+                if (!quantityThreshold || isNaN(quantityThreshold) || Number(quantityThreshold) <= 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Quantity Threshold is invalid or 0 !!";
+                    createToast(type, title, text);
+                    return
+                }
+
+                const { value: pw, isConfirmed } = await Swal.fire({
+                    title: 'Add Record?',
+                    text: 'Enter password to add this record in database.',
+                    input: 'password',
+                    icon: 'question',
+                    inputPlaceholder: 'Enter admin password',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Add Record',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true,
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    inputValidator: (value) => {
+                      if (!value) return 'Password is required!';
+                    }
+                });
+            
+                if (!isConfirmed) return;
+            
+                if (pw !== ADMIN_PASS) {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Wrong Password',
+                      text: 'You are not authorized to make changes to database.',
+                      background: '#081b20',
+                      color: '#ffffff'
+                    });
+                    return;
+                }
+            
+                try {
+                    const response = await fetch("/add-inventory", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ name, weight: parseFloat(parseFloat(weight).toFixed(3)), quantity: parseInt(quantity), weight_threshold: parseFloat(parseFloat(weightThreshold).toFixed(3)), quantity_threshold: parseInt(quantityThreshold) })
+                    });
+                
+                    const result = await response.json();
+                    if (result.success) {
+                        window.validationList.push(nameLower);
+
+                        const itemDiv = document.createElement("div");
+                        itemDiv.classList.add("item");
+
+                        if (weight === 0 || quantity === 0){
+                            itemDiv.classList.remove("available");
+                            itemDiv.classList.remove("vulnerable");
+                            itemDiv.classList.add("unavailable");
+                        } else if ((parseFloat(parseFloat(weight).toFixed(3)) <= parseFloat(parseFloat(weightThreshold).toFixed(3))) || (parseInt(quantity) <= parseInt(quantityThreshold))) {
+                            itemDiv.classList.remove("available");
+                            itemDiv.classList.remove("unavailable");
+                            itemDiv.classList.add("vulnerable");
+                        } else {
+                            itemDiv.classList.remove("unavailable");
+                            itemDiv.classList.remove("vulnerable");
+                            itemDiv.classList.add("available");
+                        }
+
+                        itemDiv.innerHTML = `
+                            <div class="type">${type}</div>
+                            <div class="name">${dummy}</div>
+                            <div class="info">
+                                <span>Weight - ${parseFloat(weight).toFixed(3)} grams</span>  ||  <span>Quantity - ${parseInt(quantity)} piece</span>
+                            </div>
+                            <div class="cta" rowid="${result.rowid}" thresWeight="${parseFloat(parseFloat(weightThreshold).toFixed(3))}" thresQuantity="${parseInt(quantityThreshold)}">
+                                <img src="/static/icon/plus.svg">
+                            </div>
+                        `;
+
+                        if (type === "Gold 18C") {
+                            document.getElementById("wrapperNavBtn2").click();
+                            document.getElementById("goldCont_18C").appendChild(itemDiv);
+                            let container = document.getElementById("goldCont_18C");
+                            container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+                        } else if (type === "Gold 22C") {
+                            document.getElementById("wrapperNavBtn1").click();
+                            document.getElementById("goldCont_22C").appendChild(itemDiv);
+                            let container = document.getElementById("goldCont_22C");
+                            container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+                        } else if (type === "Silver") {
+                            document.getElementById("wrapperNavBtn3").click();
+                            document.getElementById("silverCont").appendChild(itemDiv);
+                            let container = document.getElementById("silverCont");
+                            container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+                        }
+
+                        itemDiv.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+
+                        itemDiv.classList.add("highlight");
+
+                        let allItems = document.querySelectorAll(".item");
+                        allItems.forEach(item => {
+                            if (item !== itemDiv) {
+                                item.classList.add("blurred");
+                            }
+                        });
+
+                        setTimeout(() => {
+                            itemDiv.classList.remove("highlight");
+                            allItems.forEach(item => {
+                                item.classList.remove("blurred");
+                            });
+                        }, 2000);
+
+                        document.getElementById("newArticle").value = "";
+                        document.getElementById("weight").value = "";
+                        document.getElementById("quantity").value = "";
+                        document.getElementById("weightThreshold").value = "";
+                        document.getElementById("quantityThreshold").value = "";
+                        document.getElementById("popup").classList.remove("active");
+
+                        let toasttype = 'success';
+                        let title = 'Success !!';
+                        let text = "Article added to database successfully";
+                        createToast(toasttype, title, text);
+                    }
+                     else {
+                        console.error(result.message || "Failed to add item to inventory");
+                        let type = 'error';
+                        let title = 'Error !!';
+                        let text = "Some error occured, check console !!";
+                        createToast(type, title, text);
+                    }
+                } catch (error) {
+                    console.error("Error during request:", error);
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = "Some error occured on the server side, check console !!";
+                    createToast(type, title, text);
+                }
+            });
+
+        // Update and Delete item handeler 
+            document.getElementById("updateClose").addEventListener("click", function() {
+                document.querySelector(".update").classList.remove("active");
+            });
+
+            let uiThWt , uiThQt;
+            document.addEventListener("click", function (event) {
+                if (event.target.closest(".cta")) {
+                    const cta = event.target.closest(".cta");
+                    const parent = cta.closest(".item");
+
+                    const rowid = cta.getAttribute("rowid");
+                    const thresWeight = cta.getAttribute("thresWeight");
+                    const thresQuantity = cta.getAttribute("thresQuantity");
+
+                    const type = parent.querySelector(".type").innerText;
+                    const name = parent.querySelector(".name").innerText;
+                    const weight = parent.querySelector(".info span:nth-child(1)").innerText.replace("Weight - ", "").replace(" grams", "");
+                    const quantity = parent.querySelector(".info span:nth-child(2)").innerText.replace("Quantity - ", "").replace(" piece", "");
+
+                    let name_ = "";
+                    if (type === "Silver") {
+                        name_ = `${name}_Silver`;
+                    } else {
+                        const carat = type.split(" ")[0];
+                        name_ = `${name}_${carat} - Gold`;
+                    }
+                    const nameLower = name_.toLowerCase();
+
+                    uiThQt = thresQuantity;
+                    uiThWt = thresWeight;
+                
+                    document.getElementById("updateType").innerText = type;
+                    document.getElementById("updateName").innerText = name;
+                    document.getElementById("updateWeight").innerText = weight + " grams";
+                    document.getElementById("updateQuantity").innerText = quantity + " piece";
+                    document.getElementById("thresWeight").innerText = thresWeight + " grams";
+                    document.getElementById("thresQuantity").innerText = thresQuantity + " piece";
+
+                    document.getElementById("updateThresWeight").value = thresWeight;
+                    document.getElementById("updateThresQuantity").value = thresQuantity;
+                    document.getElementById("addWeight").value = "";
+                    document.getElementById("addQuantity").value = "";
+
+                    document.getElementById("updateThres").classList.remove("active");
+                    document.querySelector(".update .updateCont .quantityInfo_edit .club .no_edit").classList.add("active");
+                    document.querySelector(".update .updateCont .quantityInfo_edit .club .edit").classList.remove("active");
+                    document.getElementById("updateThresWeight").style.pointerEvents = "none";
+                    document.getElementById("updateThresQuantity").style.pointerEvents = "none";
+                    document.getElementById("updateThresWeight").disabled = true;
+                    document.getElementById("updateThresQuantity").disabled = true;
+
+                    document.getElementById("updateUpdate").setAttribute("data-id", rowid);
+                    document.getElementById("updateUpdate").setAttribute("thWT", thresWeight);
+                    document.getElementById("updateUpdate").setAttribute("thQt", thresQuantity);
+                    document.getElementById("updateDelete").setAttribute("data-id", rowid);
+                    document.getElementById("updateDelete").setAttribute("nameLower", nameLower);
+
+                    document.querySelector(".update").classList.add("active");
+                }
+            });
+
+            document.querySelector("#updateDelete").addEventListener("click", async (event) => {
+                const rowid = event.target.getAttribute("data-id");
+                const nameLower = event.target.getAttribute("nameLower");
+
+                const { value: pw, isConfirmed } = await Swal.fire({
+                    title: 'Delete Record?',
+                    text: 'This change will not be undone !!',
+                    input: 'password',
+                    icon: 'warning',
+                    inputPlaceholder: 'Enter admin password',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Delete Record',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true,
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    inputValidator: (value) => {
+                      if (!value) return 'Password is required!';
+                    }
+                });
+            
+                if (!isConfirmed) return;
+            
+                if (pw !== ADMIN_PASS) {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Wrong Password',
+                      text: 'You are not authorized to make changes to database.',
+                      background: '#081b20',
+                      color: '#ffffff'
+                    });
+                    return;
+                }
+                
+                fetch("/delete-inventory", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: rowid })
+                }).then(res => res.json()).then(res => {
+                    if (res.success) {
+                        document.querySelector(`.cta[rowid="${rowid}"]`).closest(".item").remove();
+                        document.querySelector(".update").classList.remove("active");
+                        window.validationList = window.validationList.filter(item => item !== nameLower);
+
+                        let type = 'success';
+                        let title = 'Success !!';
+                        let text = "Article deleted from database !";
+                        createToast(type, title, text);
+                    }
+                });
+            });
+
+            // updateThres
+            updateThres = false;
+            function updateTH () {
+                if (updateThres) {
+                    document.getElementById("updateThres").classList.remove("active");
+                    document.querySelector(".update .updateCont .quantityInfo_edit .club .no_edit").classList.add("active");
+                    document.querySelector(".update .updateCont .quantityInfo_edit .club .edit").classList.remove("active");
+                    document.getElementById("updateThresWeight").style.pointerEvents = "none";
+                    document.getElementById("updateThresQuantity").style.pointerEvents = "none";
+                    document.getElementById("updateThresWeight").disabled = true;
+                    document.getElementById("updateThresQuantity").disabled = true;
+
+                    document.getElementById("updateThresWeight").value = uiThWt;
+                    document.getElementById("updateThresQuantity").value = uiThQt;
+
+                    updateThres = false;
+                } else {
+                    document.getElementById("updateThres").classList.add("active");
+                    document.querySelector(".update .updateCont .quantityInfo_edit .club .no_edit").classList.remove("active");
+                    document.querySelector(".update .updateCont .quantityInfo_edit .club .edit").classList.add("active");
+                    document.getElementById("updateThresWeight").style.pointerEvents = "auto";
+                    document.getElementById("updateThresQuantity").style.pointerEvents = "auto";
+                    document.getElementById("updateThresWeight").disabled = false;
+                    document.getElementById("updateThresQuantity").disabled = false;
+
+                    updateThres = true;
+                }
+            }
+
+            document.querySelector("#updateUpdate").addEventListener("click", async (event) => {
+                const rowid = event.target.getAttribute("data-id");
+                const thWT = event.target.getAttribute("thWT");
+                const thQT = event.target.getAttribute("thQT");
+
+                const addWeight = document.querySelector("#addWeight").value.trim();
+                const addQuantity = document.querySelector("#addQuantity").value.trim();
+
+                const prevWeight = document.querySelector("#updateWeight").innerText.replace(" grams", "");
+                const prevQuantity = document.querySelector("#updateQuantity").innerText.replace(" piece", "");
+
+                if (!addWeight || isNaN(addWeight) || Number(addWeight) <= 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Weight is invalid or 0 !!";
+                    createToast(type, title, text);
+                    return
+                }
+                if (!addQuantity || isNaN(addQuantity) || Number(addQuantity) <= 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Quantity is invalid or 0 !!";
+                    createToast(type, title, text);
+                    return
+                }
+
+                let thresholdWeight, thresholdQuantity;
+                if (updateThres) {
+                    const thWeightInput = document.getElementById("updateThresWeight").value.trim();
+                    const thQuantityInput = document.getElementById("updateThresQuantity").value.trim();
+
+                    if (!thWeightInput || isNaN(thWeightInput) || Number(thWeightInput) <= 0) {
+                        createToast('info', 'Alert !!', "Threshold Weight is invalid or 0 !!");
+                        return;
+                    }
+                    if (!thQuantityInput || isNaN(thQuantityInput) || Number(thQuantityInput) <= 0) {
+                        createToast('info', 'Alert !!', "Threshold Quantity is invalid or 0 !!");
+                        return;
+                    }
+                
+                    thresholdWeight = parseFloat(parseFloat(thWeightInput).toFixed(3));
+                    thresholdQuantity = parseInt(thQuantityInput);
+                } else {
+                    thresholdWeight = parseFloat(parseFloat(thWT).toFixed(3));
+                    thresholdQuantity = parseInt(thQT);
+                }
+
+                const { value: pw, isConfirmed } = await Swal.fire({
+                    title: 'Update Record?',
+                    text: 'Enter password to update this record in database.',
+                    input: 'password',
+                    icon: 'question',
+                    inputPlaceholder: 'Enter admin password',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Update Record',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true,
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    inputValidator: (value) => {
+                      if (!value) return 'Password is required!';
+                    }
+                });
+            
+                if (!isConfirmed) return;
+            
+                if (pw !== ADMIN_PASS) {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Wrong Password',
+                      text: 'You are not authorized to make changes to database.',
+                      background: '#081b20',
+                      color: '#ffffff'
+                    });
+                    return;
+                }
+                
+                const weight = parseFloat(parseFloat(prevWeight).toFixed(3)) + parseFloat(parseFloat(addWeight).toFixed(3));
+                const quantity = parseInt(prevQuantity) + parseInt(addQuantity);
+
+                fetch("/update-inventory", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: rowid, weight: parseFloat(parseFloat(weight).toFixed(3)), quantity: parseInt(quantity), threshold_weight: parseFloat(parseFloat(thresholdWeight).toFixed(3)), threshold_quantity: parseInt(thresholdQuantity) })
+                }).then(res => res.json()).then(res => {
+                    if (res.success) {
+                        const itemDiv = document.querySelector(`.cta[rowid="${rowid}"]`).closest(".item");
+
+                        if (weight === 0 || quantity === 0){
+                            itemDiv.classList.remove("available");
+                            itemDiv.classList.remove("vulnerable");
+                            itemDiv.classList.add("unavailable");
+                        } else if ((parseFloat(parseFloat(weight).toFixed(3)) <= parseFloat(parseFloat(thresholdWeight).toFixed(3))) || (parseInt(quantity) <= parseInt(thresholdQuantity))) {
+                            itemDiv.classList.remove("available");
+                            itemDiv.classList.remove("unavailable");
+                            itemDiv.classList.add("vulnerable");
+                        } else {
+                            itemDiv.classList.remove("unavailable");
+                            itemDiv.classList.remove("vulnerable");
+                            itemDiv.classList.add("available");
+                        }
+
+                        const info = itemDiv.querySelector(".info");
+                        info.innerHTML = `<span>Weight - ${parseFloat(weight).toFixed(3)} grams</span>  ||  <span>Quantity - ${parseInt(quantity)} piece</span>`;
+
+                        document.querySelector(`.cta[rowid="${rowid}"]`).setAttribute("thresQuantity", parseInt(thresholdQuantity));
+                        document.querySelector(`.cta[rowid="${rowid}"]`).setAttribute("thresWeight", parseFloat(thresholdWeight.toFixed(3)));
+                        
+                        document.querySelector(".update").classList.remove("active");                        
+
+                        let type = 'success';
+                        let title = 'Success !!';
+                        let text = "Article's details were updated successfully";
+                        createToast(type, title, text);
+
+                        itemDiv.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+
+                        itemDiv.classList.add("highlight");
+
+                        let allItems = document.querySelectorAll(".item");
+                        allItems.forEach(item => {
+                            if (item !== itemDiv) {
+                                item.classList.add("blurred");
+                            }
+                        });
+
+                        setTimeout(() => {
+                            itemDiv.classList.remove("highlight");
+                            allItems.forEach(item => {
+                                item.classList.remove("blurred");
+                            });
+                        }, 2000);
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

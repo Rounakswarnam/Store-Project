@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <title>Invoice</title>
+        
+        <style>
+            *,
+            *::after,
+            *::before {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            .wrapper {
+                width: 100vw;
+                padding: 20px;
+
+                & > .header {
+                    text-align: center;
+                }
+
+                & > .topper {
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+
+                & > .info {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    padding-bottom: 8px;
+                    border-bottom: 4px solid black;
+
+                    & > div {
+                        display: flex;
+                        flex-direction: column;
+                        font-size: 16px;
+                        font-weight: bold;
+
+                        &:nth-of-type(1) {
+                            text-align: left;
+                        }
+
+                        &:nth-of-type(2) {
+                            text-align: right;
+                        }
+                    }
+                }
+
+                & > .shopping {
+                    width: 100%;
+                    margin-top: 12px;
+                    display: flex;
+                    flex-direction: column;
+
+                    & > div {
+                        display: grid;
+                        grid-template-columns: 1fr 100px 80px 80px 80px 80px;
+                        font-size: 12px;
+                        font-weight: bold;
+                        border-bottom: 2px solid black;
+
+                        & > span {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            padding: 4px;
+                            border-left: 2px solid black;
+
+                            &:nth-of-type(6) {
+                                border-right: 2px solid black;
+                            }
+                        }
+                    }
+
+                    & > .header {
+                        font-size: 15px;
+                        font-weight: bold;
+                        border-top: 2px solid black;
+                    }
+                }
+
+                .total-row {
+                    font-size: 16px;
+                    font-weight: bold;
+                    border: 2px solid black;
+                    border-radius: 8px;
+                    width: 100%;
+                    padding: 4px 8px;
+                    text-align: right;
+                    margin-top: 6px;
+
+                    & > span {
+                        border: none;
+                        width: fit-content;
+                    }
+                }
+
+                & > .darab {
+                    width: 100%;
+                    margin-top: 6px;
+                    display: flex;
+                    flex-direction: column;
+
+                    & > div {
+                        display: grid;
+                        grid-template-columns: 1fr 100px 80px 80px 80px;
+                        font-size: 12px;
+                        font-weight: bold;
+                        border-bottom: 2px solid black;
+
+                        & > span {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            padding: 4px;
+                            border-left: 2px solid black;
+
+                            &:nth-of-type(5) {
+                                border-right: 2px solid black;
+                            }
+                        }
+                    }
+
+                    & > .header {
+                        font-size: 15px;
+                        font-weight: bold;
+                        border-top: 2px solid black;
+                    }
+                }
+
+                .darab-total-row {
+                    font-size: 16px;
+                    font-weight: bold;
+                    border: 2px solid black;
+                    border-radius: 8px;
+                    width: 100%;
+                    padding: 4px 8px;
+                    text-align: right;
+                    margin-top: 6px;
+
+                    & > span {
+                        border: none;
+                        width: fit-content;
+                    }
+                }
+
+                & > .total,
+                & > .paid,
+                & > .remaining {
+                    font-size: 16px;
+                    font-weight: bold;
+                    border: 2px solid black;
+                    border-radius: 8px;
+                    width: 100%;
+                    padding: 4px 8px;
+                    text-align: right;
+                    margin-top: 6px;
+                }
+
+                & > .total {
+                    margin-top: 16px;
+                }
+
+                & > .finals {
+                    width: 100%;
+                    height: fit-content;
+                    min-width: 100px;
+                    margin-top: 16px;
+                    display: grid;
+                    grid-template-columns: 1fr 200px;
+                    grid-column-gap: 16px;
+
+                    & > .logs {
+                        position: relative;
+                        width: 100%;
+                        height: fit-content;
+
+                        & > .payments {
+                            width: 100%;
+                            display: flex;
+                            flex-direction: column;
+
+                            & > div {
+                                display: grid;
+                                grid-template-columns: 1fr 1fr 1fr;
+                                font-size: 12px;
+                                font-weight: bold;
+                                border-bottom: 2px solid black;
+
+                                & > span {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    text-align: center;
+                                    padding: 4px;
+                                    border-left: 2px solid black;
+
+                                    &:nth-of-type(3) {
+                                        border-right: 2px solid black;
+                                    }
+                                }
+                            }
+
+                            & > .header {
+                                font-size: 15px;
+                                font-weight: bold;
+                                border-top: 2px solid black;
+                            }
+                        }
+                    }
+
+                    & > .sign {
+                        position: relative;
+                        width: 100%;
+                        display: flex;
+                        align-items: end;
+
+                        & > span {
+                            height: 100px;
+                            width: 100%;
+                            border: 2px solid black;
+                            border-radius: 8px;
+                            font-size: 14px;
+                            font-weight: bold;
+                            display: flex;
+                            justify-content: center;
+                            padding-top: 6px;
+                        }
+                    }
+                }
+            }
+
+            .nav {
+                position: fixed;
+                top: 8px;
+                left: 8px;
+
+                & > button {
+                    background-color: #081b29;
+                    outline: none;
+                    border: none;
+                    padding: 8px 20px;
+                    color: #fffff0;
+                    font-weight: bolder;
+                    font-size: 18px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: 0.3s;
+
+                    &:hover {
+                        background-color: yellowgreen;
+                        color: #081b29;
+                        transition: 0.3s;
+                    }
+                }
+            }
+
+            @media print {
+                @page {
+                    margin: 0.5cm; 
+                }
+
+                .wrapper {
+                    margin: 0;
+                    padding: 0;
+                }
+            
+                .nav {
+                    display: none; /* hide elements like buttons during print */
+                }
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="header">
+                <h2>❆ {{ storeName }} ❆</h2>
+                <h4>✜ {{ storeAddress }} ✜</h4>
+            </div>
+
+            <div class="topper">
+                <h5>{{ data.date }}</h5>
+                <h5>BILL ID -- {{ data.rowid }}</h5>
+            </div>
+
+            <div class="info">
+                <div class="customer">
+                    <span>Customer ▾</span>
+                    <span>{{ data.name }}</span>
+                    <span>+91{{ data.phone }}</span>
+                    <span>{{ data.address }}</span>
+                </div>
+                <div class="owner">
+                    <span>{{ storeName }}</span>
+                    <span>{{ ownerName }}</span>
+                    <span>{{ storeContact }}</span>
+                    <span>{{ storeAddress }}</span>
+                </div>
+            </div>
+        
+            <div class="shopping">
+                <div class="header">
+                    <span>Naya Item</span>
+                    <span>Type</span>
+                    <span>Bhao</span>
+                    <span>Making</span>
+                    <span>Weight (g)</span>
+                    <span>Price (₹)</span>
+                </div>
+                {% for item in shopping %}
+                    <div>
+                        <span>{{ item.name }}</span>
+                        <span>{{ item.type }}</span>
+                        <span>₹ {{ item.rate }}/g</span>
+                        <span>
+                            {% if item.type == "Silver" %}
+                                ₹ {{ item.make }}/g
+                            {% else %}
+                                {{ item.make }}%
+                            {% endif %}                            
+                        </span>
+                        <span>{{ item.weight }}g</span>
+                        <span class="item-price">₹ {{ item.price }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="total-row">
+                <span>Naya Item Total :</span>
+                <span id="total-amount">₹ 0</span>
+            </div>
+            
+            {% if darabItems and darabItems | length > 0 %}
+                <div class="darab">
+                    <div class="header">
+                        <span>Purana Item</span>
+                        <span>Type</span>
+                        <span>Bhao</span>
+                        <span>Weight (g)</span>
+                        <span>Price (₹)</span>
+                    </div>
+                    {% for item in darabItems %}
+                        <div class="darab">
+                            <span>{{ item.name }}</span>
+                            <span>{{ item.type }}</span>
+                            <span>₹ {{ item.rate }}/g</span>
+                            <span>{{ item.weight }}g</span>
+                            <span class="darab-price">₹ {{ item.price }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            
+                <div class="darab-total-row">
+                    <span>Purana Item Total :</span>
+                    <span id="darab-total-amount">₹ 0</span>
+                </div>
+            {% endif %}
+
+
+            <div class="total">
+                <span>Gross Total : </span>
+                <span>₹ {{ data.total }}</span>
+            </div>
+            <div class="paid">
+                <span>Amount Paid : </span>
+                <span>₹ {{ data.paid }}</span>
+            </div>
+            <div class="remaining">
+                <span>Due Amount : </span>
+                <span>₹ {{ data.remaining }}</span>
+            </div>
+            
+            <div class="finals">
+                <div class="logs">
+                    {% if log_payment and log_payment | length > 0 %}
+                        <div class="payments">
+                            <div class="header">
+                                <span>Date</span>
+                                <span>Paid (₹)</span>
+                                <span>Remaining Credit (₹)</span>
+                            </div>
+                            {% for log in log_payment %}
+                                <div>
+                                    <span>{{ log.date }}</span>
+                                    <span>₹ {{ log.paid }}</span>
+                                    <span>₹ {{ log.remaining_credit }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="sign">
+                    <span>{{ ownerName }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <button onclick="handleBack()">Go Back</button>
+            <button onclick="window.print();">Print</button>
+        </div>
+
+        <div id="statusHolder" data-status="{{ status | string | lower }}"></div>
+
+        <script>
+            const status = document.getElementById("statusHolder").dataset.status === "true";
+
+            function handleBack() {
+                if (status) {
+                    window.history.back();
+                } else {
+                    window.location.href = '/sales/index.html';
+                }
+            }
+
+            (function () {
+                const priceSpans = document.querySelectorAll('.item-price');
+                let total = 0;
+
+                priceSpans.forEach(span => {
+                    const priceText = span.textContent.replace(/[^\d.-]/g, '');
+                    const price = parseFloat(priceText);
+                    if (!isNaN(price)) {
+                        total += price;
+                    }
+                });
+            
+                document.getElementById('total-amount').textContent = `₹ ${total.toFixed(2)}`;
+            })();
+
+            (function () {
+                const priceSpans = document.querySelectorAll('.darab-price');
+                let total = 0;
+
+                priceSpans.forEach(span => {
+                    const priceText = span.textContent.replace(/[^\d.-]/g, '');
+                    const price = parseFloat(priceText);
+                    if (!isNaN(price)) {
+                        total += price;
+                    }
+                });
+            
+                document.getElementById('darab-total-amount').textContent = `₹ ${total.toFixed(2)}`;
+            })();
+        </script>
+    </body>
+</html>

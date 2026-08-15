@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script src="{{ url_for('static', filename='chart.umd.min.js') }}"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='sweetalert2.min.css') }}">
+        <script src="{{ url_for('static', filename='sweetalert2.min.js') }}"></script>
+
+        <title>Sales Analytics</title>
+
+        <style>
+
+            *,
+            *::before,
+            *::after {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+                scrollbar-width: none;
+            }
+
+            *::-webkit-scrollbar {
+                display: none;
+            }
+
+            body {
+                background-color: #081b29;
+            }
+
+            .swal2-validation-message {
+                background: #102a30 !important;
+                color: #ffffff !important;
+                border: 1px solid #444;
+                padding: 0.5em 1em;
+                border-radius: 4px;
+                font-size: 0.9em;
+                transition: all 0.2s ease;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            }
+
+            .wrapper {
+                width: 500px;
+                position: absolute;
+                left: 50%;
+                top: 65px;
+                transform: translateX(-50%);
+                padding-bottom: 32px;
+                
+            }
+
+            .wrapper > .title {
+                font-size: 32px;
+                font-weight: bold;
+                text-align: center;
+                color: #fffff0;
+                opacity: 0.7;
+            }
+
+            .wrapper > .numbers {
+                margin-top: 16px;
+                display: grid;
+                grid-template-rows: 36px 36px 36px;
+                grid-row-gap: 8px;
+            }
+
+            .wrapper > .numbers > div {
+                background-color: #113956;
+                font-size: 20px;
+                font-weight: bold;
+                color: #fffff0;
+                display: flex;
+                align-items: center;
+                padding-left: 10px;
+                padding-right: 10px;
+                border-radius: 8px;
+                position: relative;
+                cursor: pointer;
+
+                &:nth-of-type(1)::after {
+                    content: "Total Sales";
+                }
+
+                &:nth-of-type(2)::after {
+                    content: "Total Income";
+                }
+
+                &:nth-of-type(3)::after {
+                    content: "Total Credit";
+                }
+
+                &::after {
+                    position: absolute;
+                    background-color: yellowgreen;
+                    height: 20px;
+                    display: flex;
+                    align-items: center;
+                    text-align: center;
+                    justify-content: center;
+                    padding-left: 6px;
+                    padding-right: 6px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    color: #081b29;
+                    font-weight: bold;
+                    pointer-events: none;
+                    opacity: 0;
+                    transition: 0.3s;
+                    left: 50%;
+                    top: 0;
+                    transform: translate(-50%,calc(-100% + 10px));
+                }
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    height: 15px;
+                    width: 15px;
+                    left: 50%;
+                    top: 0;
+                    transform: translate(-50%,0) rotate(45deg);
+                    background-color: yellowgreen;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: 0.3s;
+                }
+
+                &:hover::after {
+                    opacity: 1;
+                    transform: translate(-50%,-100%);
+                    transition: 0.3s;
+                }
+
+                &:hover::before {
+                    opacity: 1;
+                    transform: translate(-50%,-10px) rotate(45deg);
+                    transition: 0.3s;
+                }
+            }
+
+            .wrapper > .wrapperNAV {
+                height: 42px;
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-column-gap: 16px;
+                background-color: #113656;
+                padding: 4px;
+                border-radius: 8px;
+                margin-top: 8px;
+            } 
+
+            .wrapper > .wrapperNAV > button {
+                height: 100%;
+                width: 100%;
+                background-color: transparent;
+                outline: none;
+                border: 2px solid transparent;
+                border-radius: 8px;
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                position: relative;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+
+                &:nth-of-type(2)::before,
+                &:nth-of-type(3)::before {
+                    content: "";
+                    position: absolute;
+                    height: 80%;
+                    width: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    left: 0;
+                    top: 50%;
+                    transform: translate(-12px,-50%);
+                    opacity: 0.6;
+                    pointer-events: none;
+                }
+
+                &.active {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .wrapper > .container {
+                margin-top: 8px;
+                position: relative;
+                width: 100%;
+            }
+
+            .wrapper > .container > .cont {
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                opacity: 0;
+                pointer-events: none;
+                transition: 0.8s;
+                background-color: #113656;
+                border-radius: 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                padding: 8px;
+                filter: blur(42px);
+                transform: translateY(150px);
+
+                &.active {
+                    opacity: 1;
+                    pointer-events: auto;
+                    filter: blur(0);
+                    transform: translateY(0);
+                    transition: 0.8s;
+                    transition-delay: 0.3s;
+                }
+            }
+
+            .wrapper > .container > .cont > .item {
+                background-color: #081b29;
+                padding: 4px 8px;
+                border-radius: 6px;
+
+                & > .type {
+                    background-color:yellowgreen;
+                    color: #081b29;
+                    font-weight: bold;
+                    font-size: 14px;
+                    padding: 1px 4px;
+                    border-radius: 4px;
+                }
+
+                & > .wrap {
+                    margin-top: 6px;
+                    color: #fffff0;
+                    font-weight: bold;
+                    display: grid;
+                    grid-template-columns: 1.3fr 1fr;
+                    grid-column-gap: 12px;
+
+                    & > .name {
+                        text-align: left;
+                        position: relative;
+                        word-break: break-word;
+                    }
+
+                    & > .dtls {
+                        text-align: right;
+                        position: relative;
+                        word-break: break-word;
+
+                        &::before {
+                            content: "";
+                            position: absolute;
+                            height: 90%;
+                            width: 4px;
+                            background-color: #fffff0;
+                            left: 0;
+                            top: 50%;
+                            transform: translate(-8px,-50%);
+                            border-radius: 2px;
+                            opacity: 0.7;
+                        }
+                    }
+                }
+            }
+
+            .month-selector {
+                position: absolute;
+                background: #113956;
+                padding: 10px;
+                border-radius: 8px;
+                box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+                width: 350px;
+                opacity: 0;
+                pointer-events: none;
+                transform: translateX(-360px);
+                transition: 0.5s;
+                z-index: 9;
+                position: absolute;
+                left: 8px;
+                top: 66px;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+
+                &.active {
+                    opacity: 1;
+                    pointer-events: auto;
+                    transform: translateX(0);
+                    transition: 0.5s;
+                }
+            }
+
+            .year-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+
+                & > #yearDisplay {
+                    font-size: 28px;
+                    font-weight: bold;
+                    color: #fffff0;
+                }
+
+                & > button {
+                    height: 36px;
+                    width: 36px;
+                    background-color: #081b29;
+                    border: none;
+                    outline: none;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #fffff0;
+                    font-size: 22px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    position: relative;
+
+                    &:disabled {
+                        opacity: 0.2;
+                        pointer-events: none;
+                    }
+
+                    &:nth-of-type(1)::before {
+                        content: "";
+                        position: absolute;
+                        height: 18px;
+                        width: 18px;
+                        background-color: #fffff0;
+                        left: 50%;
+                        top: 50%;
+                        transform: translate(-50%,-50%);
+                        margin-left: 1px;
+                        clip-path: polygon(75% 1%, 0 50%, 75% 100%);
+                    }
+
+                    &:nth-of-type(2)::before {
+                        content: "";
+                        position: absolute;
+                        height: 18px;
+                        width: 18px;
+                        background-color: #fffff0;
+                        left: 50%;
+                        top: 50%;
+                        transform: translate(-50%,-50%);
+                        margin-left: -1px;
+                        clip-path: polygon(25% 0, 25% 100%, 100% 50%);
+                    }
+                }
+            }
+
+            .month-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .month-btn {
+                padding: 8px;
+                border-radius: 8px;
+                cursor: pointer;
+                text-align: center;
+                background-color: #081b29;
+                color: #fffff0;
+                font-size: 16px;
+                font-weight: bold;
+                outline: none;
+                border: none;
+                transition: 0.3s;
+
+                &:hover {
+                    background-color: yellowgreen;
+                    color: #081b29;
+                }
+
+                &.disabled {
+                    opacity: 0.2;
+                    pointer-events: none;
+                }
+            }
+
+            .select-month-btn {
+                height: 50px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                padding-left: 20px;
+                padding-right: 20px;
+                font-size: 16px;
+                font-weight: bold;
+                color: #fffff0;
+                cursor: pointer;
+                border: none;
+                outline: none;
+                border-radius: 8px;
+                background-color: #113956;
+                z-index: 9;
+                position: absolute;
+                top: 8px;
+                left: 124px;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                transition: 0.3s;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .wrapper > .chartContainer {
+                margin-top: 8px;
+                position: relative;
+                width: 100%;
+                height: 316px;
+            }
+
+            .wrapper > .chartContainer > .chart-container {
+                height: 100%;
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                opacity: 0;
+                pointer-events: none;
+                transition: 0.8s;
+                background-color: #113656;
+                border-radius: 8px;
+                display: flex;
+                overflow: hidden;
+                padding: 8px;
+                filter: blur(42px);
+                transform: translateY(150px);
+                
+                &.active {
+                    opacity: 1;
+                    pointer-events: auto;
+                    filter: blur(0);
+                    transform: translateY(0);
+                    transition: 0.8s;
+                }
+            }
+
+            .chart-box {
+                width: 300px;
+                height: 300px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+            }
+
+            .legend-container {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .legend-item {
+                padding: 10px;
+                color: #081b29;
+                font-weight: bold;
+                border-radius: 5px;
+                position: relative;
+                max-width: 180px;
+                cursor: pointer;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .legend-item:hover::before {
+                content: attr(data-full);
+                position: absolute;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 5px;
+                border-radius: 3px;
+                white-space: nowrap;
+                left: 100%;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 10;
+            }
+
+            .total-value {
+                position: absolute;
+                font-size: 20px;
+                font-weight: bold;
+                text-align: center;
+                max-width: 180px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                cursor: pointer;
+                color: #fffff0;
+            }
+
+            #navtrigger {
+                position: absolute;
+                top: 8px;
+                left: 8px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    width: 30px;
+                    height: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(calc(-50% - 6px)) rotate(0);
+                    transition: 0.3s;
+                }
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    width: 30px;
+                    height: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(calc(-50% + 6px)) rotate(0);
+                    transition: 0.3s;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #navtrigger.active {
+                &::before {
+                    transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+                    transition: 0.3s;
+                }
+
+                &::after {
+                    transform: translateX(-50%) translateY(-50%) rotate(45deg);
+                    transition: 0.3s;
+                }
+            }
+
+            #nav {
+                width: 300px;
+                top: 65px;
+                left: 8px;
+                position: absolute;
+                border-radius: 12px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                padding-left: 8px;
+                padding-right: 8px;
+                background-color: #113956;
+                pointer-events: none;
+                opacity: 0;
+                transform: translateX(calc(-100% - 15px));
+                transition: 0.3s;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+            }
+
+            #nav.active {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+                transition: 0.3s;
+            }
+
+            #nav > .mainUL > .mainLI {
+                color: #fffff0;
+                font-size: 18px;
+                font-weight: bold;
+                margin-top: 0;
+                position: relative;
+                margin-top: 4px;
+
+                &:nth-of-type(1) {
+                    margin-top: 0;
+                }
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(1) img,
+            #nav > .mainUL > .mainLI:nth-of-type(2) img,
+            #nav > .mainUL > .mainLI:nth-of-type(4) img {
+                height: 25px;
+                width: 25px;
+                transform: translateY(3px);
+                right: 8px;
+                position: absolute;
+                pointer-events: none;
+                opacity: 0.8;
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(1) .text,
+            #nav > .mainUL > .mainLI:nth-of-type(2) .text,
+            #nav > .mainUL > .mainLI:nth-of-type(4) .text {
+                margin-left: 8px;
+                pointer-events: none;
+                opacity: 0.8;
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(3) {
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #nav > .mainUL > .mainLI > .subUL {
+                position: relative;
+            
+                &::before {
+                    content: "";
+                    position: absolute;
+                    height: 90%;
+                    width: 4px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 13px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    opacity: 0.6;
+                }
+            }
+
+            #nav > .mainUL > .mainLI > .subUL > .subLI {
+                margin-left: 22px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                border-radius: 8px;
+                transition: 0.3s;
+                cursor: pointer;
+                margin-top: 4px;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .currentPage {
+                background-color: #081b29;
+            }
+
+            #pageReload {
+                position: absolute;
+                top: 8px;
+                left: 66px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: 0.3s;
+
+                & > img {
+                    height: 36px;
+                    width: 36px;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #notif {
+                z-index: 99;
+                width: 300px;
+                position: fixed;
+                bottom: 8px;
+                right: 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            #notif > .toast {
+                width: 100%;
+                padding: 8px;
+                border-radius: 8px;
+                display: grid;
+                grid-template-rows: 32px 1fr;
+                grid-row-gap: 3px;
+                position: relative;
+                backdrop-filter: blur(6px);
+                animation: show_toast 0.3s ease forwards;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    width: calc(100% - 16px);
+                    height: 4px;
+                    background-color: #081b29;
+                    left: 8px;
+                    bottom: 6px;
+                    border-radius: 2px;
+                    box-shadow: 0 0 5px #081b29;
+                    animation: timeOut 6s linear 1 forwards;
+                    transform-origin: right;
+                }
+            }
+
+            #notif > .toast.success { 
+                background: linear-gradient(to right, rgba(76, 175, 80, 0.4), rgba(56, 142, 60, 0.4), rgba(27, 94, 32, 0.4)); 
+            }
+
+            #notif > .toast.error { 
+                background: linear-gradient(to right, rgba(244, 67, 54, 0.4), rgba(211, 47, 47, 0.4), rgba(136, 14, 79, 0.4)); 
+            }
+
+            #notif > .toast.info { 
+                background: linear-gradient(to right, rgba(33, 150, 243, 0.4), rgba(30, 136, 229, 0.4), rgba(21, 101, 192, 0.4)); 
+            }
+
+            @keyframes timeOut{
+                to{
+                    width: 0%;  
+                }
+            }
+
+            @keyframes show_toast {
+            	0% {
+            		transform: translateX(100%);
+            	}
+            	100% {
+            		transform: translateX(0);
+            	}
+            }
+
+            #notif > .toast > .header {
+                display: grid;
+                grid-template-columns: 1fr 32px;
+                grid-column-gap: 6px;
+                position: relative;
+            }
+
+            #notif > .toast > .header > .tittle {
+                font-size: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: start;
+                font-weight: bold;
+                position: relative;
+                text-shadow: 0 0 4px #081b29, 0 0 8px #081b29, 0 0 16px #081b29;
+                color: #fffff0;
+            }
+
+            #notif > .toast > .header > .cta {
+                background-color: transparent;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+
+                & > img {
+                    pointer-events: none;
+                    height: 30px;
+                    width: 30px;
+                    transform: rotate(45deg);
+                }
+            }
+
+            #notif > .toast > .message {
+                padding-bottom: 6px;
+                white-space: pre-wrap;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 16px;
+                text-shadow: 0 0 4px #081b29, 0 0 8px #081b29;
+            }
+
+        </style>
+    </head>
+    <body>
+        <button id="openMonthPicker" class="select-month-btn">Select Month</button>
+
+        <div id="monthPicker" class="month-selector">
+            <div class="year-nav">
+                <button id="prevYear">
+                    <ion-icon name="caret-back-outline"></ion-icon>
+                </button>
+                <span id="yearDisplay"></span>
+                <button id="nextYear">
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                </button>
+            </div>
+            <div id="monthGrid" class="month-grid"></div>
+        </div>
+
+        <div class="wrapper">
+            <div class="title"></div>
+
+            <div class="numbers">
+                <div id="total"></div>
+                <div id="paid"></div>
+                <div id="credit"></div>
+            </div>
+
+            <div class="wrapperNAV">
+                <button class="quantity active">Quantity</button>
+                <button class="weight">Weight</button>
+                <button class="income">Income</button>
+            </div>
+
+            <div class="chartContainer">
+                <div class="chart-container quantityChart active">
+                    <div class="chart-box">
+                        <canvas id="chartCount" width="300" height="300"></canvas>
+                        <div class="total-value" id="totalValueCount"></div>
+                    </div>
+                    <div class="legend-container" id="legendCount"></div>
+                </div>
+            
+                <div class="chart-container weightChart">
+                    <div class="chart-box">
+                        <canvas id="chartWeight" width="300" height="300"></canvas>
+                        <div class="total-value" id="totalValueWeight"></div>
+                    </div>
+                    <div class="legend-container" id="legendWeight"></div>
+                </div>
+            
+                <div class="chart-container incomeChart">
+                    <div class="chart-box">
+                        <canvas id="chartPrice" width="300" height="300"></canvas>
+                        <div class="total-value" id="totalValuePrice"></div>
+                    </div>
+                    <div class="legend-container" id="legendPrice"></div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="cont active" id="tableCount"></div>
+                <div class="cont" id="tableWeight"></div>
+                <div class="cont" id="tablePrice"></div>
+            </div>
+        </div>
+
+        <div id="navtrigger"></div>
+        <div id="pageReload" onclick="window.location.href='/admin/sales-analytics.html'"><img src="{{ url_for('static', filename='icon/reload.svg') }}"></div>
+        <div id="nav">
+            <div class="mainUL">
+                <div class="mainLI">
+                    <span class="text">Sales</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI" onclick="window.location.href='/sales/index.html'">New Sales</div>
+                        <div class="subLI" onclick="window.location.href='/sales/search-update.html'">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI">
+                    <span class="text">Loans</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI">New Loan</div>
+                        <div class="subLI">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI" id="inventory">Inventory</div>
+                <div class="mainLI">
+                    <span class="text">Admin Panel</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI currentPage">Sales Analytics</div>
+                        <div class="subLI" onclick="window.location.href='/admin/change-presets.html'">Address Presets</div>
+                        <div class="subLI">Admin Controls</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="notif"></div>
+
+        <script>
+        // Admin password 
+            const ADMIN_PASS = "{{ admin_pass }}";
+
+        // Admin Page Visit
+            document.getElementById("inventory").addEventListener("click", async () => {
+                const { value: pw, isConfirmed } = await Swal.fire({
+                    title: 'Want to check Inventory ??',
+                    text: 'Enter admin password to visit inventory page !!',
+                    input: 'password',
+                    icon: 'question',
+                    inputPlaceholder: 'Enter admin password',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Visit Inventory Page',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true,
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    inputValidator: (value) => {
+                        if (!value) return 'Password is required!';
+                    }
+                });
+          
+                if (!isConfirmed) return;
+                
+                if (pw !== ADMIN_PASS) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wrong Password',
+                        text: 'You are not authorized to be the Admin !!',
+                        background: '#081b20',
+                        color: '#ffffff'
+                    });
+                    return;
+                }
+              
+                window.location.href='/inventory/inventory.html'
+            });
+        // Toast notifications 
+
+            let notifications = document.getElementById("notif");
+
+            function createToast(type, title, text) {
+                let existingToasts = notifications.getElementsByClassName("toast");
+            
+                while (existingToasts.length >= 3) {
+                    existingToasts[0].remove(); 
+                }
+            
+                let newToast = document.createElement('div');
+                newToast.classList.add("toast");
+                newToast.classList.add(type);
+                newToast.innerHTML = `
+                    <div class="header">
+                        <span class="tittle">${title}</span>
+                        <span class="cta" onclick="this.closest('.toast').remove()">
+                            <img src="{{ url_for('static', filename='icon/plus.svg') }}">
+                        </span>
+                    </div>
+                    <div class="message">${text}</div>
+                `;
+                
+                notifications.appendChild(newToast);
+                newToast.timeOut = setTimeout(() => newToast.remove(), 6000);
+            }
+
+        // Nav Trigger
+            document.getElementById("navtrigger").addEventListener("click", function() {
+               document.getElementById("navtrigger").classList.toggle("active");
+               document.getElementById("nav").classList.toggle("active");
+            });
+        
+        // Sub nav controls 
+            const btn1 = document.querySelector(".quantity");
+            const btn2 = document.querySelector(".weight");
+            const btn3 = document.querySelector(".income");
+
+            const cont1 = document.getElementById("tableCount");
+            const cont2 = document.getElementById("tableWeight");
+            const cont3 = document.getElementById("tablePrice");
+
+            const chart1 = document.querySelector(".quantityChart");
+            const chart2 = document.querySelector(".weightChart");
+            const chart3 = document.querySelector(".incomeChart");
+
+            btn1.addEventListener("click", function() {
+                btn1.classList.add("active");
+                cont1.classList.add("active");
+                chart1.classList.add("active");
+
+                btn2.classList.remove("active");
+                btn3.classList.remove("active");
+
+                cont2.classList.remove("active");
+                cont3.classList.remove("active");
+
+                chart2.classList.remove("active");
+                chart3.classList.remove("active");
+            });
+
+            btn2.addEventListener("click", function() {
+                btn2.classList.add("active");
+                cont2.classList.add("active");
+                chart2.classList.add("active");
+
+                btn1.classList.remove("active");
+                btn3.classList.remove("active");
+
+                cont1.classList.remove("active");
+                cont3.classList.remove("active");
+
+                chart1.classList.remove("active");
+                chart3.classList.remove("active");
+            });
+
+            btn3.addEventListener("click", function() {
+                btn3.classList.add("active");
+                cont3.classList.add("active");
+                chart3.classList.add("active");
+
+                btn1.classList.remove("active");
+                btn2.classList.remove("active");
+
+                cont1.classList.remove("active");
+                cont2.classList.remove("active");
+
+                chart1.classList.remove("active");
+                chart2.classList.remove("active");
+            });
+
+        // Making the callender 
+
+            function createMonthSelector(months) {
+                const monthNames = [
+                    "January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                ];
+            
+                const monthGrid = document.getElementById('monthGrid');
+                const yearDisplay = document.getElementById('yearDisplay');
+                const monthPicker = document.getElementById('monthPicker');
+                const openPickerBtn = document.getElementById('openMonthPicker');
+                const prevYearBtn = document.getElementById('prevYear');
+                const nextYearBtn = document.getElementById('nextYear');
+            
+                let availableYears = [...new Set(months.map(m => parseInt(m.split('-')[0])))].sort((a, b) => a - b);
+                let currentYear = availableYears[availableYears.length - 1]; 
+                let selectedMonth = null;
+            
+                function renderMonths() {
+                    monthGrid.innerHTML = '';
+                    yearDisplay.textContent = currentYear;
+                
+                    const allowedMonths = months
+                        .filter(m => m.startsWith(currentYear.toString())) 
+                        .map(m => parseInt(m.split('-')[1]) - 1);
+                
+                    monthNames.forEach((month, index) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'month-btn';
+                        btn.textContent = month;
+                    
+                        if (!allowedMonths.includes(index)) {
+                            btn.classList.add('disabled');
+                        } else {
+                            btn.addEventListener('click', () => selectMonth(index));
+                        }
+                    
+                        monthGrid.appendChild(btn);
+                    });
+                
+                    updateNavigation();
+                }
+            
+                function selectMonth(monthIndex) {
+                    selectedMonth = `${currentYear}-${String(monthIndex + 1).padStart(2, '0')}`;
+                    openPickerBtn.textContent = `${monthNames[monthIndex]} ${currentYear}`;
+                    document.querySelector(".wrapper .title").textContent = `${monthNames[monthIndex]} ${currentYear}`;
+                    monthPicker.classList.remove("active");
+                    fetchAnalytics(selectedMonth);
+                }
+            
+                function changeYear(offset) {
+                    currentYear += offset;
+                    renderMonths();
+                }
+            
+                function updateNavigation() {
+                    prevYearBtn.disabled = currentYear === availableYears[0];
+                    nextYearBtn.disabled = currentYear === availableYears[availableYears.length - 1];
+                }
+            
+                openPickerBtn.addEventListener('click', () => {
+                    monthPicker.classList.toggle("active");
+                });
+            
+                prevYearBtn.addEventListener('click', () => changeYear(-1));
+                nextYearBtn.addEventListener('click', () => changeYear(1));
+            
+                document.addEventListener('click', (event) => {
+                    if (!monthPicker.contains(event.target) && event.target !== openPickerBtn) {
+                        monthPicker.classList.remove("active");
+                    }
+                });
+            
+                renderMonths();
+            }
+
+        // Rendering the latest month analytics 
+            function formatYearMonth(ymString) {
+                const months = [
+                    "January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                ];
+
+                const [year, month] = ymString.split("-");
+                return `${months[parseInt(month, 10) - 1]} ${year}`;
+            }
+
+            async function fetchMonths() {
+                try {
+                    const response = await fetch('/get_months_analytics');
+                    if (!response.ok) {
+                        let type = 'error';
+                        let title = 'Server Error !!';
+                        let text = 'Some error occured on the server side, Check console for more details !!';
+                        createToast(type, title, text);
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const months = await response.json();
+
+                    if (!Array.isArray(months) || months.length === 0) {
+                        let type = 'error';
+                        let title = 'Data Error !!';
+                        let text = 'No records were found for analysis !!';
+                        createToast(type, title, text);
+                    }
+
+                    fetchAnalytics(months[months.length - 1]);
+                    createMonthSelector(months);
+                    const yyyy_mm = formatYearMonth(months[months.length - 1]);
+                    document.querySelector(".wrapper .title").textContent = yyyy_mm;
+                    document.getElementById("openMonthPicker").textContent = yyyy_mm;
+                    let type = 'info';
+                    let title = 'Analysing !!';
+                    let text = 'Analysiing most rescent month ...';
+                    createToast(type, title, text);
+                } catch (error) {
+                    console.error("Error fetching months analytics:", error);
+                    document.querySelector(".wrapper .title").textContent = "Error fetching data";
+                    document.getElementById("openMonthPicker").textContent = "Error";
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                }
+            }
+
+            fetchMonths();
+
+        // Rendering on month selection
+            async function fetchAnalytics(month) {
+                try {
+                    const response = await fetch(`/get_analytics?month=${month}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                        let type = 'error';
+                        let title = 'Server Error !!';
+                        let text = 'Some error occured on the server side, Check console for more details !!';
+                        createToast(type, title, text);
+                        return;
+                    }
+                
+                    const data = await response.json();
+                
+                    if (!data || typeof data !== "object") {
+                        let type = 'error';
+                        let title = 'Data Error !!';
+                        let text = 'Invalid data recieved !!';
+                        createToast(type, title, text);
+                        return;
+                    }
+                
+                    document.getElementById("total").textContent = `₹ ${data.total_sales || 0}`;
+                    document.getElementById("credit").textContent = `₹ ${data.total_credit || 0}`;
+                    document.getElementById("paid").textContent = `₹ ${(data.total_sales - data.total_credit) || 0}`;
+                
+                    if (!data.sold_items || typeof data.sold_items !== "object") {
+                        let type = 'error';
+                        let title = 'Invalid Data !!';
+                        let text = 'Invalid purchase data recieved !!';
+                        createToast(type, title, text);
+                        return;
+                    }
+                
+                    const sortedByCount = Object.entries(data.sold_items).sort((a, b) => (b[1]?.count || 0) - (a[1]?.count || 0));
+                    const sortedByWeight = Object.entries(data.sold_items).sort((a, b) => (b[1]?.weight || 0) - (a[1]?.weight || 0));
+                    const sortedByPrice = Object.entries(data.sold_items).sort((a, b) => (b[1]?.price || 0) - (a[1]?.price || 0));
+
+                    renderTable("tableCount", sortedByCount, "count");
+                    renderTable("tableWeight", sortedByWeight, "weight");
+                    renderTable("tablePrice", sortedByPrice, "price");
+                
+                    renderDonutChart("chartCount", "totalValueCount", "legendCount", sortedByCount, "count");
+                    renderDonutChart("chartWeight", "totalValueWeight", "legendWeight", sortedByWeight, "weight");
+                    renderDonutChart("chartPrice", "totalValuePrice", "legendPrice", sortedByPrice, "price");
+                
+                    let type = 'success';
+                    let title = 'Success !!';
+                    let text = 'Analysis Completed Successfully !!';
+                    createToast(type, title, text);
+                
+                } catch (error) {
+                    console.error("Error fetching analytics:", error);
+                    document.getElementById("total").textContent = "Error";
+                    document.getElementById("credit").textContent = "Error";
+                    document.getElementById("paid").textContent = "Error";
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                }
+            }
+
+
+        // Rendering tables 
+            function renderTable(containerId, data, key) {
+                const container = document.getElementById(containerId);
+                container.innerHTML = ""; 
+            
+                data.forEach(([name, details]) => {
+                    const [article, type] = name.split("_");
+                
+                    const itemDiv = document.createElement("div");
+                    itemDiv.classList.add("item");
+
+                    const typeSpan = document.createElement("span");
+                    typeSpan.classList.add("type");
+                    typeSpan.textContent = type.trim();
+
+                    const wrapDiv = document.createElement("div");
+                    wrapDiv.classList.add("wrap");
+
+                    const nameSpan = document.createElement("span");
+                    nameSpan.classList.add("name");
+                    nameSpan.textContent = article;
+
+                    const dtlsSpan = document.createElement("span");
+                    dtlsSpan.classList.add("dtls");
+                    dtlsSpan.textContent = key === "weight" ? Number(details[key]).toFixed(3) : details[key];
+                
+                    wrapDiv.appendChild(nameSpan);
+                    wrapDiv.appendChild(dtlsSpan);
+                    itemDiv.appendChild(typeSpan);
+                    itemDiv.appendChild(wrapDiv);
+                    container.appendChild(itemDiv);
+                });
+            }
+
+        // Rendering Charts
+            const chartInstance = {};
+            function renderDonutChart(canvasId, totalId, legendId, data, key) {
+                document.getElementById(totalId).textContent = ""; 
+                document.getElementById(legendId).innerHTML = "";
+
+                if (chartInstance[canvasId]) {
+                    chartInstance[canvasId].destroy();
+                }
+
+                const ctx = document.getElementById(canvasId).getContext("2d");
+                let totals = {};
+                let totalValue = 0;
+            
+                data.forEach(([name, details]) => {
+                    const [, type] = name.split("_");
+                
+                    totals[type] = (totals[type] || 0) + (key === "weight" ? parseFloat(details[key].toFixed(3)) : details[key]);
+                    totalValue += details[key];
+                });
+            
+                const colorMap = {
+                    "Gold 22C": "#B8860B",
+                    "Gold 18C": "#FFD700",
+                    "Silver": "#A9A9A9"
+                };
+            
+                const labels = Object.keys(totals);
+                const values = Object.values(totals);
+                const colors = labels.map(label => colorMap[label] || "#D3D3D3");
+            
+                chartInstance[canvasId] = new Chart(ctx, {
+                    type: "doughnut",
+                    data: {
+                        labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: colors,
+                            borderWidth: 6,  
+                            borderColor: "#113956",
+                            hoverOffset: 16 
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        cutout: "70%",
+                        animation: {
+                            animateRotate: true, 
+                            animateScale: true   
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+
+                document.getElementById(totalId).textContent = key === "weight" ? totalValue.toFixed(3) : totalValue;
+
+                let legendContainer = document.getElementById(legendId);
+                legendContainer.innerHTML = "";
+
+                labels.forEach((label, index) => {
+                    let percentage = ((values[index] / totalValue) * 100).toFixed(2);
+                    let valueText = key === "weight" ? values[index].toFixed(3) : values[index];
+                
+                    let legendItem = document.createElement("div");
+                    legendItem.classList.add("legend-item");
+                    legendItem.style.backgroundColor = colors[index];
+                
+                    legendItem.innerHTML = `${label}: ${percentage}% <br> ${valueText}`;
+                
+                    legendContainer.appendChild(legendItem);
+                });
+            }
+
+        </script>
+    </body>
+</html>

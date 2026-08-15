@@ -1,0 +1,3016 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='sweetalert2.min.css') }}">
+        <script src="{{ url_for('static', filename='sweetalert2.min.js') }}"></script>
+
+        <title>New Sale - Sales</title>
+
+        <style>
+
+            *,
+            *::before,
+            *::after {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+                scrollbar-width: none;
+            }
+
+            *::-webkit-scrollbar {
+                display: none;
+            }
+
+            body {
+                background-color: #081b29;
+            }
+
+            .swal2-validation-message {
+                background: #102a30 !important;
+                color: #ffffff !important;
+                border: 1px solid #444;
+                padding: 0.5em 1em;
+                border-radius: 4px;
+                font-size: 0.9em;
+                transition: all 0.2s ease;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            }
+
+            .wrapper {
+                width: 500px;
+                position: absolute;
+                left: 50%;
+                top: 65px;
+                transform: translateX(-50%);
+                padding-bottom: 32px;
+            }
+
+            .wrapper h1 {
+                color: #fffff0;
+                opacity: 0.9;
+                text-align: center;
+            }
+
+            .wrapper .customer-details {
+                width: 100%;
+                display: grid;
+                grid-template-rows: 32px 32px 32px;
+                grid-row-gap: 8px;
+                margin-top: 24px;
+            }
+
+            #customerName,
+            #address {
+                height: 100%;
+                width: 100%;
+                background-color: #113956;
+                border: none;
+                outline: none;
+                padding-left: 8px;
+                padding-right: 8px;
+                padding-bottom: 8px;
+                padding-top: 9px;
+                border-radius: 6px;
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                border: 2px solid transparent;
+                transition: 0.3;
+
+                &:focus {
+                    border: 2px solid yellowgreen;
+                    transition: 0.3s;
+                }
+            }
+
+            input::placeholder {
+                color: #fffff0;
+                opacity: 0.7;
+            }
+
+            #suggestionsAddress {
+                min-width: 100%;
+                max-height: 200px;
+                background-color: #113956;
+                overflow-y: scroll;
+                overflow-x: hidden;
+                list-style: none;
+                z-index: 999; 
+                position: absolute;
+                padding: 4px;
+                display: flex;
+                flex-direction: column;
+                margin-top: 4px;
+                border-radius: 8px;
+                border: 2px solid yellowgreen;
+            }
+
+            #suggestionsAddress li {
+                background-color: transparent;
+                padding-top: 3px;
+                padding-bottom: 3px;
+                padding-left: 8px;
+                padding-right: 8px;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 14px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: 0.3s;
+                margin-top: 2px;
+
+                &:nth-of-type(1) {
+                    margin-top: 0;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #suggestionsAddress li.hover {
+                background-color: #081b29;
+                transition: 0.3s;
+            }
+
+            .wrapper .customer-details .club:nth-of-type(3) {
+                display: grid;
+                grid-template-columns: 1fr 347px;
+                grid-column-gap: 8px;
+            }
+
+            .wrapper .customer-details .club:nth-of-type(3) span {
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                opacity: 0.7;
+                padding-left: 8px;
+            }
+
+            #phoneInput {
+                display: grid;
+                grid-template-columns: 32px 32px 32px 32px 32px 32px 32px 32px 32px 32px;
+                grid-column-gap: 3px;
+            }
+
+            #phoneInput input {
+                height: 100%;
+                width: 100%;
+                background-color: #113956;
+                border: none;
+                outline: none;
+                border-radius: 6px;
+                text-align: center;
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                border: 2px solid transparent;
+                transition: 0.3s;
+
+                &:focus {
+                    border: 2px solid yellowgreen;
+                    transition: 0.3s;
+                }
+            }
+
+            .wrapper .purchase-details {
+                margin-top: 8px;
+
+                & > .tittle {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #fffff0;
+                    opacity: 0.7;
+                    text-align: center;
+                    position: relative;
+                
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        height: 2px;
+                        width: 32%;
+                        background-color: #fffff0;
+                        left: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        border-radius: 50%;
+                        opacity: 0.7;
+                    }
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        height: 2px;
+                        width: 32%;
+                        background-color: #fffff0;
+                        right: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        border-radius: 50%;
+                        opacity: 0.7;
+                    }
+                }
+
+                & > .purchase {
+                    display: grid;
+                    grid-template-rows: 32px 112px;
+                    grid-row-gap: 8px;
+                    margin-top: 8px;
+
+                    & > .club1 {
+                        display: grid;
+                        grid-template-columns: 100px 1fr;
+                        grid-column-gap: 8px;
+                        position: relative;
+
+                        & > select {
+                            border: none;
+                            outline: none;
+                            appearance: none;
+                            background-color: #113956;
+                            color: #fffff0;
+                            font-size: 16px;
+                            font-weight: bold;
+                            border-radius: 6px;
+                            display: inline;
+                            width: 100%;
+                            height: 100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            cursor: pointer;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+
+                        & > input {
+                            width: 100%;
+                            height: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #fffff0;
+                            padding: 0 8px;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+
+                        & > ul {
+                            position: absolute;
+                            min-width: calc(100% - 108px);
+                            max-height: 200px;
+                            background-color: red;
+                            z-index: 9;
+                            top: 35px;
+                            right: 0;
+                            border-radius: 6px;
+                            border: 2px solid yellowgreen;
+                            background-color: #113956;
+                            overflow-y: scroll;
+                            overflow-x: hidden;
+                            list-style: none;
+                            padding: 4px;
+                            display: flex;
+                            flex-direction: column;
+
+                            & > li {
+                                background: transparent;
+                                padding-top: 3px;
+                                padding-bottom: 3px;
+                                padding-left: 8px;
+                                padding-right: 8px;
+                                color: #fffff0;
+                                font-weight: bold;
+                                font-size: 14px;
+                                border-radius: 6px;
+                                transition: 0.3s;
+                                cursor: pointer;
+                                margin-top: 2px;
+                                transition: 0.3s;
+
+                                &:nth-of-type(1) {
+                                    margin-top: 0;
+                                }
+                        
+                                &.unavailable {
+                                    background: linear-gradient(135deg, #8B0000, #FF6347, #8B0000);
+                                    color: #fffff0;
+                                    border: 2px solid red;
+                                }
+                        
+                                &.vulnerable {
+                                    background: linear-gradient(135deg, #FFA500, #FF7F50, #FF4500);
+                                    color: #081b29;
+                                    border: 2px solid orange;
+                                }
+                        
+                                &:hover {
+                                    background: #081b29;
+                                    color: #fffff0;
+                                    transition: 0.3s;
+                                }
+                        
+                                &.unavailable:hover {
+                                    background: #081b29;
+                                    transition: 0.3s;
+                                }
+                        
+                                &.vulnerable:hover {
+                                    background: #081b29;
+                                    color: #fffff0;
+                                    transition: 0.3s;
+                                }
+
+                                &.hover {
+                                    background: #081b29;
+                                    color: #fffff0;
+                                    transition: 0.3s;
+                                }
+                            
+                                &.unavailable.hover,
+                                &.unavailable.hover,
+                                &.unavailable.hover {
+                                    background: #081b29;
+                                    transition: 0.3s;
+                                }
+                            
+                                &.vulnerable.hover,
+                                &.vulnerable.hover,
+                                &.vulnerable.hover {
+                                    background: #081b29;
+                                    color: #fffff0;
+                                    transition: 0.3s;
+                                }
+                            }
+                        }
+                    }
+
+                    & > .club2 {
+                        height: 100%;
+                        width: 100%;
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        grid-template-rows: 1fr 1fr 1fr;
+                        grid-gap: 8px;
+
+                        & > input {
+                            width: 100%;
+                            height: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #fffff0;
+                            padding: 0 8px;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+
+                        & > button {
+                            width: 100%;
+                            height: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #fffff0;
+                            padding: 0 8px;
+                            cursor: pointer;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+
+                            &:hover {
+                                background-color: yellowgreen;
+                                color: #081b29;
+                                transition: 0.3s;
+                            }
+
+                            &:focus {
+                                background-color: yellowgreen;
+                                color: #081b29;
+                                transition: 0.3s;
+                            }
+                        }
+                    }
+                }
+
+                & > #newItemConcluder {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    margin-top: 8px;
+
+                    & > .item {
+                        width: 100%;
+                        display: grid;
+                        grid-template-columns: 1fr 70px;
+                        grid-column-gap: 6px;
+                        background-color: #113956;
+                        padding: 6px;
+                        border-radius: 8px;
+                        filter: blur(0);
+                        scale: 1;
+                        box-shadow: 0 0 5px transparent;
+                        transition: 0.3s;
+
+                        &.blurred {
+                            filter: blur(6px);
+                            scale: 0.95;
+                            box-shadow: 0 0 5px transparent;
+                            transition: 0.3s;
+                        }
+
+                        &.highlight {
+                            filter: blur(0);
+                            scale: 1.05;
+                            box-shadow: 0 0 5px #fffff0;
+                            transition: 0.3s;
+                        }
+
+                        & > .mime {
+                            position: relative;
+                            pointer-events: none;
+                            
+                            & > .varietyName {
+                                background-color: yellowgreen;
+                                padding: 2px 8px;
+                                border-radius: 6px;
+                                font-size: 14px;
+                                color: #081b29;
+                                font-weight: bold;
+                            }
+
+                            & > .artiName {
+                                margin-top: 4px;
+                                font-size: 18px;
+                                font-weight: bold;
+                                color: #fffff0;
+                            }
+
+                            & > .presets {
+                                margin-top: 2px;
+                                font-weight: bold;
+                                font-size: 14px;
+                                color: #fffff0;
+                            }
+
+                            & > .info {
+                                font-weight: bold;
+                                font-size: 14px;
+                                color: #fffff0;
+                            }
+                        }
+
+                        & > .cta {
+                            position: relative;
+                            display: grid;
+                            grid-template-rows: 1fr 1fr;
+                            grid-row-gap: 6px;
+
+                            & > button {
+                                background-color: #8a2be2;
+                                border: none;
+                                outline: none;
+                                color: #fffff0;
+                                font-weight: bold;
+                                font-size: 14px;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                transition: 0.3s;
+
+                                &:hover {
+                                    background-color: #081b29;
+                                    transition: 0.3s;
+                                } 
+                            }
+                        }
+                    }
+                }
+            }
+
+            .wrapper .exchange-details {
+                margin-top: 8px;
+                position: relative;
+
+                & > .tittle {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #fffff0;
+                    opacity: 0.7;
+                    text-align: center;
+                    position: relative;
+                
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        height: 2px;
+                        width: 32%;
+                        background-color: #fffff0;
+                        left: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        border-radius: 50%;
+                        opacity: 0.7;
+                    }
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        height: 2px;
+                        width: 32%;
+                        background-color: #fffff0;
+                        right: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        border-radius: 50%;
+                        opacity: 0.7;
+                    }
+                }
+
+                & > .exchange {
+                    margin-top: 8px;
+                    display: grid;
+                    grid-template-rows: 32px 72px;
+                    grid-row-gap: 8px;
+
+                    & > .club1 {
+                        display: grid;
+                        grid-template-columns: 100px 1fr;
+                        grid-column-gap: 8px;
+                        position: relative;
+
+                        & > select {
+                            border: none;
+                            outline: none;
+                            appearance: none;
+                            background-color: #113956;
+                            color: #fffff0;
+                            font-size: 16px;
+                            font-weight: bold;
+                            border-radius: 6px;
+                            display: inline;
+                            width: 100%;
+                            height: 100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            cursor: pointer;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+
+                        & > input {
+                            width: 100%;
+                            height: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #fffff0;
+                            padding: 0 8px;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+
+                        & > ul {
+                            position: absolute;
+                            min-width: calc(100% - 108px);
+                            max-height: 200px;
+                            background-color: red;
+                            z-index: 9;
+                            top: 35px;
+                            right: 0;
+                            border-radius: 6px;
+                            border: 2px solid yellowgreen;
+                            background-color: #113956;
+                            overflow-y: scroll;
+                            overflow-x: hidden;
+                            list-style: none;
+                            padding: 4px;
+                            display: flex;
+                            flex-direction: column;
+
+                            & > li {
+                                background: transparent;
+                                padding-top: 3px;
+                                padding-bottom: 3px;
+                                padding-left: 8px;
+                                padding-right: 8px;
+                                color: #fffff0;
+                                font-weight: bold;
+                                font-size: 14px;
+                                border-radius: 6px;
+                                transition: 0.3s;
+                                cursor: pointer;
+                                margin-top: 2px;
+                                transition: 0.3s;
+
+                                &:nth-of-type(1) {
+                                    margin-top: 0;
+                                }
+                        
+                                &:hover {
+                                    background: #081b29;
+                                    color: #fffff0;
+                                    transition: 0.3s;
+                                }
+
+                                &.hover {
+                                    background: #081b29;
+                                    color: #fffff0;
+                                    transition: 0.3s;
+                                }
+                            }
+                        }
+                    }
+
+                    & > .club2 {
+                        height: 100%;
+                        width: 100%;
+                        display: grid;
+                        grid-template-rows: 1fr 1fr;
+                        grid-gap: 8px;
+
+                        & > .club2-1 {
+                            width: 100%;
+                            height: 100%;
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            grid-gap: 8px;
+                        }
+
+                        & > .club2-2 {
+                            width: 100%;
+                            height: 100%;
+                            display: grid;
+                            grid-template-columns: 1fr 2fr;
+                            grid-gap: 8px;
+                        }
+
+                        & > .club2-1 input,
+                        & > .club2-2 input {
+                            width: 100%;
+                            height: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #fffff0;
+                            padding: 0 8px;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+
+                        & > .club2-2 div {
+                            position: relative;
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            grid-column-gap: 8px;
+
+                            & > button {
+                                width: 100%;
+                                height: 100%;
+                                background-color: #113956;
+                                border: none;
+                                outline: none;
+                                border-radius: 6px;
+                                font-size: 16px;
+                                font-weight: bold;
+                                color: #fffff0;
+                                padding: 0 8px;
+                                cursor: pointer;
+                                border: 2px solid transparent;
+                                transition: 0.3s;
+
+                                &:hover {
+                                    background-color: yellowgreen;
+                                    color: #081b29;
+                                    transition: 0.3s;
+                                }
+
+                                &:focus {
+                                    background-color: yellowgreen;
+                                    color: #081b29;
+                                    transition: 0.3s;
+                                }
+                            }
+                        }
+                    }                    
+                }
+
+                & > #oldItemConcluder {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    margin-top: 8px;
+
+                    & > .item {
+                        width: 100%;
+                        display: grid;
+                        grid-template-columns: 1fr 70px;
+                        grid-column-gap: 6px;
+                        background-color: transparent;
+                        padding: 6px;
+                        border-radius: 8px;
+                        border: 2px solid #113956;
+                        filter: blur(0);
+                        scale: 1;
+                        box-shadow: 0 0 5px transparent;
+                        transition: 0.3s;
+
+                        &.blurred {
+                            filter: blur(6px);
+                            scale: 0.95;
+                            box-shadow: 0 0 5px transparent;
+                            transition: 0.3s;
+                        }
+
+                        &.highlight {
+                            filter: blur(0);
+                            scale: 1.05;
+                            box-shadow: 0 0 5px #fffff0;
+                            transition: 0.3s;
+                        }
+
+                        & > .mime {
+                            position: relative;
+                            pointer-events: none;
+                            
+                            & > .varietyName {
+                                background-color: yellowgreen;
+                                padding: 2px 8px;
+                                border-radius: 6px;
+                                font-size: 14px;
+                                color: #081b29;
+                                font-weight: bold;
+                            }
+
+                            & > .artiName {
+                                margin-top: 4px;
+                                font-size: 18px;
+                                font-weight: bold;
+                                color: #fffff0;
+                            }
+
+                            & > .presets {
+                                margin-top: 2px;
+                                font-weight: bold;
+                                font-size: 14px;
+                                color: #fffff0;
+                            }
+
+                            & > .info {
+                                font-weight: bold;
+                                font-size: 14px;
+                                color: #fffff0;
+                            }
+                        }
+
+                        & > .cta {
+                            position: relative;
+                            display: grid;
+                            grid-template-rows: 1fr 1fr;
+                            grid-row-gap: 6px;
+
+                            & > button {
+                                background-color: #113956;
+                                border: none;
+                                outline: none;
+                                color: #fffff0;
+                                font-weight: bold;
+                                font-size: 14px;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                transition: 0.3s;
+
+                                &:hover {
+                                    background-color: #8a1be2;
+                                    transition: 0.3s;
+                                } 
+                            }
+                        }
+                    }
+                }
+            }
+
+            #bhaoPreset {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 100vw;
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(6px);
+                z-index: -2;
+                opacity: 0;
+                pointer-events: none;
+                transition: 0.3s;
+
+                &.active {
+                    z-index: 9;
+                    opacity: 1;
+                    pointer-events: auto;
+                    transition: 0.3s;
+                }
+
+                & > .wrapper {
+                    width: 400px;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%,-50%);
+                    display: grid;
+                    grid-template-rows: 68px 68px 68px 44px;
+                    grid-row-gap: 8px;
+
+                    & > .club {
+                        background-color: #113956;
+                        display: grid;
+                        grid-template-rows: 18px 32px;
+                        grid-row-gap: 6px;
+                        padding: 6px;
+                        border-radius: 8px;
+
+                        & > .txt {
+                            height: 100%;
+                            width: 100%;
+                            position: relative;
+                            pointer-events: none;
+                            
+                            & > span {
+                                height: 100%;
+                                background-color: #081b29;
+                                font-size: 14px;
+                                font-weight: bold;
+                                color: #fffff0;
+                                padding: 0 8px;
+                                display: inline flex;
+                                align-items: center;
+                                border-radius: 6px;
+                            }
+                        }
+
+                        & > .subClub {
+                            display: grid;
+                            grid-template-columns: 1fr 120px;
+                            grid-column-gap: 4px;
+
+                            & > input {
+                                background-color: #081b29;
+                                color: #fffff0;
+                                border: none;
+                                outline: none;
+                                padding: 0 6px;
+                                display: flex;
+                                align-items: center;
+                                border-radius: 6px;
+                                font-size: 18px;
+                                font-weight: bold;
+                                border: 2px solid #081b29;
+                                transition: 0.3s;
+
+                                &:focus {
+                                    border: 2px solid yellowgreen;
+                                    transition: 0.3s;
+                                }
+                            }
+                        }
+
+                        & > input {
+                            background-color: #081b29;
+                            color: #fffff0;
+                            border: none;
+                            outline: none;
+                            padding: 0 6px;
+                            display: flex;
+                            align-items: center;
+                            border-radius: 6px;
+                            font-size: 18px;
+                            font-weight: bold;
+                            border: 2px solid #081b29;
+                            transition: 0.3s;
+
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }  
+                        } 
+                        
+                        &:nth-of-type(4) {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            grid-column-gap: 6px;
+
+                            & > button {
+                                background-color: #081b29;
+                                border: none;
+                                outline: none;
+                                height: 32px;
+                                width: 100%;
+                                font-size: 18px;
+                                font-weight: bold;
+                                color: #fffff0;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                transition: 0.3s;
+
+                                &:hover {
+                                    background-color: yellowgreen;
+                                    color: #081b29;
+                                    transition: 0.3s;
+                                }
+
+                                &:focus {
+                                    background-color: yellowgreen;
+                                    color: #081b29;
+                                    transition: 0.3s;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .wrapper .billing {
+                margin-top: 16px;
+            }
+
+            .wrapper .billing .tittle {
+                font-size: 18px;
+                font-weight: bold;
+                color: #fffff0;
+                opacity: 0.7;
+                text-align: center;
+                position: relative;
+            }
+            .wrapper .billing .tittle::before {
+                content: "";
+                position: absolute;
+                height: 2px;
+                width: 32%;
+                background-color: #fffff0;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                border-radius: 50%;
+                opacity: 0.7;
+            }
+            .wrapper .billing .tittle::after {
+                content: "";
+                position: absolute;
+                height: 2px;
+                width: 32%;
+                background-color: #fffff0;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                border-radius: 50%;
+                opacity: 0.7;
+            }
+
+            .wrapper .billing .fta {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-column-gap: 8px;
+                margin-top: 16px;
+                height: 32px;
+            }
+
+            .wrapper .billing .fta #savePrint {
+                background-color: transparent;
+                outline: none;
+                border: none;
+                border-radius: 8px;
+                border: 2px dashed greenyellow;
+                color: #fffff0;
+                font-size: 16px;
+                font-weight: bold;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: greenyellow;
+                    color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .wrapper .billing .fta #save {
+                background-color: transparent;
+                outline: none;
+                border: none;
+                border-radius: 8px;
+                border: 2px dashed greenyellow;
+                color: #fffff0;
+                font-size: 16px;
+                font-weight: bold;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: greenyellow;
+                    color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .wrapper .billing .fti {
+                display: grid;
+                grid-template-columns: 1fr 100px 1fr;
+                grid-column-gap: 8px;
+                grid-template-rows: 32px;
+                margin-top: 16px;
+                height: 32px;
+                position: relative;
+            }
+
+            .wrapper .billing .fti input[type="number"] {
+                height: 100%;
+                width: 100%;
+                background-color: #113956;
+                border: none;
+                outline: none;
+                padding-left: 8px;
+                padding-right: 8px;
+                padding-bottom: 8px;
+                padding-top: 9px;
+                border-radius: 6px;
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+            }
+
+            .wrapper .billing .fti .credit {
+                background-color: #113956;
+                padding: 6px;
+                border-radius: 8px;
+                display: grid;
+                grid-template-columns: 20px 1fr;
+                grid-column-gap: 4px;
+                cursor: default;
+            }
+
+            .wrapper .billing .fti .credit #credit {
+                accent-color: #091b29;
+                cursor: pointer;
+            }
+
+            .wrapper .billing .fti .credit span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fffff0;
+                font-size: 16px;
+                font-weight: bolder;
+                opacity: 0.8;
+                cursor: pointer;
+            }
+
+            .wrapper .billing .fti .credit #remainingCradit {
+                background-color: orange;
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                padding-right: 8px;
+                display: inline;
+                position: absolute;
+                left: 50%;
+                top: 0;
+                transform: translate(-50%,calc(-100% - 12px));
+                font-size: 14px;
+                border-radius: 8px;
+                color: #081b29;
+                font-weight: bold;
+                opacity: 0;
+                transition: 0.3s;
+                min-width: 60px;
+                min-height: 24px;
+                text-align: center;
+                pointer-events: none;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    height: 12px;
+                    width: 12px;
+                    background-color: orange;
+                    left: 50%;
+                    bottom: 0;
+                    transform: translate(-50%,6px) rotate(45deg);
+                    z-index: -1;
+                }
+            }
+
+            .wrapper .billing .fti .credit #remainingCradit.active,
+            .wrapper .billing .fti .credit:hover #remainingCradit.hover {
+                opacity: 1;
+                transition: 0.3s;
+            }
+
+            #notif {
+                z-index: 99;
+                width: 300px;
+                position: fixed;
+                bottom: 8px;
+                right: 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            #notif > .toast {
+                width: 100%;
+                padding: 8px;
+                border-radius: 8px;
+                display: grid;
+                grid-template-rows: 32px 1fr;
+                grid-row-gap: 3px;
+                position: relative;
+                backdrop-filter: blur(6px);
+                animation: show_toast 0.3s ease forwards;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    width: calc(100% - 16px);
+                    height: 4px;
+                    background-color: #081b29;
+                    left: 8px;
+                    bottom: 6px;
+                    border-radius: 2px;
+                    box-shadow: 0 0 5px #081b29;
+                    animation: timeOut 6s linear 1 forwards;
+                    transform-origin: right;
+                }
+            }
+
+            #notif > .toast.success { 
+                background: linear-gradient(to right, rgba(76, 175, 80, 0.4), rgba(56, 142, 60, 0.4), rgba(27, 94, 32, 0.4)); 
+            }
+
+            #notif > .toast.error { 
+                background: linear-gradient(to right, rgba(244, 67, 54, 0.4), rgba(211, 47, 47, 0.4), rgba(136, 14, 79, 0.4)); 
+            }
+
+            #notif > .toast.info { 
+                background: linear-gradient(to right, rgba(33, 150, 243, 0.4), rgba(30, 136, 229, 0.4), rgba(21, 101, 192, 0.4)); 
+            }
+
+            @keyframes timeOut{
+                to{
+                    width: 0%;  
+                }
+            }
+
+            @keyframes show_toast {
+            	0% {
+            		transform: translateX(100%);
+            	}
+            	100% {
+            		transform: translateX(0);
+            	}
+            }
+
+            #notif > .toast > .header {
+                display: grid;
+                grid-template-columns: 1fr 32px;
+                grid-column-gap: 6px;
+                position: relative;
+            }
+
+            #notif > .toast > .header > .tittle {
+                font-size: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: start;
+                font-weight: bold;
+                position: relative;
+                text-shadow: 0 0 4px #081b29, 0 0 8px #081b29, 0 0 16px #081b29;
+                color: #fffff0;
+            }
+
+            #notif > .toast > .header > .cta {
+                background-color: transparent;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fffff0;
+                font-size: 28px;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+
+                & > img {
+                    pointer-events: none;
+                    height: 30px;
+                    width: 30px;
+                    transform: rotate(45deg);
+                }
+            }
+
+            #notif > .toast > .message {
+                padding-bottom: 6px;
+                white-space: pre-wrap;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 16px;
+                text-shadow: 0 0 4px #081b29, 0 0 8px #081b29;
+            }
+
+            #navtrigger {
+                position: absolute;
+                top: 8px;
+                left: 8px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    width: 30px;
+                    height: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(calc(-50% - 6px)) rotate(0);
+                    transition: 0.3s;
+                }
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    width: 30px;
+                    height: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(calc(-50% + 6px)) rotate(0);
+                    transition: 0.3s;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #navtrigger.active {
+                &::before {
+                    transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+                    transition: 0.3s;
+                }
+
+                &::after {
+                    transform: translateX(-50%) translateY(-50%) rotate(45deg);
+                    transition: 0.3s;
+                }
+            }
+
+            #nav {
+                width: 300px;
+                top: 65px;
+                left: 8px;
+                position: absolute;
+                border-radius: 12px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                padding-left: 8px;
+                padding-right: 8px;
+                background-color: #113956;
+                pointer-events: none;
+                opacity: 0;
+                filter: blur(16px);
+                transform: translateX(calc(-100% - 15px));
+                transition: 0.3s;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+            }
+
+            #nav.active {
+                opacity: 1;
+                filter: blur(0);
+                transform: translateY(0);
+                pointer-events: auto;
+                transition: 0.3s;
+            }
+
+            #nav > .mainUL > .mainLI {
+                color: #fffff0;
+                font-size: 18px;
+                font-weight: bold;
+                margin-top: 0;
+                position: relative;
+                margin-top: 4px;
+
+                &:nth-of-type(1) {
+                    margin-top: 0;
+                }
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(1) img,
+            #nav > .mainUL > .mainLI:nth-of-type(2) img {
+                height: 25px;
+                width: 25px;
+                transform: translateY(3px);
+                right: 8px;
+                position: absolute;
+                pointer-events: none;
+                opacity: 0.8;
+
+                > img {
+                    height: 100%;
+                    width: 100%;
+                }
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(1) .text,
+            #nav > .mainUL > .mainLI:nth-of-type(2) .text {
+                margin-left: 8px;
+                pointer-events: none;
+                opacity: 0.8;
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(3),
+            #nav > .mainUL > .mainLI:nth-of-type(4) {
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #nav > .mainUL > .mainLI > .subUL {
+                position: relative;
+            
+                &::before {
+                    content: "";
+                    position: absolute;
+                    height: 80%;
+                    width: 4px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 13px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    opacity: 0.6;
+                }
+            }
+
+            #nav > .mainUL > .mainLI > .subUL > .subLI {
+                margin-left: 22px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                border-radius: 8px;
+                transition: 0.3s;
+                cursor: pointer;
+                margin-top: 4px;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .currentPage {
+                background-color: #081b29;
+            }
+
+            #pageReload {
+                position: absolute;
+                top: 8px;
+                left: 66px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: 0.3s;
+
+                & > img {
+                    height: 36px;
+                    width: 36px;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #print {
+                position: absolute;
+                top: 8px;
+                left: 124px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: 0.3s;
+
+                & > img {
+                    height: 36px;
+                    width: 36px;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #changeBhao {
+                position: absolute;
+                top: 8px;
+                left: 182px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: 0.3s;
+
+                & > img {
+                    height: 35px;
+                    width: 35px;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <h1>New Sales Record !!</h1>
+            <div class="customer-details">
+                <div class="club">
+                    <input type="text" id="customerName" name="customerName" placeholder="Customer's Name" autocomplete="off" />
+                </div>
+                <div class="club">
+                    <input type="text" id="address" name="address" placeholder="Address" autocomplete="off" />
+                    <ul id="suggestionsAddress" style="display: none;" tabindex="-1" data-input-id="address">
+                        {% for item in address_suggestions %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="club">
+                    <span>Mobile Number</span>
+                    <div class="phone-input" id="phoneInput">
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" id="numIndexOne" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="purchase-details">
+                <div class="tittle">Shopping Details ...</div>
+                <div class="purchase">
+                    <div class="club1">
+                        <select id="type" onchange="document.getElementById('newArticle').value = ''">
+                            <option value="Gold 18C">Gold 18C</option>
+                            <option value="Gold 22C">Gold 22C</option>
+                            <option value="Silver">Silver</option>
+                        </select>
+                        <input type="text" id="newArticle" placeholder="Article Name ??" autocomplete="off" />
+                        <ul id="suggestionsGold_22C" style="display: none;" tabindex="-1" data-input-id="newArticle">
+                            {% for item in gold_22c_suggestions %}
+                                <li class="{{ item.status }}">{{ item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                        <ul id="suggestionsGold_18C" style="display: none;" tabindex="-1" data-input-id="newArticle">
+                            {% for item in gold_18c_suggestions %}
+                                <li class="{{ item.status }}">{{ item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                        <ul id="suggestionsSilver" style="display: none;" tabindex="-1" data-input-id="newArticle">
+                            {% for item in silver_suggestions %}
+                                <li class="{{ item.status }}">{{ item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="club2">
+                        <input type="number" id="newRate" autocomplete="off" placeholder="Price (per gram) ??" />
+                        <input type="number" id="newMake" autocomplete="off" placeholder="Making Charge (%) ??">
+                        <input type="number" id="newWeight" autocomplete="off" placeholder="weight (g) ??" step="0.01" />
+                        <input type="number" id="newPrice" autocomplete="off" placeholder="Price ??" />
+                        <button id="cancleNew" tabindex="-1">Cancle & Reset</button>
+                        <button id="addNewList">Add Item</button>
+                    </div>
+                </div>
+                <div id="newItemConcluder"></div>
+            </div> 
+
+            <div class="exchange-details">
+                <div class="tittle">Purana Saman ...</div>
+                <div class="exchange">
+                    <div class="club1">
+                        <select id="oldtype">
+                            <option value="Gold 18C">Gold 18C</option>
+                            <option value="Gold 22C">Gold 22C</option>
+                            <option value="Silver">Silver</option>
+                            <option value="General Gold">Gen Gold</option>
+                            <option value="General Silver">Gen Silver</option>
+                        </select>
+                        <input type="text" id="oldArticle" placeholder="Article Name ??" autocomplete="off" />
+                        <ul id="oldSuggestion" style="display: none;" tabindex="-1" data-input-id="oldArticle">
+                            {% for item in gold_18c_suggestions %}
+                                <li>{{ item.name }}</li>
+                            {% endfor %}
+                            {% for item in gold_22c_suggestions %}
+                                <li>{{ item.name }}</li>
+                            {% endfor %}
+                            {% for item in silver_suggestions %}
+                                <li>{{ item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="club2">
+                        <div class="club2-1">
+                            <input type="number" id="oldRate" autocomplete="off" placeholder="Price (per gram) ??" />
+                            <input type="number" id="oldWeight" autocomplete="off" placeholder="weight ?? (g)" step="0.01" />
+                        </div>
+                        <div class="club2-2">
+                            <input type="number" id="oldPrice" autocomplete="off" placeholder="Price ??" />
+                            <div class="btns">
+                                <button id="cancleOld" tabindex="-1">Cancle & Reset</button>
+                                <button id="addOldList">Add Darab</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="oldItemConcluder"></div>
+            </div>
+
+            <div class="billing">
+                <div class="tittle">Billing Section ...</div>
+                <div class="fti">
+                    <input type="number" id="total" placeholder="Total Price" autocomplete="off" tabindex="-1"/>
+                    <div class="credit">
+                        <input type="checkbox" id="credit" tabindex="-1" >
+                        <span class="text">Credit ?</span>
+                        <div id="remainingCradit"></div>
+                    </div>
+                    <input type="number" id="paid" placeholder="Amount Paid" autocomplete="off" tabindex="-1" />
+                </div>
+                <div class="fta">
+                    <button id="save" tabindex="-1">Save Record</button>
+                    <button id="savePrint" tabindex="-1">Save & Print Invoice</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="bhaoPreset" class="">
+            <div class="wrapper">
+                <div class="club">
+                    <div class="txt">
+                        <span>Gold 18C</span>
+                    </div>
+                    <div class="subClub">
+                        <input type="number" id="bhao18C" placeholder="Bhao ??" step="100" autocomplete="off" />
+                        <input type="number" id="make18C" placeholder="Making ??" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="club">
+                    <div class="txt">
+                        <span>Gold 22C</span>
+                    </div>
+                    <div class="subClub">
+                        <input type="number" id="bhao22C" placeholder="Bhao ??" step="100" autocomplete="off" />
+                        <input type="number" id="make22C" placeholder="Making ??" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="club">
+                    <div class="txt">
+                        <span>General gold</span>
+                    </div>
+                    <input type="number" id="bhaoGen" placeholder="Bhao ??" step="100" autocomplete="off" />
+                </div>
+                <div class="club">
+                    <button id="closeBhao" tabindex="-1" >Cancle</button>
+                    <button id="updateBhao">Update Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="navtrigger"></div>
+        <div id="pageReload" onclick="window.location.href='/sales/index.html'"><img src="{{ url_for('static', filename='icon/reload.svg') }}"></div>
+        <div id="print" onclick="window.location.href='/sales/invoice.html'"><img src="{{ url_for('static', filename='icon/invoice.svg') }}"></div>
+        <div id="changeBhao"><img src="{{ url_for('static', filename='icon/options.svg') }}"></div>
+        <div id="nav">
+            <div class="mainUL">
+                <div class="mainLI">
+                    <span class="text">Sales</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI currentPage">New Sales</div>
+                        <div class="subLI" onclick="window.location.href='/sales/search-update.html'">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI">
+                    <span class="text">Loans</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI">New Loan</div>
+                        <div class="subLI">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI" id="inventory">Inventory</div>
+                <div class="mainLI" id="admin">Admin Panel</div>
+            </div>
+        </div>
+
+        <div id="validation-data" data-list='{{ lowercase|tojson }}' hidden></div>
+        <div id="notif"></div>
+
+        <script>
+            
+        // Admin password
+            const ADMIN_PASS = "{{ admin_pass }}";
+
+        // Address Validation 
+            const validationRaw = document.getElementById("validation-data").dataset.list;
+            window.validationList = JSON.parse(validationRaw);
+            
+        // Admin Page Visit
+            document.getElementById("admin").addEventListener("click", async () => {
+                const { value: pw, isConfirmed } = await Swal.fire({
+                    title: 'Want to open Admin Page ??',
+                    text: 'Enter admin password to visit admin page !!',
+                    input: 'password',
+                    icon: 'question',
+                    inputPlaceholder: 'Enter admin password',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Visit Admin Page',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true,
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    inputValidator: (value) => {
+                        if (!value) return 'Password is required!';
+                    }
+                });
+          
+                if (!isConfirmed) return;
+                
+                if (pw !== ADMIN_PASS) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wrong Password',
+                        text: 'You are not authorized to be the Admin !!',
+                        background: '#081b20',
+                        color: '#ffffff'
+                    });
+                    return;
+                }
+              
+                window.location.href='/admin/sales-analytics.html'
+            });
+
+            document.getElementById("inventory").addEventListener("click", async () => {
+                const { value: pw, isConfirmed } = await Swal.fire({
+                    title: 'Want to check Inventory ??',
+                    text: 'Enter admin password to visit inventory page !!',
+                    input: 'password',
+                    icon: 'question',
+                    inputPlaceholder: 'Enter admin password',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Visit Inventory Page',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true,
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    inputValidator: (value) => {
+                        if (!value) return 'Password is required!';
+                    }
+                });
+          
+                if (!isConfirmed) return;
+                
+                if (pw !== ADMIN_PASS) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wrong Password',
+                        text: 'You are not authorized to be the Admin !!',
+                        background: '#081b20',
+                        color: '#ffffff'
+                    });
+                    return;
+                }
+              
+                window.location.href='/inventory/inventory.html'
+            });
+
+        // Event Handelers
+            // Nav Trigger
+            document.getElementById("navtrigger").addEventListener("click", function() {
+                document.getElementById("navtrigger").classList.toggle("active");
+                document.getElementById("nav").classList.toggle("active");
+            });
+
+            // Bhao Presets
+            document.getElementById("changeBhao").addEventListener("click", function() {
+                document.getElementById("bhaoPreset").classList.add("active");
+
+                document.getElementById("bhao18C").value = window.GOLD_18C_BHAO;
+                document.getElementById("make18C").value = window.GOLD_18C_MAKING;
+                document.getElementById("bhao22C").value = window.GOLD_22C_BHAO;
+                document.getElementById("make22C").value = window.GOLD_22C_MAKING;
+                document.getElementById("bhaoGen").value = window.GEN_GOLD_BHAO;
+
+                document.getElementById("bhao18C").disabled = false;
+                document.getElementById("make18C").disabled = false;
+                document.getElementById("bhao22C").disabled = false;
+                document.getElementById("make22C").disabled = false;
+                document.getElementById("bhaoGen").disabled = false;
+
+                document.getElementById("bhao18C").focus();
+            });
+            document.getElementById("closeBhao").addEventListener("click", function() {
+                document.getElementById("bhaoPreset").classList.remove("active");
+
+                document.getElementById("bhao18C").value = '';
+                document.getElementById("make18C").value = '';
+                document.getElementById("bhao22C").value = '';
+                document.getElementById("make22C").value = '';
+                document.getElementById("bhaoGen").value = '';
+
+                document.getElementById("bhao18C").disabled = true;
+                document.getElementById("make18C").disabled = true;
+                document.getElementById("bhao22C").disabled = true;
+                document.getElementById("make22C").disabled = true;
+                document.getElementById("bhaoGen").disabled = true;
+            });
+
+            // phone number auto navigations 
+            const phoneInputs = document.querySelectorAll('.phone-input input');
+            phoneInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.match(/[0-9]/)) {
+                        if (index < phoneInputs.length - 1) phoneInputs[index + 1].focus();
+                    } else {
+                        e.target.value = '';
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        phoneInputs[index - 1].focus();
+                    }
+                });
+            });
+
+        // The suggestion chain !!
+            function filterSuggestions(input, listId) {
+                const suggestions = document.getElementById(listId);
+                const items = Array.from(suggestions.children);
+                const query = input.value.toLowerCase().trim();
+            
+                const matchingItems = items.filter(item =>
+                    item.textContent.toLowerCase().includes(query)
+                );
+            
+                if (matchingItems.length > 0) {
+                    suggestions.style.display = "block";
+                    items.forEach(item => {
+                        item.style.display = matchingItems.includes(item) ? "block" : "none";
+                    });
+                } else {
+                    suggestions.style.display = "none";
+                }
+            }
+            
+            document.getElementById("newArticle").addEventListener("input", function () {
+                let caret = document.getElementById("type").value.trim();
+                if (caret === "Gold 18C") {
+                    filterSuggestions(this, "suggestionsGold_18C");
+                }
+                if (caret === "Gold 22C") {
+                    filterSuggestions(this, "suggestionsGold_22C");
+                }
+                if (caret === "Silver") {
+                    filterSuggestions(this, "suggestionsSilver");
+                }
+            });
+            
+            document.getElementById("address").addEventListener("input", function () {
+                filterSuggestions(this, "suggestionsAddress");
+            });
+
+            document.getElementById("oldArticle").addEventListener("input", function () {
+                filterSuggestions(this, "oldSuggestion");
+            });
+            
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest("ul") && !e.target.closest("input")) {
+                    document.querySelectorAll("ul").forEach(ul => ul.style.display = "none");
+                }
+            });
+            
+            let isClickingSuggestion = false;
+            
+            document.querySelectorAll("ul").forEach(ul => {
+                ul.addEventListener("mousedown", () => isClickingSuggestion = true);
+                ul.addEventListener("touchstart", () => isClickingSuggestion = true);
+            
+                ul.addEventListener("click", (e) => {
+                    if (e.target.tagName === "LI") {
+                        const inputId = ul.getAttribute("data-input-id");
+                        const input = document.getElementById(inputId);
+                        if (input) {
+                            input.value = e.target.textContent;
+                            ul.style.display = "none";
+                        }
+                    }
+                    isClickingSuggestion = false;
+                });
+            });
+            
+            ["oldArticle", "newArticle", "address"].forEach(inputId => {
+                const input = document.getElementById(inputId);
+                input.addEventListener("blur", function () {
+                    setTimeout(() => {
+                        if (!isClickingSuggestion) {
+                            document.querySelectorAll("ul").forEach(ul => ul.style.display = "none");
+                        }
+                    }, 100);
+                });
+            });
+            
+            document.addEventListener("DOMContentLoaded", function () {
+                function enableKeyboardNavigation(inputId, listId) {
+                    const input = document.getElementById(inputId);
+                    const suggestions = document.getElementById(listId);
+                    let activeIndex = -1;
+                
+                    input.addEventListener("input", function () {
+                        activeIndex = -1;
+                        suggestions.scrollTop = 0;
+                    });
+                
+                    input.addEventListener("keydown", function (e) {
+                        const visibleItems = Array.from(suggestions.children).filter(
+                            item => item.style.display !== "none"
+                        );
+                    
+                        if (visibleItems.length === 0) return;
+                    
+                        if (e.key === "ArrowDown") {
+                            e.preventDefault();
+                            activeIndex = (activeIndex + 1) % visibleItems.length;
+                            updateHighlight(visibleItems);
+                        } else if (e.key === "ArrowUp") {
+                            e.preventDefault();
+                            activeIndex = (activeIndex - 1 + visibleItems.length) % visibleItems.length;
+                            updateHighlight(visibleItems);
+                        } else if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (activeIndex >= 0) {
+                                selectItem(visibleItems[activeIndex]);
+                            }
+                        }
+                    });
+                
+                    function updateHighlight(items) {
+                        items.forEach(item => item.classList.remove("hover"));
+                        if (activeIndex >= 0) {
+                            items[activeIndex].classList.add("hover");
+                            items[activeIndex].scrollIntoView({
+                                block: "center",
+                                behavior: "smooth"
+                            });
+                        }
+                    }
+                
+                    function selectItem(item) {
+                        input.value = item.textContent;
+                        suggestions.style.display = "none";
+                    }
+                
+                    suggestions.addEventListener("click", (e) => {
+                        if (e.target.tagName === "LI") {
+                            selectItem(e.target);
+                        }
+                    });
+                }
+            
+                function enableDynamicKeyboardNavigation(inputId, getListElement) {
+                    const input = document.getElementById(inputId);
+                    let activeIndex = -1;
+
+                    input.addEventListener("input", function () {
+                        activeIndex = -1;
+                        const suggestions = getListElement();
+                        if (suggestions) suggestions.scrollTop = 0;
+                    });
+                
+                    input.addEventListener("keydown", function (e) {
+                        const suggestions = getListElement();
+                        if (!suggestions) return;
+                    
+                        const visibleItems = Array.from(suggestions.children).filter(
+                            item => item.style.display !== "none"
+                        );
+                    
+                        if (visibleItems.length === 0) return;
+                    
+                        if (e.key === "ArrowDown") {
+                            e.preventDefault();
+                            activeIndex = (activeIndex + 1) % visibleItems.length;
+                            updateHighlight(visibleItems);
+                        } else if (e.key === "ArrowUp") {
+                            e.preventDefault();
+                            activeIndex = (activeIndex - 1 + visibleItems.length) % visibleItems.length;
+                            updateHighlight(visibleItems);
+                        } else if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (activeIndex >= 0) {
+                                selectItem(visibleItems[activeIndex]);
+                            }
+                        }
+                    });
+                
+                    function updateHighlight(items) {
+                        items.forEach(item => item.classList.remove("hover"));
+                        if (activeIndex >= 0) {
+                            items[activeIndex].classList.add("hover");
+                            items[activeIndex].scrollIntoView({
+                                block: "center",
+                                behavior: "smooth"
+                            });
+                        }
+                    }
+                
+                    function selectItem(item) {
+                        input.value = item.textContent;
+                        const suggestions = getListElement();
+                        if (suggestions) suggestions.style.display = "none";
+                    }
+            
+                    ["suggestionsGold_18C", "suggestionsGold_22C", "suggestionsSilver"].forEach(id => {
+                        const suggestions = document.getElementById(id);
+                        if (suggestions) {
+                            suggestions.addEventListener("click", (e) => {
+                                if (e.target.tagName === "LI") selectItem(e.target);
+                            });
+                        }
+                    });
+                }
+
+            
+                enableKeyboardNavigation("address", "suggestionsAddress");
+                enableKeyboardNavigation("oldArticle", "oldSuggestion");
+                enableDynamicKeyboardNavigation("newArticle", () => {
+                    const caret = document.getElementById("type").value.trim();
+                    if (caret === "Gold 18C") {
+                        return document.getElementById("suggestionsGold_18C");
+                    } else if (caret === "Gold 22C") {
+                        return document.getElementById("suggestionsGold_22C");
+                    } else {
+                        return document.getElementById("suggestionsSilver");
+                    }
+                });
+            });
+        
+        // Toast notifications 
+
+            let notifications = document.getElementById("notif");
+
+            function createToast(type, title, text) {
+                let existingToasts = notifications.getElementsByClassName("toast");
+            
+                while (existingToasts.length >= 3) {
+                    existingToasts[0].remove(); 
+                }
+            
+                let newToast = document.createElement('div');
+                newToast.classList.add("toast");
+                newToast.classList.add(type);
+                newToast.innerHTML = `
+                    <div class="header">
+                        <span class="tittle">${title}</span>
+                        <span class="cta" onclick="this.closest('.toast').remove()">
+                            <img src="{{ url_for('static', filename='icon/plus.svg') }}">
+                        </span>
+                    </div>
+                    <div class="message">${text}</div>
+                `;
+                
+                notifications.appendChild(newToast);
+                newToast.timeOut = setTimeout(() => newToast.remove(), 6000);
+            }
+
+        // GETTING GOLD DETAILS >>>
+            async function loadGoldData() {
+                try {
+                    const res = await fetch('/gold-data');
+                    const data = await res.json();
+
+                    window.GOLD_22C_BHAO = parseInt(data["Gold 22C"].Bhao);
+                    window.GOLD_22C_MAKING = parseInt(data["Gold 22C"].Making);
+                    window.GOLD_18C_BHAO = parseInt(data["Gold 18C"].Bhao);
+                    window.GOLD_18C_MAKING = parseInt(data["Gold 18C"].Making);
+                    window.GEN_GOLD_BHAO = parseInt(data["Gen Gold"].Bhao);
+
+                    document.getElementById("newRate").value = window.GOLD_18C_BHAO;
+                    document.getElementById("newMake").value = window.GOLD_18C_MAKING;
+                    document.getElementById("oldRate").value = window.GOLD_18C_BHAO;
+
+                    createToast('success', 'Updated !!', "Latest Gold Rates and Making Charges updated !!");
+                } catch (err) {
+                    createToast('error', 'Server Error !!', "Latest Gold Rates and Making Charges could not be updated, CHECK CONSOLE !!");
+                    createToast('alert', 'Alert !!', "Reload the page to try once again !!");
+                    console.error("❌ Failed to fetch gold data:", err);
+                }
+            }
+
+            (async () => {
+                await loadGoldData();
+            })();
+
+        // UPDATING GOLD DETAILS >>>
+            document.getElementById("updateBhao").addEventListener("click", async () => {
+                const bhao18C = parseInt(document.getElementById("bhao18C").value);
+                const make18C = parseInt(document.getElementById("make18C").value);
+                const bhao22C = parseInt(document.getElementById("bhao22C").value);
+                const make22C = parseInt(document.getElementById("make22C").value);
+                const bhaoGen = parseInt(document.getElementById("bhaoGen").value);
+                    
+                if (!bhao18C || isNaN(bhao18C) || bhao18C <= 0) {
+                    createToast('info', 'Alert !!', "18C Gold Bhao is invalid or Zero !!");
+                    document.getElementById("bhao18C").focus();
+                    return;
+                }
+                if (!make18C || isNaN(make18C) || make18C <= 0) {
+                    createToast('info', 'Alert !!', "18C Gold Makeing is invalid or Zero !!");
+                    document.getElementById("make18C").focus();
+                    return;
+                }
+                if (!bhao22C || isNaN(bhao22C) || bhao22C <= 0) {
+                    createToast('info', 'Alert !!', "22C Gold Bhao is invalid or Zero !!");
+                    document.getElementById("bhao122C").focus();
+                    return;
+                }
+                if (!make22C || isNaN(make22C) || make22C <= 0) {
+                    createToast('info', 'Alert !!', "22C Gold Makeing is invalid or Zero !!");
+                    document.getElementById("make22C").focus();
+                    return;
+                }
+                if (!bhaoGen || isNaN(bhaoGen) || bhaoGen <= 0) {
+                    createToast('info', 'Alert !!', "General Gold Bhao is invalid or Zero !!");
+                    document.getElementById("bhaoGen").focus();
+                    return;
+                }
+    
+                const updatedData = {
+                    "Gold 22C": {
+                        "Bhao": bhao22C,
+                        "Making": make22C
+                    },
+                    "Gold 18C": {
+                        "Bhao": bhao18C,
+                        "Making": make18C
+                    },
+                    "Gen Gold": {
+                        "Bhao": bhaoGen
+                    }
+                };  
+
+                try {
+                    const response = await fetch('/update-gold-data', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedData)
+                    });
+                  
+                    if (response.ok) {
+                        window.GOLD_18C_BHAO = bhao18C;
+                        window.GOLD_18C_MAKING = make18C;
+                        window.GOLD_22C_BHAO = bhao22C;
+                        window.GOLD_22C_MAKING = make22C;
+                        window.GEN_GOLD_BHAO = bhaoGen;
+
+                        document.getElementById("bhaoPreset").classList.remove("active");
+
+                        document.getElementById("type").value = "Silver";
+                        document.getElementById("newMake").placeholder = "Making Charge (₹/g)";
+                        document.getElementById("oldtype").value = "Silver";
+                        document.getElementById("newRate").value = "";
+                        document.getElementById("newMake").value = "";
+                        document.getElementById("oldRate").value = "";
+                        
+                        createToast('success', 'Updated !!', "Latest Gold Rates and Making Charges updated !!");
+                    } else {
+                        createToast('error', 'Update Failed', 'Could not update gold data on the server.');
+                    }
+                } catch (err) {
+                    console.error("❌ Error connecting to the backend:", err);
+                    createToast('error', 'Connection Error', 'Unable to reach the server. CHECK CONSOLE');
+                }
+            });
+
+        // Billing section controls ...
+
+            const totalInput = document.getElementById("total");
+            const paidInput = document.getElementById("paid");
+            const creditCheckbox = document.getElementById("credit");
+            const remainingCreditContainer = document.getElementById("remainingCradit");
+
+            let totalAmount = 0;
+            let paidAmount = 0;
+
+            totalInput.readOnly = true;
+            paidInput.readOnly = true;
+            totalInput.style.pointerEvents = "none";
+            paidInput.style.pointerEvents = "none";
+
+            function updateAmounts() {
+                let newTotal = newPurchaseRecords.reduce((sum, item) => sum + Math.round(item.price || 0), 0);
+                let oldTotal = oldPurchaseRecords.reduce((sum, item) => sum + Math.round(item.price || 0), 0);
+            
+                totalAmount = Math.max(0, newTotal - oldTotal); 
+                paidAmount = creditCheckbox.checked ? paidAmount : totalAmount; 
+
+                totalInput.value = Math.round(totalAmount);
+                paidInput.value = Math.round(paidAmount);
+            
+                updateRemainingCredit();
+            }
+
+            function updateRemainingCredit() {
+                let remaining = Math.round(totalAmount - paidAmount);
+                remainingCreditContainer.innerHTML = remaining > 0 ? `₹ ${remaining}` : "";
+                toggleRemainingCreditVisibility();
+            }
+
+            function toggleRemainingCreditVisibility() {
+                if (creditCheckbox.checked) {
+                    remainingCreditContainer.classList.add("active");
+                    setTimeout(() => {
+                        remainingCreditContainer.classList.remove("active");
+                    }, 5000);
+                }
+            }
+
+            creditCheckbox.addEventListener("change", function () {
+                if (this.checked) {
+                    paidInput.readOnly = false;
+                    paidInput.style.pointerEvents = "auto";
+                    remainingCreditContainer.classList.add("hover");
+                } else {
+                    paidInput.readOnly = true;
+                    paidInput.style.pointerEvents = "none";
+                    paidAmount = totalAmount; 
+                    remainingCreditContainer.classList.remove("hover");
+                    updateAmounts();
+                }
+            });
+
+            paidInput.addEventListener("input", function () {
+                paidAmount = Math.round(parseFloat(this.value) || 0);
+                updateRemainingCredit();
+            });
+
+            function onItemChange() {
+                updateAmounts();
+            }
+
+        // New item entire logic
+
+            let newPurchaseRecords = [];
+            let isUpdatingNew = false;
+            let updatingNewId = null;
+
+            document.getElementById("addNewList").addEventListener("click", function () {
+                document.getElementById("addNewList").innerText = "Add Item";
+                if (isUpdatingNew) {
+                    newUpdateHandler();
+                    isUpdatingNew = false;
+                    updatingNewId = null;
+                    return;
+                }
+            
+                let type = document.getElementById("type").value; 
+                let article = document.getElementById("newArticle").value.trim();
+                let raw_rate = document.getElementById("newRate").value.trim();
+                let raw_makingCharge = document.getElementById("newMake").value.trim();
+                let raw_weight = document.getElementById("newWeight").value.trim();
+                let raw_price = document.getElementById("newPrice").value.trim();
+            
+                let rate = parseInt(raw_rate);
+                let makingCharge = parseInt(raw_makingCharge);
+                let weight = parseFloat(parseFloat(raw_weight).toFixed(3));
+                let price = parseInt(raw_price);
+
+                if (!article) {
+                    createToast('info', 'Alert !!', "Article Name can't be empty");
+                    document.getElementById("newArticle").focus();
+                    return;
+                }
+                if (!rate || isNaN(rate) || Number(rate) <= 0) {
+                    createToast('info', 'Alert !!', "Rate is invalid or 0");
+                    document.getElementById("newRate").focus();
+                    return;
+                }
+                if (!makingCharge || isNaN(makingCharge) || Number(makingCharge) <= 0) {
+                    createToast('info', 'Alert !!', "Makeing Chanrge is invalid or 0");
+                    document.getElementById("newMake").focus();
+                    return;
+                }
+                if (!weight || isNaN(weight) || Number(weight) <= 0) {
+                    createToast('info', 'Alert !!', "Weight is invalid or 0");
+                    document.getElementById("newWeight").focus();
+                    return;
+                }
+                if (!price || isNaN(price) || Number(price) <= 0) {
+                    createToast('info', 'Alert !!', "Price is invalid or 0");
+                    document.getElementById("newPrice").focus();
+                    return;
+                }
+            
+                let newItem = {id: Date.now(), type, article, rate, makingCharge, weight, price};
+            
+                newPurchaseRecords.push(newItem);
+            
+                onItemChange(); 
+            
+                let itemHTML = `
+                    <div class="item" id="newItem-${newItem.id}">
+                        <div class="mime">
+                            <span class="varietyName">${type}</span>
+                            <div class="artiName">${article}</div>
+                            <div class="presets">
+                                <span class="rate">Bhao - ₹ ${rate} per gram</span> || <span class="makeing">${type === "Silver" ? `Making - ₹ ${makingCharge} /g` : `Making - ${makingCharge} %`}</span>   
+                            </div>
+                            <div class="info">
+                                <span class="weight">Weight - ${weight} grams</span> || <span class="price">Price - ₹ ${price}</span>
+                            </div>
+                        </div>
+                        <div class="cta">
+                            <button class="update" onclick="newUpdateRecord(${newItem.id})" tabindex="-1">Update</button>
+                            <button class="delete" onclick="newDeleteRecord(${newItem.id})" tabindex="-1">Delete</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById("newItemConcluder").insertAdjacentHTML("beforeend", itemHTML);
+                
+                document.getElementById("newArticle").value = "";
+                document.getElementById("newRate").value = "";
+                document.getElementById("newMake").value = "";
+                document.getElementById("newWeight").value = "";
+                document.getElementById("newPrice").value = "";
+                
+                createToast('success', 'Added !!', 'Article Added to list !!');
+                
+                document.getElementById("type").focus(); 
+                document.getElementById("addNewList").innerText = "Add Item";
+            });
+
+            function newDeleteRecord(id) {
+                newPurchaseRecords = newPurchaseRecords.filter(record => record.id !== id);
+            
+                onItemChange();
+            
+                let itemElement = document.getElementById(`newItem-${id}`);
+                if (itemElement) {
+                    itemElement.remove();
+                    createToast('success', 'Deleted !!', 'Article removed from list !!');
+                }
+                document.getElementById("addNewList").innerText = "Add Item";
+            }
+
+            function newUpdateRecord(id) {
+                isUpdatingNew = true;
+                updatingNewId = id;
+            
+                let record = newPurchaseRecords.find(record => record.id === id);
+                if (!record) return;
+            
+                document.getElementById("type").value = record.type;
+                document.getElementById("newArticle").value = record.article;
+                document.getElementById("newRate").value = record.rate;
+                document.getElementById("newMake").value = record.makingCharge;
+                document.getElementById("newWeight").value = record.weight;
+                document.getElementById("newPrice").value = record.price;
+                document.getElementById("addNewList").innerText = "Update Item";
+            
+                document.querySelector(".purchase-details").scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            
+            }
+
+            function newUpdateHandler() {
+                document.getElementById("addNewList").innerText = "Update Item";
+            
+                let type = document.getElementById("type").value;
+                let article = document.getElementById("newArticle").value.trim();
+                let raw_rate = document.getElementById("newRate").value.trim();
+                let raw_makingCharge = document.getElementById("newMake").value.trim();
+                let raw_weight = document.getElementById("newWeight").value.trim();
+                let raw_price = document.getElementById("newPrice").value.trim();
+            
+                let rate = parseInt(raw_rate);
+                let makingCharge = parseInt(raw_makingCharge);
+                let weight = parseFloat(parseFloat(raw_weight).toFixed(3));
+                let price = parseInt(raw_price);
+            
+                if (!article) {
+                    createToast('info', 'Alert !!', "Article Name can't be empty");
+                    document.getElementById("newArticle").focus();
+                    return;
+                }
+                if (!rate || isNaN(rate) || Number(rate) <= 0) {
+                    createToast('info', 'Alert !!', "Rate is invalid or 0");
+                    document.getElementById("newRate").focus();
+                    return;
+                }
+                if (!makingCharge || isNaN(makingCharge) || Number(makingCharge) <= 0) {
+                    createToast('info', 'Alert !!', "Makeing Chanrge is invalid or 0");
+                    document.getElementById("newMake").focus();
+                    return;
+                }
+                if (!weight || isNaN(weight) || Number(weight) <= 0) {
+                    createToast('info', 'Alert !!', "Weight is invalid or 0");
+                    document.getElementById("newWeight").focus();
+                    return;
+                }
+                if (!price || isNaN(price) || Number(price) <= 0) {
+                    createToast('info', 'Alert !!', "Price is invalid or 0");
+                    document.getElementById("newPrice").focus();
+                    return;
+                }
+            
+                let recordIndex = newPurchaseRecords.findIndex(record => record.id === updatingNewId);
+                if (recordIndex !== -1) {newPurchaseRecords[recordIndex] = {id: updatingNewId, type, article, rate, makingCharge, weight, price};}
+            
+                onItemChange();
+            
+                let itemElement = document.getElementById(`newItem-${updatingNewId}`);
+                if (itemElement) {
+                    itemElement.querySelector(".varietyName").textContent = type;
+                    itemElement.querySelector(".artiName").textContent = article;
+                    itemElement.querySelector(".info .weight").textContent = `Weight - ${weight} grams`;
+                    itemElement.querySelector(".info .price").textContent = `Price - ₹ ${price}`;
+                    itemElement.querySelector(".presets .rate").textContent = `Bhao - ₹ ${rate} per gram`;
+                    itemElement.querySelector(".presets .makeing").textContent = `${type === "Silver" ? `Making - ₹ ${makingCharge} /g` : `Making - ${makingCharge} %`}`;
+                
+                    itemElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                
+                    itemElement.classList.add("highlight");
+                
+                    let allItems = document.querySelectorAll("#newItemConcluder .item");
+                    allItems.forEach(item => {
+                        if (item !== itemElement) {
+                            item.classList.add("blurred");
+                        }
+                    });
+                
+                    setTimeout(() => {
+                        itemElement.classList.remove("highlight");
+                        allItems.forEach(item => {
+                            item.classList.remove("blurred");
+                        });
+                    }, 2000);
+                }
+            
+                document.getElementById("newArticle").value = "";
+                document.getElementById("newRate").value = "";
+                document.getElementById("newMake").value = "";
+                document.getElementById("newWeight").value = "";
+                document.getElementById("newPrice").value = "";
+            
+                createToast('success', 'Updated !!', 'Article updated !!');
+            
+                isUpdatingNew = false;
+                updatingNewId = null;
+                document.getElementById("addNewList").innerText = "Add Item";
+            }
+
+            const typeSelect = document.getElementById("type");
+            const newRateInput = document.getElementById("newRate");
+            const newMakeInput = document.getElementById("newMake");
+            const newWeightInput = document.getElementById("newWeight");
+            const newPriceInput = document.getElementById("newPrice");
+
+            typeSelect.addEventListener('change', function() {
+                if (typeSelect.value === "Silver") {
+                    newMakeInput.placeholder = "Making Charge (₹/g)";
+                    newRateInput.value = "";
+                    newMakeInput.value = "";
+                } else {
+                    newMakeInput.placeholder = "Making Charge (%)";
+                    if (typeSelect.value === "Gold 18C") {
+                        newRateInput.value = window.GOLD_18C_BHAO;
+                        newMakeInput.value = window.GOLD_18C_MAKING;
+                    } 
+                    if (typeSelect.value === "Gold 22C") {
+                        newRateInput.value = window.GOLD_22C_BHAO;
+                        newMakeInput.value = window.GOLD_22C_MAKING;   
+                    }
+                }
+                calculatePrice(); 
+            });
+
+            newRateInput.addEventListener('input', calculatePrice);
+            newMakeInput.addEventListener('input', calculatePrice);
+            newWeightInput.addEventListener('input', calculatePrice);
+
+            function calculatePrice() {
+                const rate = parseFloat(newRateInput.value);
+                const making = parseFloat(newMakeInput.value);
+                let weight = parseFloat(newWeightInput.value);
+            
+                if (!weight || isNaN(weight) || weight <= 0) {
+                    newPriceInput.value = "";
+                    return;
+                }
+            
+                if (!rate || isNaN(rate) || rate <= 0) {
+                    newPriceInput.value = "";
+                    return;
+                }
+            
+                if (!making || isNaN(making) || making <= 0) {
+                    newPriceInput.value = "";
+                    return;
+                }
+                weight = weight.toFixed(3);
+            
+                let price = 0;
+            
+                if (typeSelect.value === "Silver") {
+                    const makingChargePerGram = making;
+                    price = (weight * rate) + (makingChargePerGram * weight);
+                } else {
+                    const makingPercentage = making;
+                    price = (weight * rate) + ((makingPercentage / 100) * (weight * rate));
+                }
+                price = Math.ceil(price / 10) * 10;
+                newPriceInput.value = price > 0 ? price : ''; 
+            }
+
+            document.getElementById("cancleNew").addEventListener("click", function() {
+                document.getElementById("newArticle").value = "";
+                document.getElementById("newRate").value = "";
+                document.getElementById("newMake").value = "";
+                document.getElementById("newWeight").value = "";
+                document.getElementById("newPrice").value = "";
+                isUpdatingNew = false;
+                updatingNewId = null;
+                document.getElementById("addNewList").innerText = "Add Item";
+            });
+
+        // Entire Darab Management
+
+            let oldPurchaseRecords = [];
+            let isUpdatingOld = false;
+            let updatingOldId = null;
+
+            document.getElementById("addOldList").addEventListener("click", function () {
+                if (isUpdatingOld) {
+                    oldUpdateHandler();
+                    isUpdatingOld = false;
+                    updatingOldId = null;
+                    return;
+                }
+            
+                let type = document.getElementById("oldtype").value;
+                let article = document.getElementById("oldArticle").value.trim();
+                let raw_rate = document.getElementById("oldRate").value.trim();
+                let raw_weight = document.getElementById("oldWeight").value.trim();
+                let raw_price = document.getElementById("oldPrice").value.trim();
+            
+                let rate = parseInt(raw_rate);
+                let weight = parseFloat(parseFloat(raw_weight).toFixed(3));
+                let price = parseInt(raw_price);
+            
+                if (!article) {
+                    createToast('info', 'Alert !!', "Article Name cannot be empty");
+                    document.getElementById("oldArticle").focus();
+                    return;
+                }
+                if (!rate || isNaN(rate) || Number(rate) <= 0) {
+                    createToast('info', 'Alert !!', "Rate is invalid or 0");
+                    document.getElementById("oldRate").focus();
+                    return;
+                }
+                if (!weight || isNaN(weight) || Number(weight) <= 0) {
+                    createToast('info', 'Alert !!', "Weight is invalid or 0");
+                    document.getElementById("oldWeight").focus();
+                    return;
+                }
+                if (!price || isNaN(price) || Number(price) <= 0) {
+                    createToast('info', 'Alert !!', "Price is invalid or 0");
+                    document.getElementById("oldPrice").focus();
+                    return;
+                }
+            
+                let newOldItem = { id: Date.now(), type, article, rate, weight, price };
+            
+                oldPurchaseRecords.push(newOldItem);
+            
+                onItemChange(); 
+            
+                let itemHTML = `
+                    <div class="item" id="oldItem-${newOldItem.id}">
+                        <div class="mime">
+                            <span class="varietyName">${type}</span>
+                            <div class="artiName">${article}</div>
+                            <div class="presets">
+                                <span class="rate">Bhao - ₹ ${rate} per gram</span>
+                            </div>
+                            <div class="info">
+                                <span class="weight">Weight - ${weight} grams</span> || 
+                                <span class="price">Price - ₹ ${price}</span>
+                            </div>
+                        </div>
+                        <div class="cta">
+                            <button class="update" onclick="oldUpdateRecord(${newOldItem.id})" tabindex="-1">Update</button>
+                            <button class="delete" onclick="oldDeleteRecord(${newOldItem.id})" tabindex="-1">Delete</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById("oldItemConcluder").insertAdjacentHTML("beforeend", itemHTML);
+                
+                document.getElementById("oldArticle").value = "";
+                document.getElementById("oldRate").value = "";
+                document.getElementById("oldWeight").value = "";
+                document.getElementById("oldPrice").value = "";
+                
+                createToast('success', 'Added !!', 'Darab Added Successfully !!');
+                
+                document.getElementById("oldtype").focus();
+                document.getElementById("addOldList").innerText = "Add Darab";
+            });
+
+            function oldDeleteRecord(id) {
+                oldPurchaseRecords = oldPurchaseRecords.filter(record => record.id !== id);
+            
+                onItemChange();
+            
+                let itemElement = document.getElementById(`oldItem-${id}`);
+                if (itemElement) {
+                    itemElement.remove();
+                    createToast('success', 'Deleted !!', 'Darab removed Successfully !!');
+                }
+                document.getElementById("addOldList").innerText = "Add Darab";
+            }
+
+            function oldUpdateRecord(id) {
+                isUpdatingOld = true;
+                updatingOldId = id;
+            
+                let record = oldPurchaseRecords.find(record => record.id === id);
+                if (!record) return;
+            
+                document.getElementById("oldtype").value = record.type;
+                document.getElementById("oldArticle").value = record.article;
+                document.getElementById("oldRate").value = record.rate;
+                document.getElementById("oldWeight").value = record.weight;
+                document.getElementById("oldPrice").value = record.price;
+                document.getElementById("addOldList").innerText = "Update Darab";
+            
+                document.querySelector(".exchange-details").scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });   
+            }
+
+            function oldUpdateHandler() {
+                document.getElementById("addOldList").innerText = "Update Darab";
+            
+                let type = document.getElementById("oldtype").value;
+                let article = document.getElementById("oldArticle").value.trim();
+                let raw_rate = document.getElementById("oldRate").value.trim();
+                let raw_weight = document.getElementById("oldWeight").value.trim();
+                let raw_price = document.getElementById("oldPrice").value.trim();
+
+                let rate = parseInt(raw_rate);
+                let weight = parseFloat(parseFloat(raw_weight).toFixed(3));
+                let price = parseInt(raw_price);
+
+                if (!article) {
+                    createToast('info', 'Alert !!', "Article Name cannot be empty");
+                    document.getElementById("oldArticle").focus();
+                    return;
+                }
+                if (!rate || isNaN(rate) || Number(rate) <= 0) {
+                    createToast('info', 'Alert !!', "Rate is invalid or 0");
+                    document.getElementById("oldRate").focus();
+                    return;
+                }
+                if (!weight || isNaN(weight) || Number(weight) <= 0) {
+                    createToast('info', 'Alert !!', "Weight is invalid or 0");
+                    document.getElementById("oldWeight").focus();
+                    return;
+                }
+                if (!price || isNaN(price) || Number(price) <= 0) {
+                    createToast('info', 'Alert !!', "Price is invalid or 0");
+                    document.getElementById("oldPrice").focus();
+                    return;
+                }
+
+                let recordIndex = oldPurchaseRecords.findIndex(record => record.id === updatingOldId);
+                if (recordIndex !== -1) {
+                    oldPurchaseRecords[recordIndex] = { id: updatingOldId, type, article, rate, weight, price };
+                }
+
+                onItemChange();
+
+                let itemElement = document.getElementById(`oldItem-${updatingOldId}`);
+                if (itemElement) {
+                    itemElement.querySelector(".varietyName").textContent = type;
+                    itemElement.querySelector(".artiName").textContent = article;
+                    itemElement.querySelector(".info .weight").textContent = `Weight - ${weight} grams`;
+                    itemElement.querySelector(".info .price").textContent = `Price - ₹ ${price}`;
+                    itemElement.querySelector(".presets .rate").textContent = `Bhao - ₹ ${rate} per gram`;
+
+                    itemElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+
+                    itemElement.classList.add("highlight");
+
+                    let allItems = document.querySelectorAll("#oldItemConcluder .item");
+                    allItems.forEach(item => {
+                        if (item !== itemElement) {
+                            item.classList.add("blurred");
+                        }
+                    });
+
+                    setTimeout(() => {
+                        itemElement.classList.remove("highlight");
+                        allItems.forEach(item => {
+                            item.classList.remove("blurred");
+                        });
+                    }, 2000);
+                }
+
+                document.getElementById("oldArticle").value = "";
+                document.getElementById("oldRate").value = "";
+                document.getElementById("oldWeight").value = "";
+                document.getElementById("oldPrice").value = "";
+
+                createToast('success', 'Updated !!', 'Darab updated Successfully !!');
+
+                isUpdatingOld = false;
+                updatingOldId = null;
+                document.getElementById("addOldList").innerText = "Add Darab";
+            }
+
+            const manderine = document.getElementById("oldtype");
+            manderine.addEventListener("change", function() {
+                if (manderine.value === "Gold 18C") {
+                    document.getElementById("oldRate").value = window.GOLD_18C_BHAO;
+                } else if (manderine.value === "Gold 22C") {
+                    document.getElementById("oldRate").value = window.GOLD_22C_BHAO;
+                } else if (manderine.value === "General Gold") {
+                    document.getElementById("oldRate").value = window.GEN_GOLD_BHAO;
+                } else {
+                    document.getElementById("oldRate").value = "";
+                }
+            });
+
+            const oldRateInput = document.getElementById("oldRate");
+            const oldWeightInput = document.getElementById("oldWeight");
+            const oldPriceInput = document.getElementById("oldPrice");
+
+            oldRateInput.addEventListener('input', calculateOldPrice);
+            oldWeightInput.addEventListener('input', calculateOldPrice);
+
+            function calculateOldPrice() {
+                const rate = parseFloat(oldRateInput.value);
+                let weight = parseFloat(oldWeightInput.value);
+                if (!weight || isNaN(weight) || weight <= 0) {
+                    oldPriceInput.value = '';
+                    return;
+                }
+                if (!rate || isNaN(rate) || rate <= 0) {
+                    oldPriceInput.value = '';
+                    return;
+                }
+                let price = weight * rate;
+                price = Math.floor(price / 10) * 10;
+                oldPriceInput.value = price > 0 ? price : '';
+            }
+
+            document.getElementById("cancleOld").addEventListener("click", function() {
+                document.getElementById("oldArticle").value = "";
+                document.getElementById("oldRate").value = "";
+                document.getElementById("oldWeight").value = "";
+                document.getElementById("oldPrice").value = "";
+                isUpdatingOld = false;
+                updatingOldId = null;
+                document.getElementById("addOldList").innerText = "Add Darab";
+            });
+
+        // Send data to backend ...
+
+            async function save() {
+                const date = new Date().toISOString().split("T")[0];
+                const customerName = document.getElementById("customerName").value.trim();
+                const address = document.getElementById("address").value.trim();
+
+                nameLower = address.toLowerCase();
+
+                const phoneInputs = document.querySelectorAll("#phoneInput input");
+                const phoneNumber = Array.from(phoneInputs).map(input => input.value).join("");
+            
+                const purchaseDetails = newPurchaseRecords.map(item => ({
+                    type: item.type,
+                    article: item.article,
+                    rate: item.rate,
+                    makeing: item.makingCharge,
+                    weight: item.weight,
+                    price: item.price
+                }));
+
+                const darab = oldPurchaseRecords.map(item => ({
+                    type: item.type,
+                    article: item.article,
+                    rate: item.rate,
+                    weight: item.weight,
+                    price: item.price
+                }));
+
+                const totalAmount = parseFloat(document.getElementById("total").value.trim());
+                const paidAmount = parseFloat(document.getElementById("paid").value.trim()) || 0;
+                let credit = document.getElementById("credit").checked;
+            
+                if (paidAmount >= totalAmount) {
+                    credit = false;  
+                }
+            
+                let remainingCredit = totalAmount - paidAmount;
+                if (remainingCredit < 0) remainingCredit = 0; 
+
+                if (!customerName) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Customer's Name can't be empty";
+                    createToast(type, title, text);
+                    document.getElementById("customerName").focus();
+                    return false;
+                }
+            
+                if (!address) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Customer's Address can't be empty";
+                    createToast(type, title, text);
+                    document.getElementById("address").focus();
+                    return false;
+                }
+            
+                if (!/^\d{10}$/.test(phoneNumber)) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Phone number must contain 10 digits";
+                    createToast(type, title, text);
+                    document.getElementById("numIndexOne").focus();
+                    return false;
+                }
+            
+                if (purchaseDetails.length === 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Atleast one item should be there in the shopping list.";
+                    createToast(type, title, text);
+                    document.getElementById("type").focus();
+                    return false;
+                }
+            
+                if (totalAmount < 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Total amount must be Zero or greater than 0.";
+                    createToast(type, title, text);
+                    return false;
+                }
+            
+                if (paidAmount < 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Paid amount must be Zero or greater than 0";
+                    createToast(type, title, text);
+                    document.getElementById("paid").focus();
+                    return false;
+                }
+            
+                if (credit && remainingCredit <= 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Remaining credit must be greater then 0, if the purchase is marked as credit !!";
+                    createToast(type, title, text);
+                    return false;
+                }  
+                
+                const bhao = {
+                    "Gold 22C": window.GOLD_22C_BHAO,
+                    "Gold 18C": window.GOLD_18C_BHAO
+                };
+            
+                const data = {
+                    date,
+                    customer_name: customerName,
+                    address,
+                    phone_number: phoneNumber,
+                    purchase_details: purchaseDetails,
+                    darab: darab,
+                    total_amount: totalAmount,
+                    paid_amount: paidAmount,
+                    credit,  
+                    remaining_credit: remainingCredit,
+                    bhao: bhao
+                };
+
+                const isConfirmed = await Swal.fire({
+                    title: 'Conferm Sales !!',
+                    text: `Do you want to add this record to sales ??`,
+                    icon: 'info',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    confirmButtonText: 'Yes, Conferm',
+                    cancelButtonText: 'Cancle',
+                    showCancelButton: true,
+                    reverseButtons: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                }).then(result => result.isConfirmed);
+            
+                if (!isConfirmed) return false;
+            
+                try {
+                    const response = await fetch("/save_sales_record", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    });
+                
+                    const result = await response.json();
+                    if (response.ok) {
+                        let type = 'success';
+                        let title = 'Success !!';
+                        let text = 'Records added to database sucessfully !!';
+                        createToast(type, title, text);
+
+                        if (!window.validationList.includes(nameLower)) {
+                            let type = 'info';
+                            let title = 'Alert !!';
+                            let text = `"${address}" added to Address Suggestion !!`;
+                            createToast(type, title, text);
+                        }
+
+                        return true;
+                    } else {
+                        console.log("Error: " + result.error);
+                        let type = 'error';
+                        let title = 'Server Error !!';
+                        let text = 'Some error occured, Check console for more details !!';
+                        createToast(type, title, text);
+                        console.error("Error : ", error);
+
+                        return false;
+                    }
+                } catch (error) {
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                    console.error("Error : ", error);
+                    return false;
+                }
+            }
+
+            document.getElementById("save").addEventListener("click", async function() {
+                const result = await save();
+                if (result) {
+                    setTimeout(() => {
+                        window.location.href = '/sales/index.html';
+                    }, 3000);
+                }
+            });
+
+            document.getElementById("savePrint").addEventListener("click", async function() {
+                const result = await save();
+                if (result) {
+                    setTimeout(() => {
+                        window.location.href = '/sales/invoice.html';
+                    }, 3000);
+                }
+            });
+        </script>
+    </body>
+</html>

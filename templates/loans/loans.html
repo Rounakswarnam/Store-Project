@@ -1,0 +1,1854 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='sweetalert2.min.css') }}">
+        <script src="{{ url_for('static', filename='sweetalert2.min.js') }}"></script>
+        
+        <title>New Loans - Loans</title>
+
+        <style>
+            *,
+            *::before,
+            *::after {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+                scrollbar-width: none;
+            }
+
+            *::-webkit-scrollbar {
+                display: none;
+            }
+
+            body {
+                background-color: #081b29;
+            }
+
+            .swal2-validation-message {
+                background: #102a30 !important;
+                color: #ffffff !important;
+                border: 1px solid #444;
+                padding: 0.5em 1em;
+                border-radius: 4px;
+                font-size: 0.9em;
+                transition: all 0.2s ease;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            }
+
+            .wrapper {
+                width: 500px;
+                position: absolute;
+                left: 50%;
+                top: 65px;
+                transform: translateX(-50%);
+                padding-bottom: 32px;
+            }
+
+            .wrapper h1 {
+                color: #fffff0;
+                opacity: 0.9;
+                text-align: center;
+            }
+
+            .wrapper .customer-details {
+                width: 100%;
+                display: grid;
+                grid-template-rows: 32px 32px 32px;
+                grid-row-gap: 8px;
+                margin-top: 24px;
+            }
+
+            #customerName,
+            #address {
+                height: 100%;
+                width: 100%;
+                background-color: #113956;
+                border: none;
+                outline: none;
+                padding-left: 8px;
+                padding-right: 8px;
+                padding-bottom: 8px;
+                padding-top: 9px;
+                border-radius: 6px;
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                border: 2px solid transparent;
+                transition: 0.3;
+
+                &:focus {
+                    border: 2px solid yellowgreen;
+                    transition: 0.3s;
+                }
+            }
+
+            input::placeholder {
+                color: #fffff0;
+                opacity: 0.7;
+            }
+
+            #suggestionsAddress {
+                min-width: 100%;
+                max-height: 200px;
+                background-color: #113956;
+                overflow-y: scroll;
+                overflow-x: hidden;
+                list-style: none;
+                z-index: 999; 
+                position: absolute;
+                padding: 4px;
+                display: flex;
+                flex-direction: column;
+                margin-top: 4px;
+                border-radius: 8px;
+                border: 2px solid yellowgreen;
+            }
+
+            #suggestionsAddress li {
+                background-color: transparent;
+                padding-top: 3px;
+                padding-bottom: 3px;
+                padding-left: 8px;
+                padding-right: 8px;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 14px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: 0.3s;
+                margin-top: 2px;
+
+                &:nth-of-type(1) {
+                    margin-top: 0;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #suggestionsAddress li.hover {
+                background-color: #081b29;
+                transition: 0.3s;
+            }
+
+            .wrapper .customer-details .club:nth-of-type(3) {
+                display: grid;
+                grid-template-columns: 1fr 347px;
+                grid-column-gap: 8px;
+            }
+
+            .wrapper .customer-details .club:nth-of-type(3) span {
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                opacity: 0.7;
+                padding-left: 8px;
+            }
+
+            #phoneInput {
+                display: grid;
+                grid-template-columns: 32px 32px 32px 32px 32px 32px 32px 32px 32px 32px;
+                grid-column-gap: 3px;
+            }
+
+            #phoneInput input {
+                height: 100%;
+                width: 100%;
+                background-color: #113956;
+                border: none;
+                outline: none;
+                border-radius: 6px;
+                text-align: center;
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                border: 2px solid transparent;
+                transition: 0.3s;
+
+                &:focus {
+                    border: 2px solid yellowgreen;
+                    transition: 0.3s;
+                }
+            }
+
+            .wrapper .item-details {
+                margin-top: 8px;
+                position: relative;
+
+                & > .tittle {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #fffff0;
+                    opacity: 0.7;
+                    text-align: center;
+                    position: relative;
+                
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        height: 2px;
+                        width: 32%;
+                        background-color: #fffff0;
+                        left: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        border-radius: 50%;
+                        opacity: 0.7;
+                    }
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        height: 2px;
+                        width: 32%;
+                        background-color: #fffff0;
+                        right: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        border-radius: 50%;
+                        opacity: 0.7;
+                    }
+                }
+
+                & > .items {
+                    margin-top: 8px;
+                    display: grid;
+                    grid-template-rows: 32px 72px;
+                    grid-row-gap: 8px;
+
+                    & > .club1 {
+                        display: grid;
+                        grid-template-columns: 100px 1fr;
+                        grid-column-gap: 8px;
+                        position: relative;
+
+                        & > select {
+                            border: none;
+                            outline: none;
+                            appearance: none;
+                            background-color: #113956;
+                            color: #fffff0;
+                            font-size: 16px;
+                            font-weight: bold;
+                            border-radius: 6px;
+                            display: inline;
+                            width: 100%;
+                            height: 100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            cursor: pointer;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+
+                        & > input {
+                            width: 100%;
+                            height: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #fffff0;
+                            padding: 0 8px;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+
+                        & > ul {
+                            position: absolute;
+                            min-width: calc(100% - 108px);
+                            max-height: 200px;
+                            background-color: red;
+                            z-index: 9;
+                            top: 35px;
+                            right: 0;
+                            border-radius: 6px;
+                            border: 2px solid yellowgreen;
+                            background-color: #113956;
+                            overflow-y: scroll;
+                            overflow-x: hidden;
+                            list-style: none;
+                            padding: 4px;
+                            display: flex;
+                            flex-direction: column;
+
+                            & > li {
+                                background: transparent;
+                                padding-top: 3px;
+                                padding-bottom: 3px;
+                                padding-left: 8px;
+                                padding-right: 8px;
+                                color: #fffff0;
+                                font-weight: bold;
+                                font-size: 14px;
+                                border-radius: 6px;
+                                transition: 0.3s;
+                                cursor: pointer;
+                                margin-top: 2px;
+                                transition: 0.3s;
+
+                                &:nth-of-type(1) {
+                                    margin-top: 0;
+                                }
+                        
+                                &:hover {
+                                    background: #081b29;
+                                    color: #fffff0;
+                                    transition: 0.3s;
+                                }
+
+                                &.hover {
+                                    background: #081b29;
+                                    color: #fffff0;
+                                    transition: 0.3s;
+                                }
+                            }
+                        }
+                    }
+
+                    & > .club2 {
+                        height: 100%;
+                        width: 100%;
+                        display: grid;
+                        grid-template-rows: 1fr 1fr;
+                        grid-gap: 8px;
+
+                        & > .club2-1 {
+                            width: 100%;
+                            height: 100%;
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            grid-gap: 8px;
+                        }
+
+                        & > .club2-1 input {
+                            width: 100%;
+                            height: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            color: #fffff0;
+                            padding: 0 8px;
+                            border: 2px solid transparent;
+                            transition: 0.3s;
+
+                            &:focus {
+                                border: 2px solid yellowgreen;
+                                transition: 0.3s;
+                            }
+                        }
+
+                        & > .club2-2 div {
+                            position: relative;
+                            display: grid;
+                            height: 100%;
+                            width: 100%;
+                            grid-template-columns: 1fr 1fr;
+                            grid-column-gap: 8px;
+
+                            & > button {
+                                width: 100%;
+                                height: 100%;
+                                background-color: #113956;
+                                border: none;
+                                outline: none;
+                                border-radius: 6px;
+                                font-size: 16px;
+                                font-weight: bold;
+                                color: #fffff0;
+                                padding: 0 8px;
+                                cursor: pointer;
+                                border: 2px solid transparent;
+                                transition: 0.3s;
+
+                                &:hover {
+                                    background-color: yellowgreen;
+                                    color: #081b29;
+                                    transition: 0.3s;
+                                }
+
+                                &:focus {
+                                    background-color: yellowgreen;
+                                    color: #081b29;
+                                    transition: 0.3s;
+                                }
+                            }
+                        }
+                    }                    
+                }
+
+                & > #itemConcluder {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    margin-top: 8px;
+
+                    & > .item {
+                        width: 100%;
+                        display: grid;
+                        grid-template-columns: 1fr 70px;
+                        grid-column-gap: 6px;
+                        background-color: #113956;
+                        padding: 6px;
+                        border-radius: 8px;
+                        filter: blur(0);
+                        scale: 1;
+                        box-shadow: 0 0 5px transparent;
+                        transition: 0.3s;
+
+                        &.blurred {
+                            filter: blur(6px);
+                            scale: 0.95;
+                            box-shadow: 0 0 5px transparent;
+                            transition: 0.3s;
+                        }
+
+                        &.highlight {
+                            filter: blur(0);
+                            scale: 1.05;
+                            box-shadow: 0 0 5px #fffff0;
+                            transition: 0.3s;
+                        }
+
+                        & > .mime {
+                            position: relative;
+                            pointer-events: none;
+                            
+                            & > .varietyName {
+                                background-color: yellowgreen;
+                                padding: 2px 8px;
+                                border-radius: 6px;
+                                font-size: 14px;
+                                color: #081b29;
+                                font-weight: bold;
+                            }
+
+                            & > .artiName {
+                                margin-top: 4px;
+                                font-size: 18px;
+                                font-weight: bold;
+                                color: #fffff0;
+                            }
+
+                            & > .presets {
+                                margin-top: 2px;
+                                font-weight: bold;
+                                font-size: 14px;
+                                color: #fffff0;
+                            }
+
+                            & > .info {
+                                font-weight: bold;
+                                font-size: 14px;
+                                color: #fffff0;
+                            }
+                        }
+
+                        & > .cta {
+                            position: relative;
+                            display: grid;
+                            grid-template-rows: 1fr 1fr;
+                            grid-row-gap: 6px;
+
+                            & > button {
+                                background-color: #8a2be2;
+                                border: none;
+                                outline: none;
+                                color: #fffff0;
+                                font-weight: bold;
+                                font-size: 14px;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                transition: 0.3s;
+
+                                &:hover {
+                                    background-color: #081b29;
+                                    transition: 0.3s;
+                                } 
+                            }
+                        }
+                    }
+                }
+            }
+
+            .wrapper .billing {
+                margin-top: 16px;
+
+                & > .tittle {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #fffff0;
+                    opacity: 0.7;
+                    text-align: center;
+                    position: relative;
+
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        height: 2px;
+                        width: 32%;
+                        background-color: #fffff0;
+                        left: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        border-radius: 50%;
+                        opacity: 0.7;
+                    }
+
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        height: 2px;
+                        width: 32%;
+                        background-color: #fffff0;
+                        right: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        border-radius: 50%;
+                        opacity: 0.7;
+                    }
+                }
+
+                & > .fta {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    grid-column-gap: 8px;
+                    margin-top: 58px;
+                    height: 32px;
+
+                    & > #savePrint {
+                        background-color: transparent;
+                        outline: none;
+                        border: none;
+                        border-radius: 8px;
+                        border: 2px dashed greenyellow;
+                        color: #fffff0;
+                        font-size: 16px;
+                        font-weight: bold;
+                        transition: 0.3s;
+                        cursor: pointer;
+
+                        &:hover {
+                            background-color: greenyellow;
+                            color: #081b29;
+                            transition: 0.3s;
+                        }
+                    }
+                
+                    & > #save {
+                        background-color: transparent;
+                        outline: none;
+                        border: none;
+                        border-radius: 8px;
+                        border: 2px dashed greenyellow;
+                        color: #fffff0;
+                        font-size: 16px;
+                        font-weight: bold;
+                        transition: 0.3s;
+                        cursor: pointer;
+                    
+                        &:hover {
+                            background-color: greenyellow;
+                            color: #081b29;
+                            transition: 0.3s;
+                        }
+                    }
+                }
+
+                & > .fti {
+                    display: grid;
+                    grid-template-rows: 32px 42px;
+                    grid-row-gap: 8px;
+                    grid-template-rows: 32px;
+                    margin-top: 8px;
+                    height: 32px;
+                    position: relative;
+
+                    & > .pre {
+                        width: 100%;
+                        height: 100%;
+                        display: grid;
+                        grid-template-columns: 1fr 200px;
+                        grid-column-gap: 8px;
+
+                        & > input[type="number"] {
+                            height: 100%;
+                            width: 100%;
+                            background-color: #113956;
+                            border: none;
+                            outline: none;
+                            padding-left: 8px;
+                            padding-right: 8px;
+                            padding-bottom: 8px;
+                            padding-top: 9px;
+                            border-radius: 6px;
+                            font-size: 16px;
+                            color: #fffff0;
+                            font-weight: bold;
+                        }
+                    
+                        & > .oneMonth {
+                            background-color: #113956;
+                            padding: 6px;
+                            border-radius: 8px;
+                            display: grid;
+                            grid-template-columns: 20px 1fr;
+                            grid-column-gap: 4px;
+                            cursor: default;
+                        
+                            & > #oneMonthIntrest {
+                                accent-color: #091b29;
+                                cursor: pointer;
+                            }
+                        
+                            & > span {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: #fffff0;
+                                font-size: 16px;
+                                font-weight: bolder;
+                                opacity: 0.8;
+                                cursor: pointer;
+                            }
+                        }
+                    }
+
+                    & > .intrest {
+                        background-color: #113956;
+                        border-radius: 6px;
+                        display: grid;
+                        grid-template-columns: 34px 34px 34px 34px 34px 34px 34px 34px 34px 34px 34px 34px 34px;
+                        grid-template-rows: 34px;
+                        grid-column-gap: 4px;
+                        padding: 4px;
+
+                        & > .opt {
+                            background-color: #081b29;
+                            border-radius: 3px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: #fffff0;
+                            font-weight: bold;
+                            font-size: 18px;
+                            cursor: pointer;
+                            transition: 0.3s;
+
+                            &.selectedIntrest {
+                                background-color: greenyellow;
+                                color: #081b29;
+                                transition: 0.3s;
+                            }
+                        }
+
+                        & > #oneMonthIntrestValue {
+                            background-color: greenyellow;
+                            padding-top: 4px;
+                            padding-bottom: 4px;
+                            padding-left: 8px;
+                            padding-right: 8px;
+                            display: inline;
+                            position: absolute;
+                            left: 146px;
+                            top: 0;
+                            transform: translate(-50%,calc(-100% - 12px));
+                            font-size: 14px;
+                            border-radius: 8px;
+                            color: #081b29;
+                            font-weight: bold;
+                            opacity: 0;
+                            transition: 0.3s;
+                            min-width: 60px;
+                            min-height: 24px;
+                            text-align: center;
+                            pointer-events: none;
+                            transition: 0.3s;
+                        
+                            &::before {
+                                content: "";
+                                position: absolute;
+                                height: 12px;
+                                width: 12px;
+                                background-color: greenyellow;
+                                left: 50%;
+                                bottom: 0;
+                                transform: translate(-50%,6px) rotate(45deg);
+                                z-index: -1;
+                            }
+                        }
+
+                        &:hover > #oneMonthIntrestValue {
+                            opacity: 1;
+                            transition: 0.3s;
+                        }
+                    }
+                }
+            }
+
+            #notif {
+                z-index: 99;
+                width: 300px;
+                position: fixed;
+                bottom: 8px;
+                right: 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            #notif > .toast {
+                width: 100%;
+                padding: 8px;
+                border-radius: 8px;
+                display: grid;
+                grid-template-rows: 32px 1fr;
+                grid-row-gap: 3px;
+                position: relative;
+                backdrop-filter: blur(6px);
+                animation: show_toast 0.3s ease forwards;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    width: calc(100% - 16px);
+                    height: 4px;
+                    background-color: #081b29;
+                    left: 8px;
+                    bottom: 6px;
+                    border-radius: 2px;
+                    box-shadow: 0 0 5px #081b29;
+                    animation: timeOut 6s linear 1 forwards;
+                    transform-origin: right;
+                }
+            }
+
+            #notif > .toast.success { 
+                background: linear-gradient(to right, rgba(76, 175, 80, 0.4), rgba(56, 142, 60, 0.4), rgba(27, 94, 32, 0.4)); 
+            }
+
+            #notif > .toast.error { 
+                background: linear-gradient(to right, rgba(244, 67, 54, 0.4), rgba(211, 47, 47, 0.4), rgba(136, 14, 79, 0.4)); 
+            }
+
+            #notif > .toast.info { 
+                background: linear-gradient(to right, rgba(33, 150, 243, 0.4), rgba(30, 136, 229, 0.4), rgba(21, 101, 192, 0.4)); 
+            }
+
+            @keyframes timeOut{
+                to{
+                    width: 0%;  
+                }
+            }
+
+            @keyframes show_toast {
+            	0% {
+            		transform: translateX(100%);
+            	}
+            	100% {
+            		transform: translateX(0);
+            	}
+            }
+
+            #notif > .toast > .header {
+                display: grid;
+                grid-template-columns: 1fr 32px;
+                grid-column-gap: 6px;
+                position: relative;
+            }
+
+            #notif > .toast > .header > .tittle {
+                font-size: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: start;
+                font-weight: bold;
+                position: relative;
+                text-shadow: 0 0 4px #081b29, 0 0 8px #081b29, 0 0 16px #081b29;
+                color: #fffff0;
+            }
+
+            #notif > .toast > .header > .cta {
+                background-color: transparent;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fffff0;
+                font-size: 28px;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+
+                & > img {
+                    pointer-events: none;
+                    height: 30px;
+                    width: 30px;
+                    transform: rotate(45deg);
+                }
+            }
+
+            #notif > .toast > .message {
+                padding-bottom: 6px;
+                white-space: pre-wrap;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 16px;
+                text-shadow: 0 0 4px #081b29, 0 0 8px #081b29;
+            }
+
+            #navtrigger {
+                position: absolute;
+                top: 8px;
+                left: 8px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    width: 30px;
+                    height: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(calc(-50% - 6px)) rotate(0);
+                    transition: 0.3s;
+                }
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    width: 30px;
+                    height: 4px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(calc(-50% + 6px)) rotate(0);
+                    transition: 0.3s;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #navtrigger.active {
+                &::before {
+                    transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+                    transition: 0.3s;
+                }
+
+                &::after {
+                    transform: translateX(-50%) translateY(-50%) rotate(45deg);
+                    transition: 0.3s;
+                }
+            }
+
+            #nav {
+                width: 300px;
+                top: 65px;
+                left: 8px;
+                position: absolute;
+                border-radius: 12px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                padding-left: 8px;
+                padding-right: 8px;
+                background-color: #113956;
+                pointer-events: none;
+                opacity: 0;
+                filter: blur(16px);
+                transform: translateX(calc(-100% - 15px));
+                transition: 0.3s;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+            }
+
+            #nav.active {
+                opacity: 1;
+                filter: blur(0);
+                transform: translateY(0);
+                pointer-events: auto;
+                transition: 0.3s;
+            }
+
+            #nav > .mainUL > .mainLI {
+                color: #fffff0;
+                font-size: 18px;
+                font-weight: bold;
+                margin-top: 0;
+                position: relative;
+                margin-top: 4px;
+
+                &:nth-of-type(1) {
+                    margin-top: 0;
+                }
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(1) img,
+            #nav > .mainUL > .mainLI:nth-of-type(2) img {
+                height: 25px;
+                width: 25px;
+                transform: translateY(3px);
+                right: 8px;
+                position: absolute;
+                pointer-events: none;
+                opacity: 0.8;
+
+                > img {
+                    height: 100%;
+                    width: 100%;
+                }
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(1) .text,
+            #nav > .mainUL > .mainLI:nth-of-type(2) .text {
+                margin-left: 8px;
+                pointer-events: none;
+                opacity: 0.8;
+            }
+
+            #nav > .mainUL > .mainLI:nth-of-type(3),
+            #nav > .mainUL > .mainLI:nth-of-type(4) {
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #nav > .mainUL > .mainLI > .subUL {
+                position: relative;
+            
+                &::before {
+                    content: "";
+                    position: absolute;
+                    height: 80%;
+                    width: 4px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 13px;
+                    background-color: #fffff0;
+                    border-radius: 2px;
+                    opacity: 0.6;
+                }
+            }
+
+            #nav > .mainUL > .mainLI > .subUL > .subLI {
+                margin-left: 22px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 8px;
+                border-radius: 8px;
+                transition: 0.3s;
+                cursor: pointer;
+                margin-top: 4px;
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .currentPage {
+                background-color: #081b29;
+            }
+
+            #pageReload {
+                position: absolute;
+                top: 8px;
+                left: 66px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: 0.3s;
+
+                & > img {
+                    height: 36px;
+                    width: 36px;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            #print {
+                position: absolute;
+                top: 8px;
+                left: 124px;
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                background-color: #113956;
+                box-shadow: 0 0 4px cyan, 0 0 8px #081b29;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: 0.3s;
+
+                & > img {
+                    height: 36px;
+                    width: 36px;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    background-color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <h1>New Loan Record !!</h1>
+            <div class="customer-details">
+                <div class="club">
+                    <input type="text" id="customerName" name="customerName" placeholder="Customer's Name" autocomplete="off" />
+                </div>
+                <div class="club">
+                    <input type="text" id="address" name="address" placeholder="Address" autocomplete="off" />
+                    <ul id="suggestionsAddress" style="display: none;" tabindex="-1" data-input-id="address">
+                        {% for item in address_suggestions %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="club">
+                    <span>Mobile Number</span>
+                    <div class="phone-input" id="phoneInput">
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" id="numIndexOne" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="item-details" id="itemDetails">
+                <div class="tittle">Item Details ...</div>
+                <div class="items">
+                    <div class="club1">
+                        <select id="type">
+                            <option value="Gold 18C">Gold 18C</option>
+                            <option value="Gold 22C">Gold 22C</option>
+                            <option value="Silver">Silver</option>
+                            <option value="General Gold">Gen Gold</option>
+                            <option value="General Silver">Gen Silver</option>
+                        </select>
+                        <input type="text" id="article" placeholder="Article Name ??" autocomplete="off" />
+                        <ul id="oldSuggestion" style="display: none;" tabindex="-1" data-input-id="oldArticle">
+                            {% for item in gold_18c_suggestions %}
+                                <li>{{ item.name }}</li>
+                            {% endfor %}
+                            {% for item in gold_22c_suggestions %}
+                                <li>{{ item.name }}</li>
+                            {% endfor %}
+                            {% for item in silver_suggestions %}
+                                <li>{{ item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="club2">
+                        <div class="club2-1">
+                            <input type="number" id="weight" autocomplete="off" placeholder="weight ?? (g)" step="0.01" />
+                            <input type="number" id="price" autocomplete="off" placeholder="Price ??" />
+                        </div>
+                        <div class="club2-2">
+                            <div class="btns">
+                                <button id="cancle" tabindex="-1">Cancle & Reset</button>
+                                <button id="addToList">Add Item</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="itemConcluder"></div>
+            </div>
+
+            <div class="billing">
+                <div class="tittle">Billing Section ...</div>
+                <div class="fti">
+                    <div class="pre">
+                        <input type="number" id="total" placeholder="Total" autocomplete="off" tabindex="-1"/>
+                        <div class="oneMonth">
+                            <input type="checkbox" id="oneMonthIntrest" tabindex="-1" checked/>
+                            <span class="text"> Deduct 1 month intrest</span>
+                        </div>
+                    </div>
+                    <div class="intrest">
+                        <div class="opt" intrest="1">01</div>
+                        <div class="opt" intrest="2">02</div>
+                        <div class="opt selectedIntrest" intrest="3">03</div>
+                        <div class="opt" intrest="4">04</div>
+                        <div class="opt" intrest="5">05</div>
+                        <div class="opt" intrest="6">06</div>
+                        <div class="opt" intrest="7">07</div>
+                        <div class="opt" intrest="8">08</div>
+                        <div class="opt" intrest="9">09</div>
+                        <div class="opt" intrest="10">10</div>
+                        <div class="opt" intrest="11">11</div>
+                        <div class="opt" intrest="12">12</div>
+                        <div class="opt" intrest="13">13</div>
+                        <div id="oneMonthIntrestValue">No Item is currently added !!</div>
+                    </div>
+                </div>
+                <div class="fta">
+                    <button id="save" tabindex="-1">Save Record</button>
+                    <button id="savePrint" tabindex="-1">Save & Print Invoice</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="navtrigger"></div>
+        <div id="pageReload" onclick="window.location.href=''"><img src="{{ url_for('static', filename='icon/reload.svg') }}"></div>
+        <div id="print" onclick="window.location.href=''"><img src="{{ url_for('static', filename='icon/invoice.svg') }}"></div>
+        <div id="nav">
+            <div class="mainUL">
+                <div class="mainLI">
+                    <span class="text">Sales</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI" onclick="window.location.href='/sales/index.html'">New Sales</div>
+                        <div class="subLI" onclick="window.location.href='/sales/search-update.html'">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI">
+                    <span class="text">Loans</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI currentPage">New Loan</div>
+                        <div class="subLI">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI" id="inventory">Inventory</div>
+                <div class="mainLI" id="admin">Admin Panel</div>
+            </div>
+        </div>
+
+        <div id="validation-data" data-list='{{ lowercase|tojson }}' hidden></div>
+        <div id="notif"></div>
+
+        <script>
+        // Admin password
+            const ADMIN_PASS = "{{ admin_pass }}";
+
+        // Address Validation 
+            const validationRaw = document.getElementById("validation-data").dataset.list;
+            window.validationList = JSON.parse(validationRaw);
+            
+        // Admin Page Visit
+            document.getElementById("admin").addEventListener("click", async () => {
+                const { value: pw, isConfirmed } = await Swal.fire({
+                    title: 'Want to open Admin Page ??',
+                    text: 'Enter admin password to visit admin page !!',
+                    input: 'password',
+                    icon: 'question',
+                    inputPlaceholder: 'Enter admin password',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Visit Admin Page',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true,
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    inputValidator: (value) => {
+                        if (!value) return 'Password is required!';
+                    }
+                });
+          
+                if (!isConfirmed) return;
+                
+                if (pw !== ADMIN_PASS) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wrong Password',
+                        text: 'You are not authorized to be the Admin !!',
+                        background: '#081b20',
+                        color: '#ffffff'
+                    });
+                    return;
+                }
+              
+                window.location.href='/admin/sales-analytics.html'
+            });
+
+            document.getElementById("inventory").addEventListener("click", async () => {
+                const { value: pw, isConfirmed } = await Swal.fire({
+                    title: 'Want to check Inventory ??',
+                    text: 'Enter admin password to visit inventory page !!',
+                    input: 'password',
+                    icon: 'question',
+                    inputPlaceholder: 'Enter admin password',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Visit Inventory Page',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    reverseButtons: true,
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    inputValidator: (value) => {
+                        if (!value) return 'Password is required!';
+                    }
+                });
+          
+                if (!isConfirmed) return;
+                
+                if (pw !== ADMIN_PASS) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wrong Password',
+                        text: 'You are not authorized to be the Admin !!',
+                        background: '#081b20',
+                        color: '#ffffff'
+                    });
+                    return;
+                }
+              
+                window.location.href='/inventory/inventory.html'
+            });
+
+        // EVENT HANDELERS
+            // Nav Trigger
+            document.getElementById("navtrigger").addEventListener("click", function() {
+                document.getElementById("navtrigger").classList.toggle("active");
+                document.getElementById("nav").classList.toggle("active");
+            });
+
+            // phone number auto navigations 
+            const phoneInputs = document.querySelectorAll('.phone-input input');
+            phoneInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.match(/[0-9]/)) {
+                        if (index < phoneInputs.length - 1) phoneInputs[index + 1].focus();
+                    } else {
+                        e.target.value = '';
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        phoneInputs[index - 1].focus();
+                    }
+                });
+            });
+
+        // Toast notifications 
+            let notifications = document.getElementById("notif");
+            function createToast(type, title, text) {
+                let existingToasts = notifications.getElementsByClassName("toast");
+            
+                while (existingToasts.length >= 3) {
+                    existingToasts[0].remove(); 
+                }
+            
+                let newToast = document.createElement('div');
+                newToast.classList.add("toast");
+                newToast.classList.add(type);
+                newToast.innerHTML = `
+                    <div class="header">
+                        <span class="tittle">${title}</span>
+                        <span class="cta" onclick="this.closest('.toast').remove()">
+                            <img src="{{ url_for('static', filename='icon/plus.svg') }}">
+                        </span>
+                    </div>
+                    <div class="message">${text}</div>
+                `;
+                
+                notifications.appendChild(newToast);
+                newToast.timeOut = setTimeout(() => newToast.remove(), 6000);
+            }
+        
+        // The suggestion chain !!
+            function filterSuggestions(input, listId) {
+                const suggestions = document.getElementById(listId);
+                const items = Array.from(suggestions.children);
+                const query = input.value.toLowerCase().trim();
+            
+                const matchingItems = items.filter(item =>
+                    item.textContent.toLowerCase().includes(query)
+                );
+            
+                if (matchingItems.length > 0) {
+                    suggestions.style.display = "block";
+                    items.forEach(item => {
+                        item.style.display = matchingItems.includes(item) ? "block" : "none";
+                    });
+                } else {
+                    suggestions.style.display = "none";
+                }
+            }
+            
+            document.getElementById("address").addEventListener("input", function () {
+                filterSuggestions(this, "suggestionsAddress");
+            });
+
+            document.getElementById("article").addEventListener("input", function () {
+                filterSuggestions(this, "oldSuggestion");
+            });
+            
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest("ul") && !e.target.closest("input")) {
+                    document.querySelectorAll("ul").forEach(ul => ul.style.display = "none");
+                }
+            });
+            
+            let isClickingSuggestion = false;
+            
+            document.querySelectorAll("ul").forEach(ul => {
+                ul.addEventListener("mousedown", () => isClickingSuggestion = true);
+                ul.addEventListener("touchstart", () => isClickingSuggestion = true);
+            
+                ul.addEventListener("click", (e) => {
+                    if (e.target.tagName === "LI") {
+                        const inputId = ul.getAttribute("data-input-id");
+                        const input = document.getElementById(inputId);
+                        if (input) {
+                            input.value = e.target.textContent;
+                            ul.style.display = "none";
+                        }
+                    }
+                    isClickingSuggestion = false;
+                });
+            });
+            
+            ["article", "address"].forEach(inputId => {
+                const input = document.getElementById(inputId);
+                input.addEventListener("blur", function () {
+                    setTimeout(() => {
+                        if (!isClickingSuggestion) {
+                            document.querySelectorAll("ul").forEach(ul => ul.style.display = "none");
+                        }
+                    }, 100);
+                });
+            });
+            
+            document.addEventListener("DOMContentLoaded", function () {
+                function enableKeyboardNavigation(inputId, listId) {
+                    const input = document.getElementById(inputId);
+                    const suggestions = document.getElementById(listId);
+                    let activeIndex = -1;
+                
+                    input.addEventListener("input", function () {
+                        activeIndex = -1;
+                        suggestions.scrollTop = 0;
+                    });
+                
+                    input.addEventListener("keydown", function (e) {
+                        const visibleItems = Array.from(suggestions.children).filter(
+                            item => item.style.display !== "none"
+                        );
+                    
+                        if (visibleItems.length === 0) return;
+                    
+                        if (e.key === "ArrowDown") {
+                            e.preventDefault();
+                            activeIndex = (activeIndex + 1) % visibleItems.length;
+                            updateHighlight(visibleItems);
+                        } else if (e.key === "ArrowUp") {
+                            e.preventDefault();
+                            activeIndex = (activeIndex - 1 + visibleItems.length) % visibleItems.length;
+                            updateHighlight(visibleItems);
+                        } else if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (activeIndex >= 0) {
+                                selectItem(visibleItems[activeIndex]);
+                            }
+                        }
+                    });
+                
+                    function updateHighlight(items) {
+                        items.forEach(item => item.classList.remove("hover"));
+                        if (activeIndex >= 0) {
+                            items[activeIndex].classList.add("hover");
+                            items[activeIndex].scrollIntoView({
+                                block: "center",
+                                behavior: "smooth"
+                            });
+                        }
+                    }
+                
+                    function selectItem(item) {
+                        input.value = item.textContent;
+                        suggestions.style.display = "none";
+                    }
+                
+                    suggestions.addEventListener("click", (e) => {
+                        if (e.target.tagName === "LI") {
+                            selectItem(e.target);
+                        }
+                    });
+                }
+
+                enableKeyboardNavigation("address", "suggestionsAddress");
+                enableKeyboardNavigation("article", "oldSuggestion");
+            });
+
+        // Billing section controls ...
+            const opts = document.querySelectorAll(".intrest .opt");
+            let selectedIntrest = 3;
+                    
+            opts.forEach(opt => {
+                opt.addEventListener("click", () => {
+                    opts.forEach(o => o.classList.remove("selectedIntrest"));
+                    opt.classList.add("selectedIntrest");
+                    selectedIntrest = opt.getAttribute("intrest");
+                    createToast("info", `${selectedIntrest}% Intrest`, "Intrest selection has been updated !!");
+                    updateMonthIntrest();
+                });
+            });
+            
+            const totalInput = document.getElementById("total");
+            const creditCheckbox = document.getElementById("oneMonthIntrest");
+            const oneMonthIntrestContainer = document.getElementById("oneMonthIntrestValue");
+
+            let totalAmount = 0;
+
+            totalInput.readOnly = true;
+            totalInput.style.pointerEvents = "none";
+
+            function updateAmounts() {
+                let total = itemRecords.reduce((sum, item) => sum + Math.round(item.price || 0), 0);
+                totalAmount = Math.max(0, total); 
+                totalInput.value = Math.round(totalAmount);
+                updateMonthIntrest();
+            }
+
+            function updateMonthIntrest() {
+                let intrest = Math.round((totalAmount * selectedIntrest) / 100);
+                oneMonthIntrestContainer.innerHTML = intrest > 0 ? `₹ ${intrest} per month` : "No Item is currently added !!";
+            }
+
+            function onItemChange() {
+                updateAmounts();
+            }
+
+        // Entire Item Management
+
+            let itemRecords = [];
+            let isUpdating = false;
+            let updatingId = null;
+
+            document.getElementById("addToList").addEventListener("click", function () {
+                if (isUpdating) {
+                    updateHandler();
+                    isUpdating = false;
+                    updatingId = null;
+                    return;
+                }
+            
+                let type = document.getElementById("type").value;
+                let article = document.getElementById("article").value.trim();
+                let raw_weight = document.getElementById("weight").value.trim();
+                let raw_price = document.getElementById("price").value.trim();
+            
+                let weight = parseFloat(parseFloat(raw_weight).toFixed(3));
+                let price = parseInt(raw_price);
+            
+                if (!article) {
+                    createToast('info', 'Alert !!', "Article Name cannot be empty");
+                    document.getElementById("article").focus();
+                    return;
+                }
+
+                if (!weight || isNaN(weight) || Number(weight) <= 0) {
+                    createToast('info', 'Alert !!', "Weight is invalid or 0");
+                    document.getElementById("weight").focus();
+                    return;
+                }
+
+                if (!price || isNaN(price) || Number(price) <= 0) {
+                    createToast('info', 'Alert !!', "Price is invalid or 0");
+                    document.getElementById("price").focus();
+                    return;
+                }
+            
+                let item = { id: Date.now(), type, article, weight, price };
+            
+                itemRecords.push(item);
+            
+                onItemChange(); 
+            
+                let itemHTML = `
+                    <div class="item" id="item-${item.id}">
+                        <div class="mime">
+                            <span class="varietyName">${type}</span>
+                            <div class="artiName">${article}</div>
+                            <div class="presets">
+                                <span class="weight">Weight - ${weight} grams</span>
+                            </div>
+                            <div class="info">
+                                <span class="price">Price - ₹ ${price}</span>
+                            </div>
+                        </div>
+                        <div class="cta">
+                            <button class="update" onclick="updateRecord(${item.id})" tabindex="-1">Update</button>
+                            <button class="delete" onclick="deleteRecord(${item.id})" tabindex="-1">Delete</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById("itemConcluder").insertAdjacentHTML("beforeend", itemHTML);
+                
+                document.getElementById("article").value = "";
+                document.getElementById("weight").value = "";
+                document.getElementById("price").value = "";
+                
+                createToast('success', 'Added !!', 'Item Added Successfully !!');
+                
+                document.getElementById("type").focus();
+                document.getElementById("addToList").innerText = "Add Item";
+            });
+
+            function deleteRecord(id) {
+                itemRecords = itemRecords.filter(record => record.id !== id);
+                onItemChange();
+                let itemElement = document.getElementById(`item-${id}`);
+                if (itemElement) {
+                    itemElement.remove();
+                    createToast('success', 'Deleted !!', 'Item removed Successfully !!');
+                }
+                document.getElementById("addToList").innerText = "Add Item";
+            }
+
+            function updateRecord(id) {
+                isUpdating = true;
+                updatingId = id;
+            
+                let record = itemRecords.find(record => record.id === id);
+                if (!record) return;
+            
+                document.getElementById("type").value = record.type;
+                document.getElementById("article").value = record.article;
+                document.getElementById("weight").value = record.weight;
+                document.getElementById("price").value = record.price;
+                document.getElementById("addToList").innerText = "Update item";
+
+                document.getElementById("itemDetails").scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            function updateHandler() {
+                document.getElementById("addToList").innerText = "Update Item";
+            
+                let type = document.getElementById("type").value;
+                let article = document.getElementById("article").value.trim();
+                let raw_weight = document.getElementById("weight").value.trim();
+                let raw_price = document.getElementById("price").value.trim();
+
+                let weight = parseFloat(parseFloat(raw_weight).toFixed(3));
+                let price = parseInt(raw_price);
+
+                if (!article) {
+                    createToast('info', 'Alert !!', "Article Name cannot be empty");
+                    document.getElementById("article").focus();
+                    return;
+                }
+
+                if (!weight || isNaN(weight) || Number(weight) <= 0) {
+                    createToast('info', 'Alert !!', "Weight is invalid or 0");
+                    document.getElementById("weight").focus();
+                    return;
+                }
+
+                if (!price || isNaN(price) || Number(price) <= 0) {
+                    createToast('info', 'Alert !!', "Price is invalid or 0");
+                    document.getElementById("price").focus();
+                    return;
+                }
+
+                let recordIndex = itemRecords.findIndex(record => record.id === updatingId);
+                if (recordIndex !== -1) {
+                    itemRecords[recordIndex] = { id: updatingId, type, article, weight, price };
+                }
+
+                onItemChange();
+
+                let itemElement = document.getElementById(`item-${updatingId}`);
+                if (itemElement) {
+                    itemElement.querySelector(".varietyName").textContent = type;
+                    itemElement.querySelector(".artiName").textContent = article;
+                    itemElement.querySelector(".presets .weight").textContent = `Weight - ${weight} grams`;
+                    itemElement.querySelector(".info .price").textContent = `Price - ₹ ${price}`;
+
+                    itemElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+
+                    itemElement.classList.add("highlight");
+
+                    let allItems = document.querySelectorAll("#itemConcluder .item");
+                    allItems.forEach(item => {
+                        if (item !== itemElement) {
+                            item.classList.add("blurred");
+                        }
+                    });
+
+                    setTimeout(() => {
+                        itemElement.classList.remove("highlight");
+                        allItems.forEach(item => {
+                            item.classList.remove("blurred");
+                        });
+                    }, 2000);
+                }
+
+                document.getElementById("article").value = "";
+                document.getElementById("weight").value = "";
+                document.getElementById("price").value = "";
+
+                createToast('success', 'Updated !!', 'Item updated Successfully !!');
+
+                isUpdating = false;
+                updatingId = null;
+                document.getElementById("addToList").innerText = "Add Item";
+            }
+
+            document.getElementById("cancle").addEventListener("click", function() {
+                document.getElementById("article").value = "";
+                document.getElementById("weight").value = "";
+                document.getElementById("price").value = "";
+                isUpdatingOld = false;
+                updatingOldId = null;
+                document.getElementById("addToList").innerText = "Add Item";
+            });
+
+        // Send data to backend ...
+
+            async function save() {
+                const date = new Date().toISOString().split("T")[0];
+                const customerName = document.getElementById("customerName").value.trim();
+                const address = document.getElementById("address").value.trim();
+
+                nameLower = address.toLowerCase();
+
+                const phoneInputs = document.querySelectorAll("#phoneInput input");
+                const phoneNumber = Array.from(phoneInputs).map(input => input.value).join("");
+            
+                const itemDetails = itemRecords.map(item => ({
+                    type: item.type,
+                    article: item.article,
+                    weight: item.weight,
+                    price: item.price
+                }));
+
+                const totalAmount = parseFloat(document.getElementById("total").value.trim());
+    
+                const intrestRate = parseFloat(selectedIntrest) || 0;
+                let monthlyIntrest = Math.round((totalAmount * intrestRate) / 100);
+
+                let oneMonthIntrest = document.getElementById("oneMonthIntrest").checked;
+                let paymentDetails = [];
+
+                if (oneMonthIntrest) {
+                    const fromDate = date;
+                    const toDate = new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split("T")[0];
+                    paymentDetails.push({
+                        payment_date: date,
+                        payment_amount: monthlyIntrest,
+                        current_principal: totalAmount,
+                        intrest_date_slot: `${fromDate} - ${toDate}`,
+                        intrest_deduction: monthlyIntrest,
+                        remaining_post_intrest: 0,
+                        updated_principal: totalAmount,
+                        updated_monthly_intrest: monthlyIntrest
+                    });
+                }
+
+                if (!customerName) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Customer's Name can't be empty";
+                    createToast(type, title, text);
+                    document.getElementById("customerName").focus();
+                    return false;
+                }
+            
+                if (!address) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Customer's Address can't be empty";
+                    createToast(type, title, text);
+                    document.getElementById("address").focus();
+                    return false;
+                }
+            
+                if (!/^\d{10}$/.test(phoneNumber)) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Phone number must contain 10 digits";
+                    createToast(type, title, text);
+                    document.getElementById("numIndexOne").focus();
+                    return false;
+                }
+            
+                if (itemDetails.length === 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Atleast one item should be there in the item list.";
+                    createToast(type, title, text);
+                    document.getElementById("type").focus();
+                    return false;
+                }
+            
+                if (totalAmount < 0) {
+                    let type = 'info';
+                    let title = 'Alert !!';
+                    let text = "Total amount must be Zero or greater than 0.";
+                    createToast(type, title, text);
+                    return false;
+                }
+            
+                const data = {
+                    date,
+                    customer_name: customerName,
+                    address: address,
+                    phone_number: phoneNumber,
+                    item_details: itemDetails,
+                    total_amount: totalAmount,
+                    intrest: intrestRate,
+                    paymentDetails: paymentDetails
+                };
+
+                const isConfirmed = await Swal.fire({
+                    title: 'Conferm Sales !!',
+                    text: `Do you want to add this record to loans ??`,
+                    icon: 'info',
+                    background: '#081b20',
+                    color: '#ffffff',
+                    confirmButtonText: 'Yes, Conferm',
+                    cancelButtonText: 'Cancle',
+                    showCancelButton: true,
+                    reverseButtons: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                }).then(result => result.isConfirmed);
+            
+                if (!isConfirmed) return false;
+
+                console.log(data);
+            
+                try {
+                    const response = await fetch("/save_loans_record", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    });
+                
+                    const result = await response.json();
+                    if (response.ok) {
+                        let type = 'success';
+                        let title = 'Success !!';
+                        let text = 'Loan Records added to database sucessfully !!';
+                        createToast(type, title, text);
+
+                        if (!window.validationList.includes(nameLower)) {
+                            let type = 'info';
+                            let title = 'Alert !!';
+                            let text = `"${address}" added to Address Suggestion !!`;
+                            createToast(type, title, text);
+                        }
+
+                        return true;
+                    } else {
+                        console.log("Error: " + result.error);
+                        let type = 'error';
+                        let title = 'Server Error !!';
+                        let text = 'Some error occured, Check console for more details !!';
+                        createToast(type, title, text);
+                        console.error("Error : ", error);
+
+                        return false;
+                    }
+                } catch (error) {
+                    let type = 'error';
+                    let title = 'Server Error !!';
+                    let text = 'Some error occured on the server side, Check console for more details !!';
+                    createToast(type, title, text);
+                    console.error("Error : ", error);
+                    return false;
+                }
+            }
+
+            document.getElementById("save").addEventListener("click", async function() {
+                const result = await save();
+                if (result) {
+                    setTimeout(() => {
+                        window.location.href = '/sales/index.html';
+                    }, 3000);
+                }
+            });
+
+            document.getElementById("savePrint").addEventListener("click", async function() {
+                const result = await save();
+                //if (result) {
+                //    setTimeout(() => {
+                //        window.location.href = '/sales/invoice.html';
+                //    }, 3000);
+                //}
+            });
+        </script>
+    </body>
+</html>

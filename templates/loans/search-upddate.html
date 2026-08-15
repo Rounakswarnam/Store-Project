@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='sweetalert2.min.css') }}">
+        <script src="{{ url_for('static', filename='sweetalert2.min.js') }}"></script>
+        
+        <title>Srarch & Update - Loans</title>
+
+        <style>
+            *,
+            *::before,
+            *::after {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+                scrollbar-width: none;
+            }
+
+            *::-webkit-scrollbar {
+                display: none;
+            }
+
+            body {
+                background-color: #081b29;
+            }
+
+            .swal2-validation-message {
+                background: #102a30 !important;
+                color: #ffffff !important;
+                border: 1px solid #444;
+                padding: 0.5em 1em;
+                border-radius: 4px;
+                font-size: 0.9em;
+                transition: all 0.2s ease;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            }
+
+            .wrapper {
+                width: 500px;
+                position: absolute;
+                left: 50%;
+                top: 65px;
+                transform: translateX(-50%);
+                padding-bottom: 32px;
+            }
+
+            .wrapper h1 {
+                color: #fffff0;
+                opacity: 0.9;
+                text-align: center;
+            }
+
+            .wrapper .finder {
+                width: 100%;
+                display: grid;
+                grid-template-rows: 32px 32px 32px 32px 32px;
+                grid-row-gap: 8px;
+                margin-top: 24px;
+            }
+
+            #customerName,
+            #address {
+                height: 100%;
+                width: 100%;
+                background-color: #113956;
+                border: none;
+                outline: none;
+                padding-left: 8px;
+                padding-right: 8px;
+                padding-bottom: 8px;
+                padding-top: 9px;
+                border-radius: 6px;
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                border: 2px solid transparent;
+                transition: 0.3s;
+
+                &:focus {
+                    border: 2px solid yellowgreen;
+                    transition: 0.3s;
+                }
+            }
+
+            input::placeholder {
+                color: #fffff0;
+                opacity: 0.7;
+            }
+
+            #suggestionsAddress {
+                min-width: 100%;
+                max-height: 200px;
+                background-color: #113956;
+                overflow-y: scroll;
+                overflow-x: hidden;
+                list-style: none;
+                z-index: 999; 
+                position: absolute;
+                padding: 4px;
+                display: flex;
+                flex-direction: column;
+                margin-top: 4px;
+                border-radius: 6px;
+                border: 2px solid yellowgreen;
+            }
+
+            #suggestionsAddress li {
+                background-color: transparent;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                padding-left: 8px;
+                padding-right: 8px;
+                color: #fffff0;
+                font-weight: bold;
+                font-size: 14px;
+                opacity: 0.7;
+                border-radius: 6px;
+                transition: 0.3s;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #081b29;
+                    opacity: 1;
+                    transition: 0.3s;
+                }
+            }
+
+            #suggestionsAddress li.hover {
+                background-color: #081b29;
+                opacity: 1;
+                transition: 0.3s;
+            }
+
+            .wrapper .finder .club:nth-of-type(3) {
+                display: grid;
+                grid-template-columns: 1fr 347px;
+                grid-column-gap: 8px;
+            }
+
+            .wrapper .finder .club:nth-of-type(3) span {
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                opacity: 0.7;
+                padding-left: 8px;
+            }
+
+            #phoneInput {
+                display: grid;
+                grid-template-columns: 32px 32px 32px 32px 32px 32px 32px 32px 32px 32px;
+                grid-column-gap: 3px;
+            }
+
+            #phoneInput input {
+                height: 100%;
+                width: 100%;
+                background-color: #113956;
+                border: none;
+                outline: none;
+                border-radius: 6px;
+                text-align: center;
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                border: 2px solid transparent;
+                transition: 0.3s;
+
+                &:focus {
+                    border: 2px solid yellowgreen;
+                    transition: 0.3s;
+                }
+            }
+
+            .wrapper .finder .club:nth-of-type(4) {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-column-gap: 8px;
+            }
+            
+            .select-container {
+                position: relative;
+                width: 100%;
+            }
+
+            select {
+                width: 100%;
+                height: 32px;
+                padding-left: 8px;
+                background-color: #113956;
+                color: #fffff0;
+                border-radius: 6px;
+                appearance: none;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                outline: none;
+                border: none;
+                color-scheme: dark;
+                border: 2px solid transparent;
+                transition: 0.3s;
+
+                &:focus {
+                    border: 2px solid yellowgreen;
+                    transition: 0.3s;
+                }
+            }
+
+            .select-container::after {
+                content: "▼";
+                position: absolute;
+                top: 50%;
+                right: 12px;
+                transform: translateY(-50%);
+                color: #fffff0;
+                pointer-events: none;
+            }
+
+            .wrapper .finder .club:nth-of-type(4) .credit {
+                background-color: #113956;
+                padding: 6px;
+                border-radius: 6px;
+                display: grid;
+                grid-template-columns: 20px 1fr;
+                grid-column-gap: 4px;
+
+                &.filter {
+                    background-color: yellowgreen;
+                }
+            }
+
+            .wrapper .finder .club:nth-of-type(4) .credit #credit {
+                accent-color: #091b29;
+                cursor: pointer;
+            }
+
+            .wrapper .finder .club:nth-of-type(4) .credit span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fffff0;
+                font-size: 16px;
+                font-weight: bolder;
+                opacity: 0.8;
+                cursor: pointer;
+            }
+
+            .wrapper .finder .club:nth-of-type(4) .credit.filter span {
+                color: #081b29;
+                opacity: 1;
+            }
+
+/* Threshold Code goes here ... */
+
+            .wrapper .finder .club:nth-of-type(5) {
+                display: grid;
+                grid-template-columns: 350px 1fr;
+                grid-column-gap: 8px;
+            }
+
+            .wrapper .finder .club:nth-of-type(5) button {
+                background-color: transparent;
+                outline: none;
+                border: 2px dashed greenyellow;
+                border-radius: 6px;
+                color: #fffff0;
+                font-weight: bold;
+                cursor: pointer;
+                transition: 0.3s;
+                font-size: 18px;
+                font-weight: bold;
+                transition: 0.3s;
+
+                &:focus {
+                    background-color: greenyellow;
+                    color: #081b29;
+                    transition: 0.3s;
+                }                
+
+                &:hover {
+                    background-color: greenyellow;
+                    color: #081b29;
+                    transition: 0.3s;
+                }
+            }
+
+            .callender {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                overflow: hidden;
+            }
+
+            .callender > div {
+                opacity: 0;
+                pointer-events: none;
+                transition: 0.3s;
+                position: absolute;
+                width: 350px;
+            }
+
+            .callender > div.active {
+                opacity: 1;
+                pointer-events: auto;
+                transition: 0.3s;
+            }
+
+            .callender > div:nth-of-type(2) {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-column-gap: 8px;
+            }
+
+            .date {
+                height: 32px;
+                width: 100%;
+                background-color: #113956;
+                border: none;
+                outline: none;
+                padding-left: 8px;
+                padding-right: 8px;
+                border-radius: 6px;
+                font-size: 16px;
+                color: #fffff0;
+                font-weight: bold;
+                color-scheme: dark;
+                cursor: pointer;
+
+                &::-webkit-calendar-picker-indicator {
+                    font-size: 20px;
+                    cursor: pointer;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <h1>Search & Update - Sales</h1>
+            <div class="finder">
+                <div class="club">
+                    <input type="text" id="customerName" name="customerName" placeholder="Customer's Name" autocomplete="off" />
+                </div>
+                <div class="club">
+                    <input type="text" id="address" name="address" placeholder="Address" />
+                    <ul id="suggestionsAddress" style="display: none;" tabindex="-1" data-input-id="address" autocomplete="off">
+                        {% for item in address_suggestions %}
+                            <li>{{ item }}</li>
+                        {% endfor %} 
+                    </ul>
+                </div>
+                <div class="club">
+                    <span>Mobile Number</span>
+                    <div class="phone-input" id="phoneInput">
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                        <input type="text" maxlength="1" pattern="[0-9]*" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="club">
+                    <div class="select-container">
+                        <select id="dateFilter">
+                            <option>Specific Date</option>
+                            <option>Date Range</option>
+                            <option>Date After</option>
+                            <option>Date Before</option>
+                        </select>
+                    </div>
+                    <div class="credit">
+                        <input type="checkbox" id="credit" tabindex="-1" />
+                        <span class="text">Active Loans ?</span>
+                    </div>
+                    <div class="select-container">
+                        <select id="filterStyle">
+                            <option>Oldest First</option>
+                            <option>Newest First</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="club">                                                                        
+                    <div class="callender">
+                        <div class="specific">
+                            <input type="date" id="specificDate" class="date" autocomplete="off" tabindex="-1" />
+                        </div>
+                        <div class="range active">
+                            <input type="date" id="rangeLower" class="date" autocomplete="off" tabindex="-1" />
+                            <input type="date" id="rangeUpper" class="date" autocomplete="off" tabindex="-1" />
+                        </div>
+                        <div class="after">
+                            <input type="date" id="dateAfter" class="date" autocomplete="off" tabindex="-1" />
+                        </div>
+                        <div class="before">
+                            <input type="date" id="dateBefore" class="date" autocomplete="off" tabindex="-1" />
+                        </div>
+                    </div>
+                    <button id="find">Search</button>
+                </div>
+            </div>
+            <div class="results">
+                <div class="tittle">Findings</div>
+                <div id="findings"></div>
+                <center>
+                    <button id="loadMore" tabindex="-1">Load More</button>
+                </center>
+            </div>
+        </div>
+
+        <!-- <div class="threshold">
+            <div class="thresWrapper">
+                <div class="thres">
+                    <input type="number" id="lowerCreditAmountThreshold" placeholder='Credit above "X" amount' autocomplete="off">
+                </div>
+                <div class="thres">    
+                    <input type="number" id="upperCreditAmountThreshold" placeholder='Credit below "X" amount' autocomplete="off">
+                </div>
+                <div class="thres">
+                    <button class="thresClose" tabindex="-1">Remove Filters</button>
+                    <button class="thresApply">Apply FIlters</button>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- <div class="optionsPopup">
+            <div id="print">Print Bill</div>
+            <div class="optionsWrapper">
+                <div class="popInfo">
+                    <div class="editables">
+                        <span id="popDate"></span><br>
+                        <span id="popID"></span><br>
+                        <input type="text" id="popName" placeholder="Customer's Name" autocomplete="off" tabindex="-1" />
+                        <input type="text" id="popAddress" placeholder="Customer's Address" tabindex="-1" />
+                        <ul id="addressSuggestions" style="display: none;" tabindex="-1" data-input-id="popAddress" autocomplete="off">
+                            {% for item in address_suggestions %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                        <input type="text" id="popNumber" placeholder="Customer's Number" autocomplete="off" tabindex="-1" />
+                        <br><br><br>
+                        <span id="popTotal"></span>
+                        <div>
+                            <input type="number" id="popPaid" placeholder="Paid Amount" autocomplete="off" tabindex="-1" />
+                            <input type="number" id="popCredit" placeholder="Credit Amount" autocomplete="off" tabindex="-1" />
+                        </div>
+                    </div>
+                    <div class="cta">
+                        <div class="auth" style="display: none;">
+                            <div class="authContainer">
+                                <input type="password" id="auth" placeholder="Admin Password" autocomplete="off" />
+                                <span id="authIcons">
+                                    <img src="{{ url_for('static', filename='icon/eye.svg') }}">
+                                    <img src="{{ url_for('static', filename='icon/eye-close.svg') }}">
+                                </span>
+                            </div>
+                            <div class="authInvalid">Empty / Incorrect Password</div>
+                        </div>
+                        <div class="ctabox">
+                            <div class="fta active">
+                                <button tabindex="-1" class="popClose">Close</button>
+                                <button tabindex="-1" class="popDelete">Delete</button>
+                                <button tabindex="-1" class="popEdit">Update</button>
+                            </div>
+                            <div class="cta1">
+                                <button tabindex="-1" class="popClose1">Cancle</button>
+                                <button tabindex="-1" id="popDelete">Delete Record</button>
+                            </div>
+                            <div class="cta2">
+                                <button tabindex="-1" class="popClose2">Cancle</button>
+                                <button tabindex="-1" id="popEdit">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="logs">
+                    <div class="logHeader">
+                        <span>Date</span>
+                        <span>Paid Credit</span>
+                        <span>Remaining</span>
+                    </div>
+                    <div id="logs"></div>
+                </div>
+                <div class="bhao">
+                    <div id="bhao18C"></div>
+                    <div id="bhao22C"></div>
+                </div>
+                <div id="popDtls"></div>
+            </div>
+        </div> -->
+
+        <!-- <div id="autoScroll" onclick="window.scrollTo({top:0, behavior:'smooth'})"><img src="{{ url_for('static', filename='icon/arrow-up.svg') }}"></div>
+        <div id="navtrigger"></div>
+        <div id="pageReload"><img src="{{ url_for('static', filename='icon/reload.svg') }}"></div>
+        <div id="rowid">
+            <input type="search" id="rowidInput" autocomplete="off" tabindex="-1" placeholder="Bill Number ??" oninput="this.value = this.value.replace(/\D/g, '');" />
+        </div>
+        <div id="nav">
+            <div class="mainUL">
+                <div class="mainLI">
+                    <span class="text">Sales</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI" onclick="window.location.href='/sales/index.html'">New Sales</div>
+                        <div class="subLI currentPage">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI">
+                    <span class="text">Loans</span> <img src="{{ url_for('static', filename='icon/arrow.svg') }}">
+                    <div class="subUL">
+                        <div class="subLI">New Loan</div>
+                        <div class="subLI">Search and Update</div>
+                    </div>
+                </div>
+                <div class="mainLI" id="inventory">Inventory</div>
+                <div class="mainLI" id="admin">Admin Panel</div>
+            </div>
+        </div>
+    
+        <div id="notif"></div> -->
+    </body>
+</html>
